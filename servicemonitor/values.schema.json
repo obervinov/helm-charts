@@ -30,7 +30,7 @@
                                     "type": "string"
                                 },
                                 "port": {
-                                    "type": "integer"
+                                    "type": ["integer", "string"]
                                 },
                                 "scheme": {
                                     "type": "string"
