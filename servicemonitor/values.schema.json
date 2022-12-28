@@ -1,0 +1,68 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "type": "object",
+    "properties": {
+        "global": {
+            "type": "object",
+            "properties": {
+                "apiName": {
+                    "type": "string"
+                },
+                "apiVersion": {
+                    "type": "string"
+                }
+            }
+        },
+        "serviceMonitors": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "endpoints": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "interval": {
+                                    "type": "string"
+                                },
+                                "path": {
+                                    "type": "string"
+                                },
+                                "port": {
+                                    "type": "integer"
+                                },
+                                "scheme": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "jobLabel": {
+                        "type": "string"
+                    },
+                    "labelSelectors": {
+                        "type": "object",
+                        "properties": {
+                            "app": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "namespaceSelectors": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "type": {
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}

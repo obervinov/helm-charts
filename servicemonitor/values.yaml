@@ -1,0 +1,19 @@
+global:
+  apiName: monitoring.coreos.com
+  apiVersion: v1
+
+serviceMonitors:
+  - name: istiod
+    type: ServiceMonitor
+    endpoints:
+      - port: 15020
+        # bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+        # honorLabels: true
+        path: /stats/prometheus
+        interval: 30s
+        scheme: http
+    jobLabel: k8s-app
+    namespaceSelectors:
+      - istio-system
+    labelSelectors:
+      app: istiod

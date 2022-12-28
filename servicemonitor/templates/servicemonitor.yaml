@@ -1,0 +1,40 @@
+{{- if .Values.serviceMonitors }}
+{{-   range .Values.serviceMonitors }}
+{{-       $name := .name -}}
+{{-       $fullName := include "chart.fullName" (list $ . $name) }}
+---
+apiVersion: {{ default "monitoring.coreos.com" $.Values.global.apiName }}/{{ default "v1" $.Values.global.apiVersion }}
+kind: {{ default "ServiceMonitor" .type }}
+metadata:
+  labels:
+    {{- include "chart.labels" $ | nindent 4 }}
+  name: {{ $fullName }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+  endpoints:
+  {{- range .endpoints }}
+  - bearerTokenFile: {{ default "/var/run/secrets/kubernetes.io/serviceaccount/token" .bearerTokenFile }}
+    honorLabels: {{ default true .honorLabels }}
+    port: {{ .port }}
+    path: {{ default "/metrics" .path }}
+    interval: {{ default "30s" .interval }}
+    scheme: {{ default "http" .scheme }}
+  {{- end }}
+  jobLabel: {{ default "k8s-app" .jobLabel }}
+  {{- if .namespaceSelectors }}
+  namespaceSelector:
+    matchNames:
+    {{- range .namespaceSelectors }}
+    - {{ . }}
+    {{- end }}
+  {{- end }}
+  {{- if .labelSelectors }}
+  selector:
+    matchLabels:
+      {{- range $k, $v := .labelSelectors }}
+      {{ $k }}: {{ $v }}
+      {{- end }}
+  {{- end }}
+...
+{{-   end }}
+{{- end }}

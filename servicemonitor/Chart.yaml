@@ -1,0 +1,20 @@
+---
+apiVersion: v2
+name: servicemonitor
+version: 1.0.0
+description: This chart is designed for easy installation of custom ServiceMonitor's for Prometheus Operator
+type: application
+home: https://github.com/obervinov/helm-charts/blob/main/servicemonitor
+sources:
+  - https://github.com/obervinov/helm-charts/blob/main/servicemonitor
+
+deprecated: false
+
+icon: https://helm.sh/img/helm.svg
+
+maintainers:
+  - name: obervinov
+    email: o.bervinov@mail.ru
+    url: https://github.com/obervinov
+
+appVersion: "1.0.0"
