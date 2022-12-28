@@ -1,5 +1,5 @@
 # Helm chart for fast deployment of custom ServiceMonitor for Prometheus Operator
 
-#### Все доступные параметры и их значения описаны в [values.yaml](values.yaml)
+#### All available parameters and their values are described in [values.yaml](values.yaml)
 
-#### Helm зависимости, которые нужны для развертки чарта находятся в секции dependencies - [Chart.yaml](Chart.yaml)
+#### Helm dependencies that are needed to scan the chart are in the dependencies section [Chart.yaml](Chart.yaml)
