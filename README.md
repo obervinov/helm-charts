@@ -3,7 +3,7 @@ This repository contains helm charts for all occasions.
 
 This is a helm-registry for storing my helm-packages.
 
-## <img src="https://github.com/obervinov/content/blob/main/ico/helm_registry.png" width="30" title="helm-packages"></img> List of helm charts available for installation
+## <img src="https://github.com/obervinov/content/blob/main/ico/helm_registry.png" width="30" title="helm-packages"> List of helm charts available for installation
 <table>
   <tr>
     <th>Chart name</th>
@@ -17,19 +17,19 @@ This is a helm-registry for storing my helm-packages.
   </tr>
 </table>
 
-## <img src="https://github.com/obervinov/content/blob/main/ico/helm.svg" width="30" title="helm"></img> How to add a repository to yourself and set a chart
+## <img src="https://github.com/obervinov/content/blob/main/ico/helm.svg" width="30" title="helm"> How to add a repository to yourself and set a chart
 ```sh
 helm repo add obervinov https://obervinov.github.io/helm-charts/
 helm repo update
 helm search repo obervinov
 ```
-### <img src="https://github.com/obervinov/content/blob/main/ico/7264022.png" width="30" title="json-schema"></img> How to build a json-schema (values.schema.json)
+### <img src="https://github.com/obervinov/content/blob/main/ico/7264022.png" width="30" title="json-schema"> How to build a json-schema (values.schema.json)
 ```sh
 helm plugin install https://github.com/karuppiah7890/helm-schema-gen.git
 helm schema-gen values.yaml > values.schema.json
 ```
 
-### <img src="https://github.com/obervinov/content/blob/main/ico/4072573.png" width="30" title="helm-registry"></img> How to create a helm registry using github pages
+### <img src="https://github.com/obervinov/content/blob/main/ico/4072573.png" width="30" title="helm-registry"> How to create a helm registry using github pages
 ```sh
 echo -e “User-Agent: *\nDisallow: /” > robots.txt
 helm package ./${CHART_PATH}
