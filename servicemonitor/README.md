@@ -1,4 +1,4 @@
-# Helm chart for fast deployment of custom ServiceMonitor for Prometheus Operator
+### Helm chart for fast deployment of custom ServiceMonitor for Prometheus Operator
 
 #### All available parameters and their values are described in [values.yaml](values.yaml)
 
