@@ -6,7 +6,7 @@ serviceMonitors:
   - name: istiod
     type: ServiceMonitor
     endpoints:
-      - port: 15020
+      - port: http-metrics
         # bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
         # honorLabels: true
         path: /stats/prometheus
