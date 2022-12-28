@@ -33,9 +33,9 @@ helm schema-gen values.yaml > values.schema.json
 ```sh
 echo -e “User-Agent: *\nDisallow: /” > robots.txt
 helm package ./${CHART_PATH}
-helm repo index --url https://github.com/obervinov/helm-charts/ .
+helm repo index --url https://obervinov.github.io/helm-charts/ .
 # or
-helm repo index --url https://github.com/obervinov/helm-charts/ --merge index.yaml .
+helm repo index --url https://obervinov.github.io/helm-charts/ --merge index.yaml .
 # view helm index
 cat index.yaml
 ```

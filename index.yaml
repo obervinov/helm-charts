@@ -3,7 +3,7 @@ entries:
   servicemonitor:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2022-12-28T17:54:33.869633922+04:00"
+    created: "2022-12-28T19:02:05.427796441+04:00"
     description: This chart is designed for easy installation of custom ServiceMonitor's
       for Prometheus Operator
     digest: 166f737312913440841afd20dfab2d53b892f1771d99ea0799c1cd9f22fcad5b
@@ -18,6 +18,6 @@ entries:
     - https://github.com/obervinov/helm-charts/blob/main/servicemonitor
     type: application
     urls:
-    - https://github.com/obervinov/helm-charts/servicemonitor-1.0.0.tgz
+    - https://obervinov.github.io/helm-charts/servicemonitor-1.0.0.tgz
     version: 1.0.0
-generated: "2022-12-28T17:54:33.869170607+04:00"
+generated: "2022-12-28T19:02:05.427131215+04:00"
