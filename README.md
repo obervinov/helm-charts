@@ -1,5 +1,5 @@
 # helm-charts
-This repository contains helm traits for all occasions
+This repository contains helm charts for all occasions
 
 ### Building json-schemas
 ```
