@@ -1,5 +1,6 @@
 # obervinov's helm-charts
-This repository contains helm charts for all occasions.<br></br>
+This repository contains helm charts for all occasions.
+
 This is a helm-registry for storing my helm-packages.
 
 ## How to add a repository to yourself and set a chart
