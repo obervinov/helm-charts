@@ -17,7 +17,5 @@ To add a secret with tokens to the chart during installation, you need to upload
 For example:
 ```sh
 vault kv get -format=yaml -field=data ${VAULT_SECRET_PATH} > secret.vault.yaml
-```
-```sh
 helm upgrade --install gitlab-runners gitlab-runners/. --set-file registrationTokens=secret.vault.yaml
 ```
