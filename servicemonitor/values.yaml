@@ -17,3 +17,12 @@ serviceMonitors:
       - istio-system
     labelSelectors:
       app: istiod
+
+podMonitors:
+  - name: istio-proxy
+    type: podMonitor
+    ports:
+      - http-envoy-prom
+    jobLabel: k8s-app
+    labelSelectors:
+      istio-proxy: true

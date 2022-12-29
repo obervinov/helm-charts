@@ -1,14 +1,15 @@
 {{- if .Values.serviceMonitors }}
 {{-   range .Values.serviceMonitors }}
-{{-       $name := .name -}}
-{{-       $fullName := include "chart.fullName" (list $ . $name) }}
+{{-     $name := .name -}}
+{{-     $fullName := include "chart.fullName" (list $ . $name) }}
 ---
 apiVersion: {{ default "monitoring.coreos.com" $.Values.global.apiName }}/{{ default "v1" $.Values.global.apiVersion }}
 kind: {{ default "ServiceMonitor" .type }}
 metadata:
   labels:
     {{- include "chart.labels" $ | nindent 4 }}
-  name: {{ $fullName }}
+    jobLabel: {{ .jobLabel | quote }}
+  name: {{ $fullName }}-servicemonitor
   namespace: {{ $.Release.Namespace }}
 spec:
   endpoints:
@@ -20,7 +21,7 @@ spec:
     interval: {{ default "30s" .interval }}
     scheme: {{ default "http" .scheme }}
   {{- end }}
-  jobLabel: {{ default "k8s-app" .jobLabel }}
+  jobLabel: {{ default "jobLabel" .jobLabel }}
   {{- if .namespaceSelectors }}
   namespaceSelector:
     matchNames:

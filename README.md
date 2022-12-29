@@ -23,6 +23,10 @@ helm repo add obervinov https://obervinov.github.io/helm-charts/
 helm repo update
 helm search repo obervinov
 ```
+### <img src="https://github.com/obervinov/content/blob/main/ico/helm.svg" width="30"> How to automatic build and publish helm-package
+```sh
+./build-helm-package.sh
+```
 ### <img src="https://github.com/obervinov/content/blob/main/ico/7264022.png" width="30"> How to build a json-schema (values.schema.json)
 ```sh
 helm plugin install https://github.com/karuppiah7890/helm-schema-gen.git

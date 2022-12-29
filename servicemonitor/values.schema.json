@@ -13,6 +13,37 @@
                 }
             }
         },
+        "podMonitors": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "jobLabel": {
+                        "type": "string"
+                    },
+                    "labelSelectors": {
+                        "type": "object",
+                        "properties": {
+                            "istio-proxy": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "ports": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "type": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
         "serviceMonitors": {
             "type": "array",
             "items": {

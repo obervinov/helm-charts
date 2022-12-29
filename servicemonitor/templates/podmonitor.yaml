@@ -1,0 +1,28 @@
+{{- if .Values.podMonitors }}
+{{-   range .Values.podMonitors }}
+{{-     $name := .name -}}
+{{-     $fullName := include "chart.fullName" (list $ . $name) }}
+---
+apiVersion: {{ default "monitoring.coreos.com" $.Values.global.apiName }}/{{ default "v1" $.Values.global.apiVersion }}
+kind: {{ default "PodMonitor" .type }}
+metadata:
+  labels:
+    {{- include "chart.labels" $ | nindent 4 }}
+    jobLabel: {{ .jobLabel | quote }}
+  name: {{ $fullName }}-podmonitor
+  namespace: {{ $.Release.Namespace }}
+spec:
+  {{- if .labelSelectors }}
+  selector:
+    matchLabels:
+      {{- range $k, $v := .labelSelectors }}
+      {{ $k }}: {{ $v }}
+      {{- end }}
+  {{- end }}
+  podMetricsEndpoints:
+  {{- range .ports }}
+  - targetPort: {{ . }}
+  {{- end }}
+...
+{{-   end }}
+{{- end }}
