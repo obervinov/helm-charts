@@ -20,7 +20,7 @@ serviceMonitors:
 
 podMonitors:
   - name: istio-proxy
-    type: podMonitor
+    type: PodMonitor
     ports:
       - http-envoy-prom
     jobLabel: k8s-app
