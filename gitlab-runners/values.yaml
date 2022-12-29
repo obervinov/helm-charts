@@ -34,19 +34,6 @@ global:
       enabled: false
       resourceNames:
         - gitlab-runner
-  ## Resource limits for runners by default ##
-  resources_runner_default: &resources_runner_default
-    limits:
-      memory: 256Mi
-      cpu: 200m
-    requests:
-      memory: 128Mi
-      cpu: 100m
-  resources_job_default: &resources_job_default
-    cpuLimit: 200m
-    memoryLimit: 256Mi
-    cpuRequests: 100m
-    memoryRequests: 128Mi
   metrics:
     enabled: true
   ## The context of the user under which the runner will be launched ##
@@ -85,6 +72,21 @@ global:
     pollTimeout: 180
     # Limit of runner output in the console #
     outputLimit: 4096    
+
+  ## Resource limits for runners by default ##
+  resources_runner_default: &resources_runner_default
+    limits:
+      memory: 256Mi
+      cpu: 200m
+    requests:
+      memory: 128Mi
+      cpu: 100m
+
+  resources_job_default: &resources_job_default
+    cpuLimit: 200m
+    memoryLimit: 256Mi
+    cpuRequests: 100m
+    memoryRequests: 128Mi
 
 ## Tokens for registering runners in the gitlab (*tokens are unloaded from the vault) ##
 registrationTokens: ""
