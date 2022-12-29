@@ -9,7 +9,7 @@ serviceMonitors:
       - port: http-metrics
         # bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
         # honorLabels: true
-        path: /stats/prometheus
+        # path: /metrics
         interval: 30s
         scheme: http
     jobLabel: k8s-app

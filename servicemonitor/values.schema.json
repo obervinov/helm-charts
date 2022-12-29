@@ -57,9 +57,6 @@
                                 "interval": {
                                     "type": "string"
                                 },
-                                "path": {
-                                    "type": "string"
-                                },
                                 "port": {
                                     "type": "string"
                                 },
