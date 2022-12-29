@@ -13,7 +13,12 @@ This is a helm-registry for storing my helm-packages.
   <tr>
     <td><b>ServiceMonitor</b></td>
     <td>https://github.com/obervinov/helm-charts/tree/main/servicemonitor</td>
-    <td>https://github.com/obervinov/helm-charts/blob/main/servicemonitor-1.0.0.tgz</td>
+    <td>https://github.com/obervinov/helm-charts/blob/main/servicemonitor-1.1.0.tgz</td>
+  </tr>
+  <tr>
+    <td><b>Gitlab-runners</b></td>
+    <td>https://github.com/obervinov/helm-charts/tree/main/gitlab-runners</td>
+    <td>https://github.com/obervinov/helm-charts/blob/main/gitlab-runners-1.0.0.tgz</td>
   </tr>
 </table>
 
