@@ -1,0 +1,27 @@
+---
+apiVersion: v2
+name: gitlab-runners
+version: 1.0.0
+description: This is a chart with gitlab-runners for devops k8s
+type: application
+home: https://github.com/obervinov/helm-charts/blob/main/gitlab-runners
+
+keywords:
+  - git
+  - ci
+  - deploy
+
+sources:
+  - https://hub.docker.com/r/gitlab/gitlab-runner/
+  - https://docs.gitlab.com/runner/
+
+deprecated: false
+
+icon: https://helm.sh/img/helm.svg
+
+maintainers:
+  - name: obervinov
+    email: o.bervinov@mail.ru
+    url: https://github.com/obervinov
+
+appVersion: "alpine-v12.6.0"

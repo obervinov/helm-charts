@@ -1,0 +1,118 @@
+---
+### Basic parameters for runners ###
+global:
+  ## Image parameters for runners ##
+  image:
+    registry: gitlab/gitlab-runner
+    tag: alpine-v12.6.0
+    imagePullPolicy: IfNotPresent
+    # Dictionary with secrets for authorization in private docker-registry #
+    imagePullSecrets:
+      - name: "gitlab-registry"
+  replicas: 1
+  ## Url to the gitlab to which the runner will connect ##
+  gitlabUrl: https://gitlab.example.com/
+  ## The time during which the container can complete its work before being forcibly terminated ##
+  terminationGracePeriodSeconds: 3600
+  ## Competition of running tasks on the default runner ##
+  concurrent: 10
+  ## The interval for checking the tasks available for the runner by default ##
+  checkInterval: 30
+  ## The default logging level for the runner ##
+  logLevel: "info"
+  ## Role-based access control##
+  rbac:
+    create: true
+    # What resources does the runner have access to #
+    resources: ["*"]
+    # What operations on resources does the runner have access to #
+    verbs: ["*"]
+    # Custom access rules #
+    rules: []
+    clusterWideAccess: true
+    podSecurityPolicy:
+      enabled: false
+      resourceNames:
+        - gitlab-runner
+  metrics:
+    enabled: true
+  ## The context of the user under which the runner will be launched ##
+  securityContext:
+    runAsUser: 100
+    fsGroup: 65533
+  ## Default runner configuration template ##
+  config: |
+    [[runners]]
+      [runners.kubernetes]
+        host = ""
+        bearer_token_overwrite_allowed = false
+        image = "ubuntu:16.04"
+        namespace = "{{ .Release.Namespace }}"
+        namespace_overwrite_allowed = ""
+        privileged = true
+        poll_timeout = 180
+        service_account_overwrite_allowed = ""
+        pod_annotations_overwrite_allowed = ""
+        helper_image = "gitlab/gitlab-runner-helper:x86_64-6214287e"
+
+  ## Default executor parameters for all runners (*can be redefined in the dictionary of a specific element) ##
+  executor_parameters_default: &executor_parameters_default
+    image: ubuntu:16.04
+    # Enable the removal of the runner from ci/cd after its redeploy (*in order not to produce a large list of unavailable runners whose id has changed) #
+    unregisterRunners: true
+    executor: kubernetes
+    locked: true
+    tags: "k8s, infrastructure"
+    # Do you need to run tasks without tags on this runner #
+    # runUntagged: true
+    # solate the execution of tasks by this runner only within protected branches/tags #
+    # protected: true
+    privileged: true
+    # Maximum repository poll time per runner #
+    pollTimeout: 180
+    # Limit of runner output in the console #
+    outputLimit: 4096    
+
+  ## Resource limits for runners by default ##
+  resources_runner_default: &resources_runner_default
+    limits:
+      memory: 256Mi
+      cpu: 200m
+    requests:
+      memory: 128Mi
+      cpu: 100m
+
+  resources_job_default: &resources_job_default
+    cpuLimit: 200m
+    memoryLimit: 256Mi
+    cpuRequests: 100m
+    memoryRequests: 128Mi
+
+## Tokens for registering runners in the gitlab (*tokens are unloaded from the vault) ##
+registrationTokens: ""
+## Tokens of already existing runners in gitlab (*tokens are unloaded from the vault) ##
+runnerTokens: ""
+
+
+### A dictionary with a description of all runners that should be rolled into a kube ###
+runners:
+  ## Banner name (*must match the name of the project or group to which it is connected in gitlab) ##
+  - name: runner1
+    <<: *executor_parameters_default
+    resources: *resources_runner_default
+    # Limits and requests with which the runner will launch build containers for jobs #
+    builds: *resources_job_default
+    # Limits and requests with which the runner will launch services (*whatever that means) #
+    services: *resources_job_default
+    # Limits and requests with which the runner will launch helpers-containers for jobs #
+    helpers: *resources_job_default
+  ## Banner name (*must match the name of the project or group to which it is connected in gitlab) ##
+  - name: runner2
+    <<: *executor_parameters_default
+    resources: *resources_runner_default
+    # Limits and requests with which the runner will launch build containers for jobs #
+    builds: *resources_job_default
+    # Limits and requests with which the runner will launch services (*whatever that means) #
+    services: *resources_job_default
+    # Limits and requests with which the runner will launch helpers-containers for jobs #
+    helpers: *resources_job_default

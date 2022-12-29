@@ -1,0 +1,308 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "type": "object",
+    "properties": {
+        "global": {
+            "type": "object",
+            "properties": {
+                "checkInterval": {
+                    "type": "integer"
+                },
+                "concurrent": {
+                    "type": "integer"
+                },
+                "config": {
+                    "type": "string"
+                },
+                "executor_parameters_default": {
+                    "type": "object",
+                    "properties": {
+                        "executor": {
+                            "type": "string"
+                        },
+                        "image": {
+                            "type": "string"
+                        },
+                        "locked": {
+                            "type": "boolean"
+                        },
+                        "outputLimit": {
+                            "type": "integer"
+                        },
+                        "pollTimeout": {
+                            "type": "integer"
+                        },
+                        "privileged": {
+                            "type": "boolean"
+                        },
+                        "tags": {
+                            "type": "string"
+                        },
+                        "unregisterRunners": {
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "gitlabUrl": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "object",
+                    "properties": {
+                        "imagePullPolicy": {
+                            "type": "string"
+                        },
+                        "imagePullSecrets": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "registry": {
+                            "type": "string"
+                        },
+                        "tag": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "logLevel": {
+                    "type": "string"
+                },
+                "metrics": {
+                    "type": "object",
+                    "properties": {
+                        "enabled": {
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "rbac": {
+                    "type": "object",
+                    "properties": {
+                        "clusterWideAccess": {
+                            "type": "boolean"
+                        },
+                        "create": {
+                            "type": "boolean"
+                        },
+                        "podSecurityPolicy": {
+                            "type": "object",
+                            "properties": {
+                                "enabled": {
+                                    "type": "boolean"
+                                },
+                                "resourceNames": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        },
+                        "resources": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "rules": {
+                            "type": "array"
+                        },
+                        "verbs": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "replicas": {
+                    "type": "integer"
+                },
+                "resources_job_default": {
+                    "type": "object",
+                    "properties": {
+                        "cpuLimit": {
+                            "type": "string"
+                        },
+                        "cpuRequests": {
+                            "type": "string"
+                        },
+                        "memoryLimit": {
+                            "type": "string"
+                        },
+                        "memoryRequests": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "resources_runner_default": {
+                    "type": "object",
+                    "properties": {
+                        "limits": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string"
+                                },
+                                "memory": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "requests": {
+                            "type": "object",
+                            "properties": {
+                                "cpu": {
+                                    "type": "string"
+                                },
+                                "memory": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                },
+                "securityContext": {
+                    "type": "object",
+                    "properties": {
+                        "fsGroup": {
+                            "type": "integer"
+                        },
+                        "runAsUser": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "terminationGracePeriodSeconds": {
+                    "type": "integer"
+                }
+            }
+        },
+        "registrationTokens": {
+            "type": "string"
+        },
+        "runnerTokens": {
+            "type": "string"
+        },
+        "runners": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "builds": {
+                        "type": "object",
+                        "properties": {
+                            "cpuLimit": {
+                                "type": "string"
+                            },
+                            "cpuRequests": {
+                                "type": "string"
+                            },
+                            "memoryLimit": {
+                                "type": "string"
+                            },
+                            "memoryRequests": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "executor": {
+                        "type": "string"
+                    },
+                    "helpers": {
+                        "type": "object",
+                        "properties": {
+                            "cpuLimit": {
+                                "type": "string"
+                            },
+                            "cpuRequests": {
+                                "type": "string"
+                            },
+                            "memoryLimit": {
+                                "type": "string"
+                            },
+                            "memoryRequests": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "image": {
+                        "type": "string"
+                    },
+                    "locked": {
+                        "type": "boolean"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "outputLimit": {
+                        "type": "integer"
+                    },
+                    "pollTimeout": {
+                        "type": "integer"
+                    },
+                    "privileged": {
+                        "type": "boolean"
+                    },
+                    "resources": {
+                        "type": "object",
+                        "properties": {
+                            "limits": {
+                                "type": "object",
+                                "properties": {
+                                    "cpu": {
+                                        "type": "string"
+                                    },
+                                    "memory": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "requests": {
+                                "type": "object",
+                                "properties": {
+                                    "cpu": {
+                                        "type": "string"
+                                    },
+                                    "memory": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "services": {
+                        "type": "object",
+                        "properties": {
+                            "cpuLimit": {
+                                "type": "string"
+                            },
+                            "cpuRequests": {
+                                "type": "string"
+                            },
+                            "memoryLimit": {
+                                "type": "string"
+                            },
+                            "memoryRequests": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "tags": {
+                        "type": "string"
+                    },
+                    "unregisterRunners": {
+                        "type": "boolean"
+                    }
+                }
+            }
+        }
+    }
+}
