@@ -16,7 +16,7 @@ spec:
   selector:
     matchLabels:
       {{- range $k, $v := .labelSelectors }}
-      {{ $k }}: {{ $v }}
+      {{ $k }}: {{ $v | quote }}
       {{- end }}
   {{- end }}
   podMetricsEndpoints:

@@ -25,4 +25,4 @@ podMonitors:
       - http-envoy-prom
     jobLabel: k8s-app
     labelSelectors:
-      istio-proxy: true
+      istio-proxy: "true"

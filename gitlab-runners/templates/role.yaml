@@ -1,0 +1,37 @@
+{{- if $.Values.global.rbac.create -}}
+{{-   range .Values.runners }}
+{{-   $name := .name }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: {{ if $.Values.global.rbac.clusterWideAccess }}"ClusterRole"{{ else }}"Role"{{ end }}
+metadata:
+  name: {{ include "gitlab-runner.fullname" (list $ . $name) }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app: {{ include "gitlab-runner.fullname" (list $ . $name) }}
+    chart: {{ include "gitlab-runner.chart" $ }}
+  {{ if not $.Values.global.rbac.clusterWideAccess -}}
+  namespace: {{ default $.Release.Namespace $.Values.global.namespace | quote }}
+  {{- end }}
+rules:
+{{- if $.Values.global.rbac.podSecurityPolicy.enabled }}
+- apiGroups: ['policy']
+  resources: ['podsecuritypolicies']
+  verbs:     ['use']
+  resourceNames:
+{{ toYaml $.Values.global.rbac.podSecurityPolicy.resourceNames | indent 2 }}
+{{- end }}
+{{- if or (empty $.Values.global.rbac.rules) (or $.Values.global.rbac.resources $.Values.global.rbac.verbs) }}
+- apiGroups: ["*"]
+  resources: {{ (default (list "*") $.Values.global.rbac.resources | toJson) }}
+  verbs: {{ (default (list "*") $.Values.global.rbac.verbs | toJson) }}
+{{- end -}}
+{{ range $.Values.global.rbac.rules }}
+- apiGroups: {{ (default (list "") .apiGroups) | toJson }}
+  resources: {{ (default (list "*") .resources) | toJson }}
+  verbs: {{ (default (list "*") .verbs) | toJson }}
+{{- end }}
+...
+
+{{-   end -}}
+{{- end -}}

@@ -1,0 +1,150 @@
+{{- range $.Values.runners }}
+{{- $name := .name }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "gitlab-runner.fullname" (list $ . $name) }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    app: {{ include "gitlab-runner.fullname" (list $ . $name) }}
+    chart: {{ include "gitlab-runner.chart" $ }}
+spec:
+  replicas: {{ default 1 $.Values.global.replicas }}
+  selector:
+    matchLabels:
+      app: {{ include "gitlab-runner.fullname" (list $ . $name) }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "gitlab-runner.fullname" (list $ . $name) }}
+        chart: {{ include "gitlab-runner.chart" $ }}
+      annotations:
+        checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") $ | sha256sum }}
+        checksum/secrets: {{ include (print $.Template.BasePath "/secrets.yaml") $ | sha256sum }}
+        {{- if $.Values.global.metrics.enabled }}
+        prometheus.io/scrape: 'true'
+        prometheus.io/port: '9252'
+        {{- end }}
+    spec:
+      securityContext:
+        runAsUser: {{ $.Values.global.securityContext.runAsUser }}
+        {{- if $.Values.global.securityContext.runAsGroup }}
+        runAsGroup: {{ $.Values.global.securityContext.runAsGroup }}
+        {{- end}}
+        {{- if $.Values.global.securityContext.fsGroup }}
+        fsGroup: {{ $.Values.global.securityContext.fsGroup }}
+        {{- end}}
+      terminationGracePeriodSeconds: {{ $.Values.global.terminationGracePeriodSeconds }}
+      initContainers:
+      - name: configure
+        command: ['sh', '/configmaps/configure']
+        image: {{ $.Values.global.image.registry }}:{{ $.Values.global.image.tag }}
+        imagePullPolicy: {{ default "" $.Values.global.image.imagePullPolicy | quote }}
+        securityContext:
+          allowPrivilegeEscalation: false
+        env:
+        {{ include "gitlab-runner.runner-env-vars" (list $ . $name) | indent 8 }}
+        volumeMounts:
+        - name: runner-secrets
+          mountPath: /secrets
+          readOnly: false
+        - name: configmaps
+          mountPath: /configmaps
+          readOnly: true
+        - name: init-runner-secrets
+          mountPath: /init-secrets
+          readOnly: true
+        resources:
+{{ toYaml $.Values.global.resources | indent 10 }}
+      serviceAccountName: {{ if $.Values.global.rbac.create }}{{ include "gitlab-runner.fullname" (list $ . $name) }}{{ else }}"{{ $.Values.global.rbac.serviceAccountName }}"{{ end }}
+      containers:
+      - name: {{ include "gitlab-runner.fullname" (list $ . $name) }}
+        image: {{ $.Values.global.image.registry }}:{{ $.Values.global.image.tag }}
+        imagePullPolicy: {{ default "" $.Values.global.image.imagePullPolicy | quote }}
+        securityContext:
+          allowPrivilegeEscalation: false
+        {{- include "gitlab-runner.unregisterRunners" (list $ .) | nindent 8 }}
+        command: ["/bin/bash", "/configmaps/entrypoint"]
+        env:
+        {{ include "gitlab-runner.runner-env-vars" (list $ . $name) | indent 8 }}
+        livenessProbe:
+          exec:
+            command: ["/bin/bash", "/configmaps/check-live"]
+          initialDelaySeconds: 60
+          timeoutSeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command: ["/usr/bin/pgrep","gitlab.*runner"]
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        ports:
+        - name: metrics
+          containerPort: 9252
+        volumeMounts:
+        - name: runner-secrets
+          mountPath: /secrets
+        - name: etc-gitlab-runner
+          mountPath: /home/gitlab-runner/.gitlab-runner
+        - name: configmaps
+          mountPath: /configmaps
+        resources:
+{{-     if .resources }}
+{{      toYaml .resources | indent 10 }}     
+{{-     else }}   
+{{      toYaml $.Values.global.resources | indent 10 }}
+{{-     end }}
+      volumes:
+      - name: runner-secrets
+        emptyDir:
+          medium: "Memory"
+      - name: etc-gitlab-runner
+        emptyDir:
+          medium: "Memory"
+      - name: init-runner-secrets
+        projected:
+          sources:
+            - secret:
+                name: {{ include "gitlab-runner.fullname" (list $ . $name) }}
+                items:
+                  - key: runner-registration-token
+                    path: runner-registration-token
+                  - key: runner-token
+                    path: runner-token
+
+            {{- range $.Values.global.secrets }}
+            - secret:
+{{ toYaml . | indent 16 }}
+            {{- end }}
+      - name: configmaps
+        configMap:
+          name: {{ include "gitlab-runner.fullname" (list $ . $name) }}
+    {{- if $.Values.global.image.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml $.Values.global.image.imagePullSecrets | indent 8 }}
+    {{- end }}
+    {{- if $.Values.global.affinity }}
+      affinity:
+{{ toYaml $.Values.global.affinity | indent 8 }}
+    {{- end }}
+    {{- if $.Values.global.nodeSelector }}
+      nodeSelector:
+{{ toYaml $.Values.global.nodeSelector | indent 8 }}
+    {{- end }}
+    {{- if $.Values.global.tolerations }}
+      tolerations:
+{{ toYaml $.Values.global.tolerations | indent 8 }}
+    {{- end }}
+    {{- if $.Values.global.hostAliases }}
+      hostAliases:
+{{ toYaml $.Values.global.hostAliases | indent 8 }}
+    {{- end }}
+...
+
+{{- end }}

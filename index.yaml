@@ -1,12 +1,36 @@
 apiVersion: v1
 entries:
+  gitlab-runners:
+  - apiVersion: v2
+    appVersion: alpine-v12.6.0
+    created: "2022-12-29T20:17:54.791216384+04:00"
+    description: This is a chart with gitlab-runners for devops k8s
+    digest: 707b4a0fb922704b6558bfc014fd4b465c8195f4656d38ea35420991ccb453cb
+    home: https://github.com/obervinov/helm-charts/blob/main/gitlab-runners
+    icon: https://helm.sh/img/helm.svg
+    keywords:
+    - git
+    - ci
+    - deploy
+    maintainers:
+    - email: o.bervinov@mail.ru
+      name: obervinov
+      url: https://github.com/obervinov
+    name: gitlab-runners
+    sources:
+    - https://hub.docker.com/r/gitlab/gitlab-runner/
+    - https://docs.gitlab.com/runner/
+    type: application
+    urls:
+    - https://obervinov.github.io/helm-charts/gitlab-runners-1.0.0.tgz
+    version: 1.0.0
   servicemonitor:
   - apiVersion: v2
     appVersion: 1.1.0
-    created: "2022-12-29T18:51:00.723267809+04:00"
+    created: "2022-12-29T20:17:54.791878739+04:00"
     description: This chart is designed for easy installation of custom ServiceMonitor's
       or PodMonitor's for Prometheus Operator
-    digest: 5a9474ea0d261ed9beccbacae58dc3ff9fee78e80f0c795bf176ab26a9705dbd
+    digest: 864c7309d4463e6f86c4562e71ab9e9b1570b38e6aa1071127b346a042797548
     home: https://github.com/obervinov/helm-charts/blob/main/servicemonitor
     icon: https://helm.sh/img/helm.svg
     maintainers:
@@ -22,7 +46,7 @@ entries:
     version: 1.1.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2022-12-29T18:51:00.722743464+04:00"
+    created: "2022-12-29T20:17:54.791563078+04:00"
     description: This chart is designed for easy installation of custom ServiceMonitor's
       for Prometheus Operator
     digest: 3a8f19b1e1fcc22de3134614778ccf8037efe7f2b984d239729c942cf2b967f9
@@ -39,4 +63,4 @@ entries:
     urls:
     - https://obervinov.github.io/helm-charts/servicemonitor-1.0.0.tgz
     version: 1.0.0
-generated: "2022-12-29T18:51:00.72205824+04:00"
+generated: "2022-12-29T20:17:54.790276638+04:00"
