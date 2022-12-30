@@ -16,7 +16,7 @@ This is a helm-registry for storing my helm-packages.
     <td>https://github.com/obervinov/helm-charts/blob/main/promoperators-1.0.0.tgz</td>
   </tr>
   <tr>
-    <td><b>Gitlab-runners</b></td>
+    <td><b>Gitlab-Runners</b></td>
     <td>https://github.com/obervinov/helm-charts/tree/main/gitlab-runners</td>
     <td>https://github.com/obervinov/helm-charts/blob/main/gitlab-runners-1.0.0.tgz</td>
   </tr>
