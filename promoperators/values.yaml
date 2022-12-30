@@ -24,7 +24,7 @@ podMonitors:
       - http-envoy-prom
     jobLabel: k8s-app
     labelSelectors:
-      sidecar.istio.io/inject: "true"
+      istio-proxy: "true"
     namespaceSelector:
       any: true
       # matchNames:
