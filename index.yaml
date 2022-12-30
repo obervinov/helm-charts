@@ -3,9 +3,9 @@ entries:
   gitlab-runners:
   - apiVersion: v2
     appVersion: alpine-v12.6.0
-    created: "2022-12-30T12:01:55.394015755+04:00"
+    created: "2022-12-30T13:42:25.97818325+04:00"
     description: This is a chart with gitlab-runners for devops k8s
-    digest: 7ff92c87ea361f0572ee5bf09f1922db5a14ad9432d3b5a3c5868ba3e44d7b3e
+    digest: fd45f84f625d5d95b49a7de3cb2cfa42a2fb18a46318405ebc27c57de8fb7e0f
     home: https://github.com/obervinov/helm-charts/blob/main/gitlab-runners
     icon: https://helm.sh/img/helm.svg
     keywords:
@@ -26,8 +26,27 @@ entries:
     version: 1.0.0
   promoperators:
   - apiVersion: v2
+    appVersion: 1.0.1
+    created: "2022-12-30T13:42:25.979201905+04:00"
+    description: This chart is designed for easy installation of custom ServiceMonitor's
+      or PodMonitor's for Prometheus Operator
+    digest: b84abb28a94f26a381ab46ab512b09974a55499e3c7e5f21e6710740dfd4a6cf
+    home: https://github.com/obervinov/helm-charts/blob/main/promoperators
+    icon: https://helm.sh/img/helm.svg
+    maintainers:
+    - email: o.bervinov@mail.ru
+      name: obervinov
+      url: https://github.com/obervinov
+    name: promoperators
+    sources:
+    - https://github.com/obervinov/helm-charts/blob/main/promoperators
+    type: application
+    urls:
+    - https://obervinov.github.io/helm-charts/promoperators-1.0.1.tgz
+    version: 1.0.1
+  - apiVersion: v2
     appVersion: 1.0.0
-    created: "2022-12-30T12:01:55.394516456+04:00"
+    created: "2022-12-30T13:42:25.978680748+04:00"
     description: This chart is designed for easy installation of custom ServiceMonitor's
       or PodMonitor's for Prometheus Operator
     digest: dcdac27a66df8d6be21b15ddc5038405f2901a61e799ece88bd6391a063d9d60
@@ -44,4 +63,4 @@ entries:
     urls:
     - https://obervinov.github.io/helm-charts/promoperators-1.0.0.tgz
     version: 1.0.0
-generated: "2022-12-30T12:01:55.392591734+04:00"
+generated: "2022-12-30T13:42:25.97653352+04:00"
