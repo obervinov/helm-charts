@@ -24,7 +24,7 @@
                     "labelSelectors": {
                         "type": "object",
                         "properties": {
-                            "istio-proxy": {
+                            "sidecar.istio.io/inject": {
                                 "type": "string"
                             }
                         }
@@ -32,14 +32,19 @@
                     "name": {
                         "type": "string"
                     },
+                    "namespaceSelector": {
+                        "type": "object",
+                        "properties": {
+                            "any": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
                     "ports": {
                         "type": "array",
                         "items": {
                             "type": "string"
                         }
-                    },
-                    "type": {
-                        "type": "string"
                     }
                 }
             }
@@ -85,9 +90,6 @@
                         "items": {
                             "type": "string"
                         }
-                    },
-                    "type": {
-                        "type": "string"
                     }
                 }
             }

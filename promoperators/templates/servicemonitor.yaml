@@ -4,7 +4,7 @@
 {{-     $fullName := include "chart.fullName" (list $ . $name) }}
 ---
 apiVersion: {{ default "monitoring.coreos.com" $.Values.global.apiName }}/{{ default "v1" $.Values.global.apiVersion }}
-kind: {{ default "ServiceMonitor" .type }}
+kind: ServiceMonitor
 metadata:
   labels:
     {{- include "chart.labels" $ | nindent 4 }}
