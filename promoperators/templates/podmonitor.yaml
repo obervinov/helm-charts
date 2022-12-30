@@ -30,10 +30,7 @@ spec:
       {{ $k }}: {{ $v | quote }}
       {{- end }}
   {{- end }}
-  podMetricsEndpoints:
-  {{- range .ports }}
-  - port: {{ . }}
-  {{- end }}
+  podMetricsEndpoints: {{ toYaml .podMetricsEndpoints | nindent 2 }}
 ...
 {{-   end }}
 {{- end }}

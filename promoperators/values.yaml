@@ -20,8 +20,9 @@ serviceMonitors:
 
 podMonitors:
   - name: istio-proxy
-    ports:
-      - http-envoy-prom
+    podMetricsEndpoints:
+      - port: http-envoy-prom
+        path: /stats/prometheus
     jobLabel: k8s-app
     labelSelectors:
       istio-proxy: "true"
