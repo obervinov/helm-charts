@@ -2,9 +2,9 @@ global:
   apiName: monitoring.coreos.com
   apiVersion: v1
 
+# sm istio for example 
 serviceMonitors:
   - name: istiod
-    type: ServiceMonitor
     endpoints:
       - port: http-metrics
         # bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
@@ -20,9 +20,13 @@ serviceMonitors:
 
 podMonitors:
   - name: istio-proxy
-    type: PodMonitor
     ports:
       - http-envoy-prom
     jobLabel: k8s-app
     labelSelectors:
-      istio-proxy: "true"
+      sidecar.istio.io/inject: "true"
+    namespaceSelector:
+      any: true
+      # matchNames:
+      #  - namespace1
+      #  - namespace2
