@@ -13,12 +13,17 @@ This is a helm-registry for storing my helm-packages.
   <tr>
     <td><b>Promoperators</b></td>
     <td>https://github.com/obervinov/helm-charts/tree/main/promoperators</td>
-    <td>https://github.com/obervinov/helm-charts/blob/main/promoperators-1.0.0.tgz</td>
+    <td>https://github.com/obervinov/helm-charts/blob/main/promoperators-1.0.1.tgz</td>
   </tr>
   <tr>
     <td><b>Gitlab-runners</b></td>
     <td>https://github.com/obervinov/helm-charts/tree/main/gitlab-runners</td>
     <td>https://github.com/obervinov/helm-charts/blob/main/gitlab-runners-1.0.0.tgz</td>
+  </tr>
+  <tr>
+    <td><b>K8s-haproxy</b></td>
+    <td>https://github.com/obervinov/helm-charts/tree/main/k8s-haproxy</td>
+    <td>https://github.com/obervinov/helm-charts/blob/main/k8s-haproxy-1.0.0.tgz</td>
   </tr>
 </table>
 
