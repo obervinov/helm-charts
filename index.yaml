@@ -3,9 +3,9 @@ entries:
   gitlab-runners:
   - apiVersion: v2
     appVersion: alpine-v12.6.0
-    created: "2023-01-03T19:07:06.633847+04:00"
+    created: "2023-01-03T19:13:00.407343322+04:00"
     description: This is a chart with gitlab-runners for devops k8s
-    digest: e79ea7de683dd9d1304d261245862c6e2da0a3aac53be50d35873f62839a6cd4
+    digest: 8581350f2e1d86b221c019c3f9755f104436dac7ba770a929896acda81adabe4
     home: https://github.com/obervinov/helm-charts/blob/main/gitlab-runners
     icon: https://helm.sh/img/helm.svg
     keywords:
@@ -22,19 +22,19 @@ entries:
     - https://docs.gitlab.com/runner/
     type: application
     urls:
-    - https://obervinov.github.io/helm-charts/_packages/gitlab-runners-1.0.0.tgz
+    - https://obervinov.github.io/helm-charts/gitlab-runners-1.0.0.tgz
     version: 1.0.0
   jaeger-stack:
   - apiVersion: v2
     appVersion: 1.32.0
-    created: "2023-01-03T19:07:06.63872505+04:00"
+    created: "2023-01-03T19:13:00.412813173+04:00"
     dependencies:
     - condition: elasticsearch.enabled
       name: elasticsearch
       repository: https://helm.elastic.co
       version: ^7.11.1
     description: Helm-chart with jaeger-stack
-    digest: 2124360714dfebcc2a96b002de810274656ed26a03f322e59be2905550b54dc9
+    digest: dde2082e6d97ebcf662af91a75179cc6aefcde25aac8a4aaf5be6fb125ba2282
     home: https://github.com/obervinov/helm-charts/blob/main/jaeger-stack
     icon: https://helm.sh/img/helm.svg
     keywords:
@@ -51,14 +51,14 @@ entries:
     - https://www.jaegertracing.io/docs/1.32/deployment/
     type: application
     urls:
-    - https://obervinov.github.io/helm-charts/_packages/jaeger-stack-1.0.0.tgz
+    - https://obervinov.github.io/helm-charts/jaeger-stack-1.0.0.tgz
     version: 1.0.0
   k8s-haproxy:
   - apiVersion: v2
     appVersion: 2.1.1-alpine
-    created: "2023-01-03T19:07:06.639434063+04:00"
+    created: "2023-01-03T19:13:00.413535337+04:00"
     description: Helm-chart with daemonset-proxy by haproxy
-    digest: 26e2c76ed8e0f6e94690dd62604060a7fc39cd23bae14278060802a3481423b7
+    digest: 653547b623a880bcb40bc10755587acefdc8471cf6501a85c2b76fd95f8f4173
     home: https://github.com/obervinov/helm-charts/blob/main/k8s-haproxy
     icon: https://helm.sh/img/helm.svg
     keywords:
@@ -75,15 +75,15 @@ entries:
     - http://www.haproxy.org
     type: application
     urls:
-    - https://obervinov.github.io/helm-charts/_packages/k8s-haproxy-1.0.0.tgz
+    - https://obervinov.github.io/helm-charts/k8s-haproxy-1.0.0.tgz
     version: 1.0.0
   promoperators:
   - apiVersion: v2
     appVersion: 1.0.1
-    created: "2023-01-03T19:07:06.640291375+04:00"
+    created: "2023-01-03T19:13:00.414011454+04:00"
     description: This chart is designed for easy installation of custom ServiceMonitor's
       or PodMonitor's for Prometheus Operator
-    digest: ca1cc2f79a65a7ffe393c551679af8237c104b18ccdda7c93e227de83669f325
+    digest: fbe5ab17a422122d58e2ae54ca32a5ddd0471ab41ea56cbd4de3c002785cac8c
     home: https://github.com/obervinov/helm-charts/blob/main/promoperators
     icon: https://helm.sh/img/helm.svg
     maintainers:
@@ -95,25 +95,6 @@ entries:
     - https://github.com/obervinov/helm-charts/blob/main/promoperators
     type: application
     urls:
-    - https://obervinov.github.io/helm-charts/_packages/promoperators-1.0.1.tgz
+    - https://obervinov.github.io/helm-charts/promoperators-1.0.1.tgz
     version: 1.0.1
-  - apiVersion: v2
-    appVersion: 1.0.0
-    created: "2023-01-03T19:07:06.639949608+04:00"
-    description: This chart is designed for easy installation of custom ServiceMonitor's
-      or PodMonitor's for Prometheus Operator
-    digest: dcdac27a66df8d6be21b15ddc5038405f2901a61e799ece88bd6391a063d9d60
-    home: https://github.com/obervinov/helm-charts/blob/main/promoperators
-    icon: https://helm.sh/img/helm.svg
-    maintainers:
-    - email: o.bervinov@mail.ru
-      name: obervinov
-      url: https://github.com/obervinov
-    name: promoperators
-    sources:
-    - https://github.com/obervinov/helm-charts/blob/main/promoperators
-    type: application
-    urls:
-    - https://obervinov.github.io/helm-charts/_packages/promoperators-1.0.0.tgz
-    version: 1.0.0
-generated: "2023-01-03T19:07:06.631955337+04:00"
+generated: "2023-01-03T19:13:00.405398184+04:00"

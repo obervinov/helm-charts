@@ -15,7 +15,7 @@ done
 
 for chart in ${charts[@]}; do
     printf "Creating helm-package for %s\n" $chart
-    helm package ./${chart} --dependency-update --destination _packages/
+    helm package ./${chart} --dependency-update
 done
 
 printf "Building helm index.yaml\n"
