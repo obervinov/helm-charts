@@ -1,0 +1,40 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "proxy.name" $ }}-daemonset
+  namespace: {{ $.Release.Namespace }}
+spec:
+  updateStrategy:
+  {{- if (eq .Values.strategy.type "RollingUpdate") }}
+    type: {{ .Values.strategy.type }}
+    rollingUpdate:
+      maxUnavailable: 1 {{ else }}
+    type: {{ .Values.strategy.type }}  {{ end }}
+  selector:
+    matchLabels:
+      {{- include "proxy.selectorLabels" $ | nindent 6 }}
+  template:
+    metadata:
+      labels:
+      {{- include "proxy.labels" $ | nindent 8 }}
+      {{- include "proxy.selectorLabels" $ | nindent 8 }}
+      annotations:
+        checksum/commit: {{ .Values.configmap.commit }}
+    spec:
+      containers:
+      - image: {{ .Values.image.repository }}:{{ .Values.image.version }}
+        imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+        name: haproxy
+        resources: {{ toYaml .Values.resources | nindent 10 }}
+        volumeMounts:
+        - name: config-volume
+          mountPath: {{ .Values.configmap.mountPath }}
+      restartPolicy: Always
+      volumes:
+      - name: config-volume
+        configMap:
+          name: {{ include "proxy.name" $ }}-cm
+      imagePullSecrets:
+        - name: {{ .Values.image.pullsecrets }}
+...

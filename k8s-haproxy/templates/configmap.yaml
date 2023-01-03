@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    {{- include "proxy.labels" $ | nindent 4 }}
+    {{- include "proxy.selectorLabels" $ | nindent 4 }}
+  name: {{ include "proxy.name" $ }}-cm
+  namespace: {{ $.Release.Namespace }}
+data:
+{{ printf "%s: |-" .Values.configmap.name | indent 2 }} {{ printf "%s" .Values.configmap.data | nindent 4}}
+...

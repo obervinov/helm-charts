@@ -3,9 +3,9 @@ entries:
   gitlab-runners:
   - apiVersion: v2
     appVersion: alpine-v12.6.0
-    created: "2022-12-30T13:42:25.97818325+04:00"
+    created: "2023-01-03T17:10:37.901470337+04:00"
     description: This is a chart with gitlab-runners for devops k8s
-    digest: fd45f84f625d5d95b49a7de3cb2cfa42a2fb18a46318405ebc27c57de8fb7e0f
+    digest: 9fdc96eda880b96c8a4a5b335c885750a9fadd94393e6d5808008d753358a342
     home: https://github.com/obervinov/helm-charts/blob/main/gitlab-runners
     icon: https://helm.sh/img/helm.svg
     keywords:
@@ -24,13 +24,37 @@ entries:
     urls:
     - https://obervinov.github.io/helm-charts/gitlab-runners-1.0.0.tgz
     version: 1.0.0
+  k8s-haproxy:
+  - apiVersion: v2
+    appVersion: 2.1.1-alpine
+    created: "2023-01-03T17:10:37.902144788+04:00"
+    description: Helm-chart with daemonset-proxy by haproxy
+    digest: 7107fe575160293e93eea2a6b4eaaeff511a107e47679f07a9d082c85385d047
+    home: https://github.com/obervinov/helm-charts/blob/main/k8s-haproxy
+    icon: https://helm.sh/img/helm.svg
+    keywords:
+    - haproxy
+    - proxy
+    - daemonset
+    maintainers:
+    - email: o.bervinov@mail.ru
+      name: obervinov
+      url: https://github.com/obervinov
+    name: k8s-haproxy
+    sources:
+    - https://hub.docker.com/_/haproxy
+    - http://www.haproxy.org
+    type: application
+    urls:
+    - https://obervinov.github.io/helm-charts/k8s-haproxy-1.0.0.tgz
+    version: 1.0.0
   promoperators:
   - apiVersion: v2
     appVersion: 1.0.1
-    created: "2022-12-30T13:42:25.979201905+04:00"
+    created: "2023-01-03T17:10:37.903608245+04:00"
     description: This chart is designed for easy installation of custom ServiceMonitor's
       or PodMonitor's for Prometheus Operator
-    digest: b84abb28a94f26a381ab46ab512b09974a55499e3c7e5f21e6710740dfd4a6cf
+    digest: c10d5ba5bf645e81cd0c4514b97dcc5e4be98384af9ea24133d87aed41e2af1d
     home: https://github.com/obervinov/helm-charts/blob/main/promoperators
     icon: https://helm.sh/img/helm.svg
     maintainers:
@@ -46,7 +70,7 @@ entries:
     version: 1.0.1
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2022-12-30T13:42:25.978680748+04:00"
+    created: "2023-01-03T17:10:37.903003784+04:00"
     description: This chart is designed for easy installation of custom ServiceMonitor's
       or PodMonitor's for Prometheus Operator
     digest: dcdac27a66df8d6be21b15ddc5038405f2901a61e799ece88bd6391a063d9d60
@@ -63,4 +87,4 @@ entries:
     urls:
     - https://obervinov.github.io/helm-charts/promoperators-1.0.0.tgz
     version: 1.0.0
-generated: "2022-12-30T13:42:25.97653352+04:00"
+generated: "2023-01-03T17:10:37.900183472+04:00"

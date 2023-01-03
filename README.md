@@ -13,12 +13,17 @@ This is a helm-registry for storing my helm-packages.
   <tr>
     <td><b>Promoperators</b></td>
     <td>https://github.com/obervinov/helm-charts/tree/main/promoperators</td>
-    <td>https://github.com/obervinov/helm-charts/blob/main/promoperators-1.0.0.tgz</td>
+    <td>https://github.com/obervinov/helm-charts/blob/main/promoperators-1.0.1.tgz</td>
   </tr>
   <tr>
     <td><b>Gitlab-runners</b></td>
     <td>https://github.com/obervinov/helm-charts/tree/main/gitlab-runners</td>
     <td>https://github.com/obervinov/helm-charts/blob/main/gitlab-runners-1.0.0.tgz</td>
+  </tr>
+  <tr>
+    <td><b>K8s-haproxy</b></td>
+    <td>https://github.com/obervinov/helm-charts/tree/main/k8s-haproxy</td>
+    <td>https://github.com/obervinov/helm-charts/blob/main/k8s-haproxy-1.0.0.tgz</td>
   </tr>
 </table>
 
@@ -40,7 +45,6 @@ helm schema-gen values.yaml > values.schema.json
 
 ### <img src="https://github.com/obervinov/content/blob/main/ico/4072573.png" width="30"> How to create a helm registry using github pages
 ```sh
-echo -e “User-Agent: *\nDisallow: /” > robots.txt
 helm package ./${CHART_PATH}
 helm repo index --url https://obervinov.github.io/helm-charts/ .
 # or
