@@ -15,9 +15,8 @@ done
 
 for chart in ${charts[@]}; do
     printf "Creating helm-package for %s\n" $chart
-    helm dependency update ./${chart}
-    helm package ./${chart}
+    helm package ./${chart} --dependency-update --destination _packages/
 done
 
 printf "Building helm index.yaml\n"
-helm repo index --url https://obervinov.github.io/helm-charts/ --merge index.yaml .
+helm repo index --url https://obervinov.github.io/helm-charts --merge index.yaml .
