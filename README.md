@@ -45,7 +45,6 @@ helm schema-gen values.yaml > values.schema.json
 
 ### <img src="https://github.com/obervinov/content/blob/main/ico/4072573.png" width="30"> How to create a helm registry using github pages
 ```sh
-echo -e “User-Agent: *\nDisallow: /” > robots.txt
 helm package ./${CHART_PATH}
 helm repo index --url https://obervinov.github.io/helm-charts/ .
 # or
