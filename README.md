@@ -26,7 +26,7 @@ This is a helm-registry for storing my helm-packages.
     <td>https://github.com/obervinov/helm-charts/blob/main/k8s-haproxy-1.0.0.tgz</td>
   </tr>
   <tr>
-    <td><b>jaeger-stack</b></td>
+    <td><b>Jaeger-stack</b></td>
     <td>https://github.com/obervinov/helm-charts/tree/main/jaeger-stack</td>
     <td>https://github.com/obervinov/helm-charts/blob/main/jaeger-stack-1.0.0.tgz</td>
   </tr>

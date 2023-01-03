@@ -4,7 +4,7 @@
 - Query
 - Elasticsearch
 
-Attention! This chart only supports:
+**Attention! This chart only supports:**
 - Elasticsearch as a span storage
 - Gloo-gateway as a ingress-controller
 ____________________________________________________________________________________________________________
