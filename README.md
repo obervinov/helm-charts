@@ -8,7 +8,6 @@ This is a helm-registry for storing my helm-packages.
   <tr>
     <th>Chart name</th>
     <th>Sources</th>
-    <th>Package</th>
   </tr>
   <tr>
     <td><b>Helm Index</b></td>
