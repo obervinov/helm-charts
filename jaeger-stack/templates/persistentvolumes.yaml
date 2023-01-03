@@ -1,0 +1,26 @@
+{{- if and .Values.elasticsearch.enabled .Values.persistentVolume.enabled -}}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  labels:
+    app: {{ template "jaeger.name" . }}
+    type: {{ .Values.persistentVolume.type }}
+  name: pv-{{ .Release.Namespace }}-jaeger-stack-{{ .Values.persistentVolume.resources.requests.storage | lower }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  accessModes:
+  {{- range .Values.persistentVolume.accessModes }}
+  - {{ toYaml . }}
+  {{- end }}
+{{- if .Values.persistentVolume.storageClass }}
+{{- if (eq "-" .Values.persistentVolume.storageClass) }}
+  storageClassName: ""
+{{- else }}
+  storageClassName: "{{ .Values.persistentVolume.storageClass }}"
+{{- end }}
+{{- end }}
+  capacity:
+    storage: "{{ .Values.persistentVolume.resources.requests.storage }}"
+  hostPath:
+    path: "{{ .Values.persistentVolume.hostPath }}/{{ .Release.Namespace }}-{{ template "jaeger.name" . }}"
+{{- end -}}

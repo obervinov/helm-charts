@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "query.fullname" . }}-deployment
+  labels:
+    app: {{ template "query.fullname" . }}
+    deployment: {{ include "query.fullname" . }}-deployment
+spec:
+  replicas: {{.Values.query.replicaCount }}
+  strategy:
+{{ toYaml .Values.query.strategy | indent 4 }}
+  selector:
+    matchLabels:
+      app: {{ template "query.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "query.fullname" . }}
+    spec:
+      imagePullSecrets:
+      - name: {{ .Values.imagePullSecret }}
+      containers:
+      - name: {{ template "query.fullname" . }}
+        image: {{ .Values.query.image.repository }}:{{ .Values.query.version }}
+        imagePullPolicy: {{ .Values.query.image.pullPolicy }}
+        resources:
+{{ toYaml .Values.query.resources | indent 10 }}
+        args:
+{{- range $key := .Values.query.args }}
+          - {{ $key | quote }}
+{{- end }}
+        ports:
+        {{- range .Values.query.ports }}
+        - name: {{ .name }}
+          containerPort: {{ .port | int }}
+          protocol: {{ .protocol }}
+        {{- end }}        
+        env:
+{{- range $name, $value := .Values.query.env.open }}
+        - name: {{ $name | quote }}
+          value: {{ $value | quote }}
+{{- end }}

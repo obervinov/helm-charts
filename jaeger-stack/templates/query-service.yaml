@@ -1,0 +1,18 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "query.fullname" . }}-svc
+  labels:
+    app: {{ template "query.fullname" . }}
+spec:
+  selector:
+    app: {{ template "query.fullname" . }}
+  ports:
+{{- range .Values.query.ports }}
+  - name: {{ .name }}
+    port: {{ .port }}
+    protocol: {{ .protocol }}
+    targetPort: {{ .name }}
+{{- end }}
+  type: {{ .Values.query.service.type }}
