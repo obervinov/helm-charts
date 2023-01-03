@@ -15,6 +15,7 @@ done
 
 for chart in ${charts[@]}; do
     printf "Creating helm-package for %s\n" $chart
+    helm dependency update ./${chart}
     helm package ./${chart}
 done
 

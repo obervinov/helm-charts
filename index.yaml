@@ -3,9 +3,9 @@ entries:
   gitlab-runners:
   - apiVersion: v2
     appVersion: alpine-v12.6.0
-    created: "2023-01-03T17:10:37.901470337+04:00"
+    created: "2023-01-03T18:30:53.660208859+04:00"
     description: This is a chart with gitlab-runners for devops k8s
-    digest: 9fdc96eda880b96c8a4a5b335c885750a9fadd94393e6d5808008d753358a342
+    digest: 8193f0b2b122c797847ccbd037b8930cc8707318d78f56c148ecb134c16fb874
     home: https://github.com/obervinov/helm-charts/blob/main/gitlab-runners
     icon: https://helm.sh/img/helm.svg
     keywords:
@@ -24,12 +24,41 @@ entries:
     urls:
     - https://obervinov.github.io/helm-charts/gitlab-runners-1.0.0.tgz
     version: 1.0.0
+  jaeger-stack:
+  - apiVersion: v2
+    appVersion: 1.32.0
+    created: "2023-01-03T18:30:53.667826855+04:00"
+    dependencies:
+    - condition: elasticsearch.enabled
+      name: elasticsearch
+      repository: https://helm.elastic.co
+      version: ^7.11.1
+    description: Helm-chart with jaeger-stack
+    digest: 4d465bcc39a713587696a37f39f66c8a6d2f765a2b8ed6ef4bb7afcf41f68b3f
+    home: https://github.com/obervinov/helm-charts/blob/main/jaeger-stack
+    icon: https://helm.sh/img/helm.svg
+    keywords:
+    - metrics
+    - jaeger
+    - otlp
+    - monitoring
+    maintainers:
+    - email: o.bervinov@mail.ru
+      name: obervinov
+      url: https://github.com/obervinov
+    name: jaeger-stack
+    sources:
+    - https://www.jaegertracing.io/docs/1.32/deployment/
+    type: application
+    urls:
+    - https://obervinov.github.io/helm-charts/jaeger-stack-1.0.0.tgz
+    version: 1.0.0
   k8s-haproxy:
   - apiVersion: v2
     appVersion: 2.1.1-alpine
-    created: "2023-01-03T17:10:37.902144788+04:00"
+    created: "2023-01-03T18:30:53.66953723+04:00"
     description: Helm-chart with daemonset-proxy by haproxy
-    digest: 7107fe575160293e93eea2a6b4eaaeff511a107e47679f07a9d082c85385d047
+    digest: 316df41474067b76ee7fbac22e7fb7ffa7c486f4af396061f176f8036061196b
     home: https://github.com/obervinov/helm-charts/blob/main/k8s-haproxy
     icon: https://helm.sh/img/helm.svg
     keywords:
@@ -51,10 +80,10 @@ entries:
   promoperators:
   - apiVersion: v2
     appVersion: 1.0.1
-    created: "2023-01-03T17:10:37.903608245+04:00"
+    created: "2023-01-03T18:30:53.67050533+04:00"
     description: This chart is designed for easy installation of custom ServiceMonitor's
       or PodMonitor's for Prometheus Operator
-    digest: c10d5ba5bf645e81cd0c4514b97dcc5e4be98384af9ea24133d87aed41e2af1d
+    digest: c86182c7d5bd8b8be1adef94992fbdc5e67c4b5f65425d06afee9a800424c897
     home: https://github.com/obervinov/helm-charts/blob/main/promoperators
     icon: https://helm.sh/img/helm.svg
     maintainers:
@@ -70,7 +99,7 @@ entries:
     version: 1.0.1
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2023-01-03T17:10:37.903003784+04:00"
+    created: "2023-01-03T18:30:53.670055736+04:00"
     description: This chart is designed for easy installation of custom ServiceMonitor's
       or PodMonitor's for Prometheus Operator
     digest: dcdac27a66df8d6be21b15ddc5038405f2901a61e799ece88bd6391a063d9d60
@@ -87,4 +116,4 @@ entries:
     urls:
     - https://obervinov.github.io/helm-charts/promoperators-1.0.0.tgz
     version: 1.0.0
-generated: "2023-01-03T17:10:37.900183472+04:00"
+generated: "2023-01-03T18:30:53.658456965+04:00"

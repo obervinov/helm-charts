@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: cleaning-indices-cronjob
+spec:
+  concurrencyPolicy: {{ .Values.cleaner.concurrencyPolicy }}
+  failedJobsHistoryLimit: {{ .Values.cleaner.failedJobsHistoryLimit }}
+  schedule: {{ .Values.cleaner.schedule }} 
+  jobTemplate:
+    spec: 
+      activeDeadlineSeconds: {{ .Values.cleaner.activeDeadlineSeconds }}
+      backoffLimit: {{ .Values.cleaner.backoffLimit }}
+      completions: {{ .Values.cleaner.completions }}
+      parallelism: {{ .Values.cleaner.parallelism }}
+      ttlSecondsAfterFinished: {{ .Values.cleaner.ttlSecondsAfterFinished }}
+      template:
+        spec:
+          containers:
+          - name: cleaning-indices-cronjob 
+            image: {{ .Values.cleaner.image.repository }}:{{ .Values.cleaner.version }}
+            imagePullPolicy: {{ .Values.cleaner.image.pullPolicy }}
+            args:
+{{- range $key := .Values.cleaner.args }}
+              - {{ $key | quote }}
+{{- end }}
+          restartPolicy: {{ .Values.cleaner.restartPolicy }} 

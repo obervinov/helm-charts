@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "collector.fullname" . }}-deployment
+  labels:
+    app: {{ template "collector.fullname" . }}
+spec:
+  replicas: {{.Values.collector.replicaCount }}
+  strategy:
+{{ toYaml .Values.collector.strategy | indent 4 }}
+  selector:
+    matchLabels:
+      app: {{ template "collector.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "collector.fullname" . }}
+    spec:
+      imagePullSecrets:
+      - name: {{ .Values.imagePullSecret }}
+      containers:
+      - name: {{ template "collector.fullname" . }}
+        image: {{ .Values.collector.image.repository }}:{{ .Values.collector.version }}
+        imagePullPolicy: {{ .Values.collector.image.pullPolicy }}
+        resources:
+{{ toYaml .Values.collector.resources | indent 10 }}
+        args:
+{{- range $key := .Values.collector.args }}
+          - {{ $key | quote }}
+{{- end }}
+        ports:
+        {{- range .Values.collector.services.ports }}
+        - name: {{ .name }}
+          containerPort: {{ .port | int }}
+          protocol: {{ .protocol }}
+        {{- end }}     
+        env:
+{{- range $name, $value := .Values.collector.env.open }}
+        - name: {{ $name | quote }}
+          value: {{ $value | quote }}
+{{- end }}
+{{- if .Values.collector.probes }}    
+        {{- toYaml .Values.collector.probes | nindent 8 }}
+{{- end }}

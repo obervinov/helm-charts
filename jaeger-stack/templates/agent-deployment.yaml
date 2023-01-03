@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "agent.fullname" . }}-deployment
+  labels:
+    app: {{ template "agent.fullname" . }}
+    deployment: {{ include "agent.fullname" . }}-deployment
+spec:
+  replicas: {{ .Values.agent.replicaCount }}
+  strategy:
+{{ toYaml .Values.agent.strategy | indent 4 }}
+  selector:
+    matchLabels:
+      app: {{ template "agent.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "agent.fullname" . }}
+    spec:
+      imagePullSecrets:
+      - name: {{ .Values.imagePullSecret }}
+      containers:
+      - name: {{ template "agent.fullname" . }}
+        image: {{ .Values.agent.image.repository }}:{{ .Values.agent.version }}
+        imagePullPolicy: {{ .Values.agent.image.pullPolicy }}
+        resources:
+{{ toYaml .Values.agent.resources | indent 10 }}
+        args:
+{{- range $key := .Values.agent.args }}
+          - {{ $key | quote }}
+{{- end }}
+        ports:
+        {{- range .Values.agent.services.ports }}
+        - name: {{ .name }}
+          containerPort: {{ .port | int }}
+          protocol: {{ .protocol }}
+        {{- end }}

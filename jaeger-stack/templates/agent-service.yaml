@@ -1,0 +1,18 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "agent.fullname" . }}-svc
+  labels:
+    app: {{ template "agent.fullname" . }}
+spec:
+  selector:
+    app: {{ template "agent.fullname" . }}
+  ports:
+{{- range .Values.agent.services.ports }}
+  - name: {{ .name }}
+    port: {{ .port }}
+    protocol: {{ .protocol }}
+    targetPort: {{ .name }}
+{{- end }}
+  type: {{ .Values.agent.services.type }}

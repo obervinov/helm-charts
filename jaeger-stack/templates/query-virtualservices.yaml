@@ -1,0 +1,57 @@
+{{-   $fullName := include "query.fullname" . }}
+{{-   $domain := printf "%s.%s" $fullName .Values.virtualservices.domainPrefix -}}
+---
+apiVersion: gateway.solo.io/v1
+kind: VirtualService
+metadata:
+  name: {{ $fullName }}-http-vs
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "jaeger.labels" . | nindent 4 }}
+spec:
+  displayName: {{ $fullName }}-http-vs
+  virtualHost:
+    domains:
+      - {{ $domain }}
+    routes:
+    - matchers:
+      - prefix: /
+      redirectAction:
+        hostRedirect: {{ $domain }}
+        httpsRedirect: true
+...
+---
+apiVersion: gateway.solo.io/v1
+kind: VirtualService
+metadata:
+  name:  {{ $fullName }}-http-ssl-vs
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "jaeger.labels" . | nindent 4 }}
+spec:
+  displayName: {{ $fullName }}-http-ssl-vs
+  sslConfig:
+    secretRef:
+    {{- if .Values.virtualservices.secretRef }}
+      name: {{ .Values.virtualservices.secretRef.name }}
+      namespace: {{ .Values.virtualservices.secretRef.namespace }}
+    {{- else }}
+      name: gloo-tls-{{ $.Release.Namespace }}-secret
+      namespace: gloo-system
+    {{- end }}
+    sniDomains:
+    - {{ $domain }}
+  virtualHost:
+    domains:
+      - {{ $domain }}
+    routes:
+    - options:
+        {{- if .Values.virtualservices.timeout }}
+        timeout: {{ .Values.virtualservices.timeout }}
+        {{- end }}
+      routeAction:
+        single:
+          upstream:
+            name: {{ $.Release.Namespace }}-{{ $fullName }}-svc-{{ .Values.virtualservices.http }}
+            namespace: gloo-system          
+...

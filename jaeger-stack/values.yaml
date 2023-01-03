@@ -1,0 +1,258 @@
+---
+### The name of the secret with authorization in the private docker registry ###
+imagePullSecret: &imagePullSecret "secret-registry-user"
+
+### Settings for Gloo Virtual Services  ###
+virtualservices:
+  ## The domain prefix for which the full domain names will be formed ##
+  domainPrefix: jaeger.example.com
+  ## Connection timeout for gloo-proxy ##
+  timeout: "60s"
+  ## Ports for virtual services (*a virtual service is created for each port) ##
+  # http #
+  http: 16686
+  # grpc #
+  grpc: 14250
+  # opentelemetry grpc #
+  otlpgrpc: 4317
+
+### PV Settings for elasticsearch  ###
+persistentVolume:
+  enabled: true
+  ##The local path in the host OS on the kubernetes node from where the PV will be mounted ##
+  hostPath: /mnt/local-storage/data
+  ## Type of PV ##
+  type: local-hdd
+  ## Pod Access Policy to PV ##
+  accessModes:
+    - ReadWriteOnce
+  ## The storage class configured in the kube ##
+  storageClass: sc-local-hdd
+  resources:
+    requests:
+      # Required storage size #
+      storage: 100Gi
+
+### Elasticsearch dependency chart settings  ###
+elasticsearch:
+  enabled: true
+  clusterName: elasticsearch
+  replicas: 1
+  minimumMasterNodes: 1
+  image: docker.elastic.co/elasticsearch/elasticsearch
+  imageTag: 7.17.4
+  imagePullSecrets:
+    - name: *imagePullSecret
+  ## Resource limits for the es container ##
+  resources:
+    requests:
+      cpu: "1000m"
+      memory: "2Gi"
+    limits:
+      cpu: "2000m"
+      memory: "4Gi"
+  ## Template for requesting, creating and mounting PV in a container ##
+  volumeClaimTemplate:
+    accessModes: ["ReadWriteOnce"]
+    resources:
+      requests:
+        storage: 100Gi
+    storageClassName: "sc-local-hdd"
+    volumeMode: Filesystem
+  persistence:
+    enabled: true
+    labels:
+      enabled: false
+    annotations: {}
+  protocol: http
+  createCert: false
+  podSecurityContext:
+    fsGroup: 1000
+    runAsUser: 1000
+  securityContext:
+    capabilities:
+      drop:
+        - ALL
+    # readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 1000
+
+collector:
+  version: "1.37"
+  name: collector
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  replicaCount: 1
+  image:
+    repository: jaegertracing/jaeger-collector
+    pullPolicy: IfNotPresent
+  services:
+    type: ClusterIP
+    ports:
+      - name: tchannel
+        port: 14267
+        protocol: TCP
+      - name: jaegerthrift
+        port: 14268
+        protocol: TCP
+      - name: metrics
+        port: 14269
+        protocol: TCP
+      - name: grpc
+        port: 14250
+        protocol: TCP
+      - name: zipkin
+        port: 9411
+        protocol: TCP
+      - name: h2 # this is grpc
+        port: 4317
+        protocol: TCP
+      - name: otlphttp
+        port: 4318
+        protocol: TCP
+  args:
+    - "--es.server-urls=http://elasticsearch-master:9200"
+    - "--es.num-shards=2"
+    - "--es.version=7"
+    - "--collector.grpc-server.host-port=0.0.0.0:14250"
+    - "--collector.http-server.host-port=0.0.0.0:14268"
+    - "--collector.zipkin.host-port=0.0.0.0:9411"
+    - "--collector.otlp.enabled"
+    - "--admin.http.host-port=0.0.0.0:14269"
+    - "--log-level=debug"
+  env:
+    open:
+      SPAN_STORAGE_TYPE: "elasticsearch"
+  resources:
+    limits:
+      cpu: "2"
+      memory: 4Gi
+    requests:
+      cpu: "1"
+      memory: 2Gi
+  probes:
+    livenessProbe:
+      httpGet:
+        path: /metrics
+        port: metrics
+      initialDelaySeconds: 60
+      periodSeconds: 5
+    readinessProbe:
+      httpGet:
+        path: /metrics
+        port: metrics
+      initialDelaySeconds: 30
+      periodSeconds: 5
+
+cleaner:
+  version: "1.37"
+  name: index-cleaner
+  image:
+    repository: jaegertracing/jaeger-es-index-cleaner
+    pullPolicy: IfNotPresent
+  activeDeadlineSeconds: 900
+  backoffLimit: 3
+  completions: 1
+  parallelism: 1
+  resources:
+    limits:
+      cpu: "200m"
+      memory: 128Mi
+    requests:
+      cpu: "100m"
+      memory: 64Mi
+  concurrencyPolicy: Forbid
+  failedJobsHistoryLimit: 1
+  restartPolicy: OnFailure
+  schedule: "0 1 * * *"
+  args:
+    - "14" # keep days
+    - "http://elasticsearch-master:9200"
+
+agent:
+  version: "1.37"
+  name: agent
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  replicaCount: 1
+  image:
+    repository: jaegertracing/jaeger-agent
+    pullPolicy: IfNotPresent
+  args:
+    - "--reporter.grpc.host-port=jaeger-collector-svc:14250"
+    - "--processor.jaeger-binary.server-host-port=0.0.0.0:6832"
+    - "--processor.jaeger-compact.server-host-port=0.0.0.0:6831"
+    - "--processor.zipkin-compact.server-host-port=0.0.0.0:5775"
+    - "--processor.jaeger-binary.server-max-packet-size=65000"
+    - "--admin.http.host-port=0.0.0.0:14271"
+    - "--log-level=debug"
+  resources:
+    limits:
+      cpu: "2"
+      memory: 4Gi
+    requests:
+      cpu: "1"
+      memory: 2Gi
+  services:
+    type: ClusterIP
+    trafficPolicy: Cluster
+    ports:
+      - name: jaegerthriftcom
+        port: 6831
+        protocol: UDP
+      - name: jaegerthrift
+        port: 6832
+        protocol: UDP
+      - name: zipkinthrift
+        port: 5775
+        protocol: UDP
+      - name: serveconfigs
+        port: 5778
+        protocol: TCP
+      - name: adminportf
+        port: 14271
+        protocol: TCP
+
+query:
+  version: "1.37"
+  name: query
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  replicaCount: 1
+  image:
+    repository: jaegertracing/jaeger-query
+    pullPolicy: IfNotPresent
+  ports:
+    - name: grpc
+      port: 16685
+      protocol: TCP
+    - name: http
+      port: 16686
+      protocol: TCP
+    - name: admin
+      port: 16687
+      protocol: TCP
+  args:
+    - "--query.max-clock-skew-adjustment=5s"
+    - "--es.server-urls=http://elasticsearch-master:9200"
+  resources:
+    limits:
+      cpu: "2"
+      memory: 2Gi
+    requests:
+      cpu: "1"
+      memory: 1Gi
+  service:
+    type: ClusterIP
+  env:
+    open:
+      SPAN_STORAGE_TYPE: "elasticsearch"
