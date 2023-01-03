@@ -1,0 +1,50 @@
+---
+### Prefix of the service name, image, and image entities ###
+name: haproxy
+
+### Information about the docker image - registry, version, download policy, secret of access to private registry ###
+image:
+  repository: haproxy
+  version: "2.1.1-alpine"
+  # pullsecrets: secrets-name
+  imagePullPolicy: IfNotPresent
+
+### Pod update strategy ###
+strategy:
+  type: RollingUpdate
+
+### Resource limits ###
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "250m"
+  limits:
+    memory: "256Mi"
+    cpu: "500m"
+
+### Mapping of ports to listners launched by the haproxy config ###
+ports:
+  - name: listener1
+    port: 6450
+    protocol: TCP
+    targetPort: 6450
+  - name: listener2
+    port: 6550
+    protocol: TCP
+    targetPort: 6550
+  - name: listener3
+    port: 6650
+    protocol: TCP
+    targetPort: 6650
+
+### Parameters of haproxy.cfg forwarding via configmaps ###
+configmap:
+  ## Hash of the commit for the annotation of the pod (*so that the pod will restart exactly when the release is laid out) ##
+  ## The value is set via --set config map.commit=${CI_COMMIT_SHA} in the chart installation command (for gitlab) ##
+  commit: ""
+  ## Config name in config map ##
+  name: haproxy.cfg
+  ## The path of mounting the config in the container ##
+  mountPath: /usr/local/etc/haproxy
+  ## The body of the haproxy.cfg config ##
+  data: ""

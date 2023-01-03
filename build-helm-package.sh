@@ -7,9 +7,6 @@ else
     printf "Helm plugin schema-gen already installed.\n"
 fi
 
-printf "Creating robot.txt\n"
-echo -e “User-Agent: *\nDisallow: /” > robots.txt
-
 charts=$(ls -d */)
 for chart in ${charts[@]}; do
     printf "Creating json-schema for %s\n" "${chart}"
