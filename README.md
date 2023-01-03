@@ -11,24 +11,24 @@ This is a helm-registry for storing my helm-packages.
     <th>Package</th>
   </tr>
   <tr>
+    <td><b>Helm Index</b></td>
+    <td>https://obervinov.github.io/helm-charts/index.yaml</td>
+  </tr>
+  <tr>
     <td><b>Promoperators</b></td>
     <td>https://github.com/obervinov/helm-charts/tree/main/promoperators</td>
-    <td>https://github.com/obervinov/helm-charts/blob/main/promoperators-1.0.1.tgz</td>
   </tr>
   <tr>
     <td><b>Gitlab-runners</b></td>
     <td>https://github.com/obervinov/helm-charts/tree/main/gitlab-runners</td>
-    <td>https://github.com/obervinov/helm-charts/blob/main/gitlab-runners-1.0.0.tgz</td>
   </tr>
   <tr>
     <td><b>K8s-haproxy</b></td>
     <td>https://github.com/obervinov/helm-charts/tree/main/k8s-haproxy</td>
-    <td>https://github.com/obervinov/helm-charts/blob/main/k8s-haproxy-1.0.0.tgz</td>
   </tr>
   <tr>
     <td><b>Jaeger-stack</b></td>
     <td>https://github.com/obervinov/helm-charts/tree/main/jaeger-stack</td>
-    <td>https://github.com/obervinov/helm-charts/blob/main/jaeger-stack-1.0.0.tgz</td>
   </tr>
 </table>
 
