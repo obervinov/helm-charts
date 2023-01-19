@@ -31,7 +31,7 @@ This is a helm-registry for storing my helm-packages.
   </tr>
   <tr>
     <td><b>Universal-template</b></td>
-    <td>https://github.com/obervinov/helm-charts/tree/main/juniversal-template</td>
+    <td>https://github.com/obervinov/helm-charts/tree/main/universal-template</td>
   </tr>
 </table>
 
