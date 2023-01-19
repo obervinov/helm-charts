@@ -1,0 +1,121 @@
+{{- if .Values.applications }}
+{{-   range .Values.applications }}
+{{-     $name := .name -}}
+{{-     $fullName := include "universal-template.fullName" (list $ . $name) }}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $fullName }}-deployment
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "universal-template.labels" $ | nindent 4 }}
+    {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 4 }}
+spec:
+  replicas: {{ .deployment.replicas | int }}
+  selector:
+    matchLabels:
+      {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 6 }}
+  strategy:
+  {{- if (eq .deployment.strategy.type "RollingUpdate") }}
+    type: {{ .deployment.strategy.type }}
+    rollingUpdate:
+      maxUnavailable: 1 {{ else }}
+    type: {{ .deployment.strategy.type }}  {{ end }}
+  template:
+    metadata:
+      annotations:
+      {{- range $key, $value := .deployment.podAnnotations }}
+      {{- if contains "checksum" $key }}
+        {{ $key }}: {{ $.Files.Get $value | sha256sum | quote }}
+      {{- else if contains "prometheus.io" $key }}
+        {{ $key }}: {{ $value | squote }}
+      {{- else }}
+        {{ $key }}: {{ $value | quote }}
+      {{- end }}
+      {{- end }}
+      labels:
+        {{- include "universal-template.labels" $ | nindent 8 }}
+        {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 8 }}
+    spec:
+      {{- if .deployment.initContainers }}
+      initContainers:
+      {{-   range .deployment.initContainers }}
+      {{-     include "universal-template.containers.init.template" . | nindent 6 }}
+      {{-   end }}
+      {{- end }}
+      containers:
+      {{- if .deployment.otlp.enabled }}
+      {{-   include "universal-template.containers.otlp.template" . | nindent 6 }}
+      {{- end }}
+      - name: {{ .name }}
+        image: {{ .deployment.image.repository }}:{{ default $.Values.version .deployment.image.version }}
+        imagePullPolicy: {{ .deployment.image.imagePullPolicy }}
+        {{- if .deployment.resources }}
+        resources: {{- toYaml .deployment.resources | nindent 10 }}
+        {{- else }}
+        resources: {{- include "universal-template.resources.default" . | nindent 10 }}
+        {{- end }}
+        {{- if .deployment.commands }}
+        command:
+        {{-   range .deployment.commands }}
+          - {{ . | quote }}
+        {{-   end }}
+        {{- end }}
+        {{- if .deployment.args }}
+        args:
+        {{-   range .deployment.args }}
+          - {{ . | quote }}
+        {{-   end }}
+        {{- end }}
+        {{- if .service }}
+        ports:
+        {{-   range .service }}
+        - name: {{ .name }}
+          containerPort: {{ .port | int }}
+          protocol: {{ .protocol }}
+        {{-   end }}
+        {{- end }}
+        {{- if or (.deployment.envs) (.deployment.envsSecret) }}
+        env:
+        {{- end }}
+        {{- if .deployment.envs }}
+        {{-   range $name, $value := .deployment.envs }}
+        - name: {{ $name | quote }}
+          value: {{ $value | quote }}
+        {{-   end }}
+        {{- end }}
+        {{- if .deployment.envsSecret }}
+        {{-   range .deployment.envsSecret }}
+        - name: {{ .name }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ $fullName }}-secret
+              key: {{ .keySecret }}
+        {{-   end }}
+        {{- end }}
+        {{- if .deployment.probes }}
+        {{- toYaml .deployment.probes | nindent 8 }}
+        {{- end }}
+      {{- if .configmap }}
+        volumeMounts:
+        - name: volume-configs
+          mountPath: {{ .configmap.mountPath | lower }}
+          readOnly: true
+      volumes:
+      - name: volume-configs
+        configMap:
+          name: {{ $fullName }}-cm
+          items:
+          {{-   range .configmap.files }}
+          - key: {{ .name | lower }}
+            path: {{ .name | lower }}
+          {{-   end }}
+      {{- end }}
+      imagePullSecrets:
+        - name: {{ .deployment.image.pullsecrets }}
+...
+
+{{-   end }}
+{{- end }}

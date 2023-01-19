@@ -1,0 +1,20 @@
+---
+apiVersion: v2
+name: universal-template
+version: 1.0.0
+description: This universal helm chart template is designed to simplify rolling out simple releases and speed up the helm implementation process. There is no need to write new charts for each microservice, you can use one by changing only values.yaml
+type: application
+home: https://github.com/obervinov/helm-charts/blob/main/universal-template
+sources:
+  - https://github.com/obervinov/helm-charts/blob/main/universal-template
+
+deprecated: false
+
+icon: https://helm.sh/img/helm.svg
+
+maintainers:
+  - name: obervinov
+    email: o.bervinov@mail.ru
+    url: https://github.com/obervinov
+
+appVersion: "1.0.0"
