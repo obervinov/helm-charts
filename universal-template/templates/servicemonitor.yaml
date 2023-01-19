@@ -1,0 +1,36 @@
+{{- if .Values.applications }}
+{{-   range .Values.applications }}
+{{-     if .deployment.prometheus }}
+{{-       if .deployment.prometheus.enabled }}
+{{-       $name := .name -}}
+{{-       $fullName := include "universal-template.fullName" (list $ . $name) }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    {{- include "universal-template.labels" $ | nindent 4 }}
+    {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 4 }}
+    {{- include "universal-template.prometheus.labels" $ | nindent 4 }}
+  name: {{ $fullName }}-sm
+  namespace: {{ $.Release.Namespace }}
+spec:
+  endpoints:
+  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    honorLabels: true
+    port: http-metrics
+    path: {{ default "/metrics" .deployment.prometheus.path }}
+    interval: 30s
+    scheme: http
+  jobLabel: k8s-app
+  namespaceSelector:
+    matchNames:
+    - {{ $.Release.Namespace }}
+  selector:
+    matchLabels:
+      app: {{ $.Release.Name }}
+...
+{{-       end }}
+{{-     end }}
+{{-   end }}
+{{- end }}

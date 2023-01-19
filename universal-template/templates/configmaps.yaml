@@ -1,0 +1,38 @@
+{{- if .Values.applications }}
+{{-   range .Values.applications }}
+{{-     if .configmap }}
+{{-     $type := printf "applications" }}
+{{-     $name := .name -}}
+{{-     $fullName := include "universal-template.fullName" (list $ . $name) }}
+---
+{{-     include "universal-template.configmap.template" (list $ . $fullName $type) }}
+...
+{{-     end }}
+{{-   end }}
+{{- end }}
+
+{{- if .Values.cronjobs }}
+{{-   range .Values.cronjobs }}
+{{-     if .configmap }}
+{{-     $type := printf "cronjobs" }}
+{{-     $name := .name }}
+{{-     $fullName := include "universal-template.fullName.cronjobs" (list $ . $name) }}
+---
+{{-     include "universal-template.configmap.template" (list $ . $fullName $type) }}
+...
+{{-     end }}
+{{-   end }}
+{{- end }}
+
+{{- if .Values.jobs }}
+{{-   range .Values.jobs }}
+{{-     if .configmap }}
+{{-     $type := printf "jobs" }}
+{{-     $name := .name }}
+{{-     $fullName := include "universal-template.fullName.jobs" (list $ . $name) }}
+---
+{{-     include "universal-template.configmap.template" (list $ . $fullName $type) }}
+...
+{{-     end }}
+{{-   end }}
+{{- end }}

@@ -1,0 +1,28 @@
+{{- if .Values.applications }}
+{{-   range .Values.applications }}
+{{-     if .service -}}
+{{-       $name := .name }}
+{{-       $fullName := include "universal-template.fullName" (list $ . $name) }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullName }}-svc
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "universal-template.labels" $ | nindent 4 }}
+    {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
+spec:
+  ports:
+{{- range .service }}
+  - name: {{ .name }}
+    port: {{ .port }}
+    protocol: {{ .protocol }}
+    targetPort: {{ .targetPort }}
+{{- end }}
+  selector: {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
+...
+{{-     end }}
+{{-   end }}
+{{- end }}

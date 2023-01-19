@@ -1,0 +1,53 @@
+---
+Helm template version: {{ .Chart.Version }}
+You can find your service logs here: https://kibana.example.com
+You can see the status of your pods here: https://dashboard.example.com
+Collected otlp spans can be found here: https://jaeger.example.com
+
+{{- if .Values.applications }}
+{{-   range .Values.applications }}
+
+{{-     if .deployment.prometheus }}
+{{-       if .deployment.prometheus.enabled }}
+---
+Prometheus Operator has been enabled.
+The collected metrics can be found here: http://prometheus.example.com
+{{-       end }}
+{{-     end }}
+
+{{-     if .ingress }}
+---
+Ingresses URLs:
+{{-       $name := .name }}
+{{-       range .ingress }}
+{{ .name }}://{{ .host }}
+{{-         if .tls }}
+{{ .name }}s://{{ .host }}
+Force redircet http -> https enabled.
+{{-         else }}
+Force redirect http -> https has been disabled.
+{{-          end }}
+{{-       end }}
+{{-     end }}
+
+
+{{-     if .deployment.otlp.enabled }}
+---
+Sidecar jaeger-agent to be launching for deployment {{ .name }}
+{{-     end }}
+
+
+{{-     if .tests }}
+{{-       if and (.tests.service) (.tests.virtualservices) }}
+---
+Launched tests for
+{{-         if .tests.service }}
+- service
+{{-         end }}
+{{-         if .tests.virtualservices }}
+- virtualservices
+{{-         end }}
+{{-       end }}
+{{-     end }}
+{{-   end }}
+{{- end }}

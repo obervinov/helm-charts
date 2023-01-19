@@ -1,0 +1,89 @@
+
+{{- if .Values.jobs }}
+{{-   range .Values.jobs }}
+{{-     $name := .name }}
+{{-     $fullName := include "universal-template.fullName.jobs" (list $ . $name) }}
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ $fullName }}-{{ now | unixEpoch }}-job
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "universal-template.labels" $ | nindent 4 }}
+    {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
+spec:
+  parallelism: {{ default 1 .parallelism }}
+  completions: {{ default 1 .completions }}
+  backoffLimit: {{ default 3 .backoffLimit }}
+  activeDeadlineSeconds: {{ default 600 .activeDeadlineSeconds }}
+  ttlSecondsAfterFinished: {{ default 300 .ttlSecondsAfterFinished }}
+  template:
+    spec:
+      {{- if .initContainers }}
+      initContainers:
+      {{-   range .initContainers }}
+      {{-     include "universal-template.containers.init.template" . | nindent 6 }}
+      {{-   end }}
+      {{- end }}
+      containers:
+      - name: {{ $fullName }}-job
+        image: {{ .image.repository }}:{{ default $.Values.version .image.version }}
+        imagePullPolicy: {{ .image.imagePullPolicy }}
+        {{- if .resources }}
+        resources: {{- toYaml .resources | nindent 10 }}
+        {{- else }}
+        resources: {{- include "universal-template.resources.default" . | nindent 8 }}
+        {{- end }}
+        command:
+        {{-   range .commands }}
+          - {{ . | quote }}
+        {{-   end }}
+        {{- if .args }}
+        args:
+        {{-   range .args }}
+          - {{ . | quote }}
+        {{-   end }}
+        {{- end }}
+        {{- if or (.envs) (.envsSecret) }}
+        env:
+        {{- end }}
+        {{- if .envs }}
+        {{-   range $name, $value := .envs }}
+        - name: {{ $name | quote }}
+          value: {{ $value | quote }}
+        {{-   end }}
+        {{- end }}
+        {{- if and (.envsSecret) (.secret) }}
+        {{-   range .envsSecret }}
+        - name: {{ .name }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ $fullName }}-job-secret
+              key: {{ .keySecret }}
+        {{-   end }}
+        {{- end }}
+      {{- if .configmap }}
+        volumeMounts:
+        - name: volume-configs
+          mountPath: {{ .configmap.mountPath | lower }}
+          readOnly: true
+      volumes:
+      - name: volume-configs
+        configMap:
+          name: {{ $fullName }}-job-cm
+          items:
+          {{-   range .configmap.files }}
+          - key: {{ .name | lower }}
+            path: {{ .name | lower }}
+          {{-   end }}
+      {{- end }}
+      imagePullSecrets:
+      - name: {{ .image.pullsecrets }}
+      restartPolicy: {{ .restartPolicy | default "Never" }}
+  backoffLimit: {{ .backoffLimit | default 1 }}
+...
+
+{{-   end -}}
+{{- end -}}

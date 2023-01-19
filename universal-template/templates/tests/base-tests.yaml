@@ -1,0 +1,87 @@
+{{- if .Values.applications }}
+{{-   range .Values.applications }}
+{{-     $imagePullSecrets := .deployment.image.pullsecrets }}
+{{-     if .tests }}
+{{-       if .tests.service }}
+{{-         if .service }}
+{{-           range .service }}
+{{-             $name := .name }}
+{{-             $fullName := include "universal-template.fullName" (list $ . $name) }}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ $fullName }}-testing-service-{{ .port }}"
+  labels:
+    {{- include "universal-template.labels" $ | nindent 4 }}
+  annotations:
+    "helm.sh/hook": "test"
+    "helm.sh/hook-delete-policy": "hook-succeeded"
+spec:
+  containers:
+    - name: testing-service-port
+      image: alpine/helm:latest
+      args:
+      - sh
+      - -c
+      {{- if eq .name "http" }}
+      - curl -i -v -L --retry-connrefused --connect-timeout 60 --retry 3 --retry-delay 10 "http://{{ $fullName }}-svc:{{ .port }}"
+      {{- else }}
+      {{-   if .sslRedirectDisabled }}
+      - grpc_cli ls "{{ $fullName }}-svc:443"
+      {{-   else }}
+      - grpc_cli ls "{{ $fullName }}-svc:80"
+      {{-   end }}
+      {{- end }}
+  imagePullSecrets:
+  - name: {{ $imagePullSecrets }}
+  restartPolicy: Never
+...
+{{-           end }}
+{{-         end }}
+{{-       end }}
+{{-       if .tests.virtualservices }}
+{{-         if .virtualservices }}
+{{-           range .virtualservices }}
+{{-             $name := .name }}
+{{-             $fullName := include "universal-template.fullName" (list $ . $name) }}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ $fullName }}-testing-ingress-{{ .name }}"
+  labels:
+    {{- include "universal-template.labels" $ | nindent 4 }}
+  annotations:
+    "helm.sh/hook": "test"
+    "helm.sh/hook-delete-policy": "hook-succeeded"
+spec:
+  containers:
+    - name: testing-service-port
+      image: alpine/helm:latest
+      args:
+        - sh
+        - -c
+        {{- if eq .name "http" }}
+        {{-   if .tls }}
+        - curl -i -v -L --retry-connrefused --connect-timeout 60 --retry 3 --retry-delay 10 "https://{{ .host }}"
+        {{-   else }}
+        - curl -i -v -L --retry-connrefused --connect-timeout 60 --retry 3 --retry-delay 10 "http://{{ .host }}"
+        {{-   end }}
+        {{- else }}
+        {{-   if .tls }}
+        - grpc_cli "{{ .host }}:443"
+        {{-   else }}
+        - grpc_cli "{{ .host }}:80"
+        {{-   end }}
+        {{- end }}
+  imagePullSecrets:
+  - name: {{ $imagePullSecrets }}
+  restartPolicy: Never
+...
+{{-           end }}
+{{-         end }}
+{{-       end }}
+{{-     end }}
+{{-   end }}
+{{- end }}

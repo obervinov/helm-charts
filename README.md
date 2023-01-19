@@ -29,6 +29,10 @@ This is a helm-registry for storing my helm-packages.
     <td><b>Jaeger-stack</b></td>
     <td>https://github.com/obervinov/helm-charts/tree/main/jaeger-stack</td>
   </tr>
+  <tr>
+    <td><b>Universal-template</b></td>
+    <td>https://github.com/obervinov/helm-charts/tree/main/juniversal-template</td>
+  </tr>
 </table>
 
 ## <img src="https://github.com/obervinov/content/blob/main/ico/helm.svg" width="30"> How to add a repository to yourself and set a chart
