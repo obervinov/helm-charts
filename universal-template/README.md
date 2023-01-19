@@ -1,4 +1,4 @@
-# Helm-chart template для сервисов Юлы
+# Universal helm chart for rolling out any service
 ## Main
 This universal helm chart template is designed to simplify rolling out simple releases and speed up the helm implementation process. There is no need to write new charts for each microservice, you can use one by changing only values.yaml<br></br>
 As an example, gitlab-ci will be used to use and integrate the helm chart.
