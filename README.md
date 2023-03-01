@@ -15,27 +15,27 @@ This is a helm-registry for storing my helm-packages.
   </tr>
   <tr>
     <td><b>Promoperators</b></td>
-    <td>https://github.com/obervinov/helm-charts/tree/main/promoperators</td>
+    <td>https://github.com/obervinov/helm-charts/tree/main/src/promoperators</td>
   </tr>
   <tr>
     <td><b>Gitlab-runners</b></td>
-    <td>https://github.com/obervinov/helm-charts/tree/main/gitlab-runners</td>
+    <td>https://github.com/obervinov/helm-charts/tree/main/src/gitlab-runners</td>
   </tr>
   <tr>
     <td><b>K8s-haproxy</b></td>
-    <td>https://github.com/obervinov/helm-charts/tree/main/k8s-haproxy</td>
+    <td>https://github.com/obervinov/helm-charts/tree/main/src/k8s-haproxy</td>
   </tr>
   <tr>
     <td><b>Jaeger-stack</b></td>
-    <td>https://github.com/obervinov/helm-charts/tree/main/jaeger-stack</td>
+    <td>https://github.com/obervinov/helm-charts/tree/main/src/jaeger-stack</td>
   </tr>
   <tr>
     <td><b>Universal-template</b></td>
-    <td>https://github.com/obervinov/helm-charts/tree/main/universal-template</td>
+    <td>https://github.com/obervinov/helm-charts/tree/main/src/universal-template</td>
   </tr>
   <tr>
     <td><b>Kibana</b></td>
-    <td>https://github.com/obervinov/helm-charts/tree/main/kibana</td>
+    <td>https://github.com/obervinov/helm-charts/tree/main/src/kibana</td>
   </tr>
 </table>
 
