@@ -33,6 +33,10 @@ This is a helm-registry for storing my helm-packages.
     <td><b>Universal-template</b></td>
     <td>https://github.com/obervinov/helm-charts/tree/main/universal-template</td>
   </tr>
+  <tr>
+    <td><b>Kibana</b></td>
+    <td>https://github.com/obervinov/helm-charts/tree/main/kibana</td>
+  </tr>
 </table>
 
 ## <img src="https://github.com/obervinov/content/blob/main/ico/helm.svg" width="30"> How to add a repository to yourself and set a chart
