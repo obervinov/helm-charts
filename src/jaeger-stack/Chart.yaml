@@ -21,7 +21,7 @@ icon: https://helm.sh/img/helm.svg
 
 maintainers:
   - name: obervinov
-    email: o.bervinov@mail.ru
+    email: obervinov@pm.me
     url: https://github.com/obervinov
 
 appVersion: "1.32.0"
