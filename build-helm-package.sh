@@ -1,5 +1,3 @@
-#!/usr/bin/bash
-
 # Check helm plugin for json-schemas generation
 printf "Helm checking plugin schema-gen...\n"
 plugin=$(helm plugin list | grep schema-gen)
@@ -12,7 +10,7 @@ else
 fi
 
 # Get all charts directories 
-charts=$(ls -d */)
+charts=$(ls -d src/*)
 printf "Discovered charts:\n"
 for chart in ${charts[@]}; do
     printf " + %s\n" "${chart}"
