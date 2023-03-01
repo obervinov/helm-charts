@@ -3,9 +3,9 @@ entries:
   gitlab-runners:
   - apiVersion: v2
     appVersion: alpine-v12.6.0
-    created: "2023-03-01T13:29:33.964561+04:00"
+    created: "2023-03-01T14:14:03.193325+04:00"
     description: This is a chart with gitlab-runners for devops k8s
-    digest: df6dabb9c751537c14c1def2d9a38b82d3258c9f352048ee36b4f888ba5ee1fc
+    digest: 951b5e3cb1d437f36f3e8b7e6dbd495a70e1b1f94f677999e6cbc2e8ca735ddd
     home: https://github.com/obervinov/helm-charts/blob/main/gitlab-runners
     icon: https://helm.sh/img/helm.svg
     keywords:
@@ -27,14 +27,14 @@ entries:
   jaeger-stack:
   - apiVersion: v2
     appVersion: 1.32.0
-    created: "2023-03-01T13:29:33.968322+04:00"
+    created: "2023-03-01T14:14:03.197023+04:00"
     dependencies:
     - condition: elasticsearch.enabled
       name: elasticsearch
       repository: https://helm.elastic.co
       version: ^7.11.1
     description: Helm-chart with jaeger-stack
-    digest: bcf9abb3898096debcf9156030f541eb2449988a04601a85c447db4cebc2470b
+    digest: f34be874df32ebbd189f16548ddddd9de7edc2ac3dcd471a6d47580b0990c767
     home: https://github.com/obervinov/helm-charts/blob/main/jaeger-stack
     icon: https://helm.sh/img/helm.svg
     keywords:
@@ -56,9 +56,9 @@ entries:
   k8s-haproxy:
   - apiVersion: v2
     appVersion: 2.1.1-alpine
-    created: "2023-03-01T13:29:33.968797+04:00"
+    created: "2023-03-01T14:14:03.197494+04:00"
     description: Helm-chart with daemonset-proxy by haproxy
-    digest: 142c572ca703bbd7d141ddfde71021ccb44f87343959ad131d48995e9ace7ead
+    digest: 2a7ff51460fd1ad9d6fcfc4ae59abd98e2e5af64f9aee0a4430df3e09c0087eb
     home: https://github.com/obervinov/helm-charts/blob/main/k8s-haproxy
     icon: https://helm.sh/img/helm.svg
     keywords:
@@ -80,9 +80,9 @@ entries:
   kibana:
   - apiVersion: v1
     appVersion: 8.5.1
-    created: "2023-03-01T13:29:33.969826+04:00"
+    created: "2023-03-01T14:14:03.198355+04:00"
     description: Non official Elastic helm chart for Kibana
-    digest: 5ba10f8afa3c078012a326596c7563027c9a07a32e9ba1fc7eaa5a8c105cf3d7
+    digest: e693c69ce5183591bf90e3441dddfea3a4cb7fea50cf4f7f611a630f209950cd
     home: https://github.com/obervinov/helm-charts/blob/main/kibana
     icon: https://helm.elastic.co/icons/kibana.png
     maintainers:
@@ -98,10 +98,10 @@ entries:
   promoperators:
   - apiVersion: v2
     appVersion: 1.0.1
-    created: "2023-03-01T13:29:33.970172+04:00"
+    created: "2023-03-01T14:14:03.198933+04:00"
     description: This chart is designed for easy installation of custom ServiceMonitor's
       or PodMonitor's for Prometheus Operator
-    digest: 6a26b7a10e5e249516ad402a7096040b3f26ee005dafad0197d2ce84aa2b0afc
+    digest: a338b0030ce44722276be0c307444674625e19384f32e2d483b9cf24f1ced07e
     home: https://github.com/obervinov/helm-charts/blob/main/promoperators
     icon: https://helm.sh/img/helm.svg
     maintainers:
@@ -118,12 +118,12 @@ entries:
   universal-template:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2023-03-01T13:29:33.971253+04:00"
+    created: "2023-03-01T14:14:03.201491+04:00"
     description: This universal helm chart template is designed to simplify rolling
       out simple releases and speed up the helm implementation process. There is no
       need to write new charts for each microservice, you can use one by changing
       only values.yaml
-    digest: 4c403107bd238fde0f0b69a3bba3ec4966c6410530e2df85dda0e4ae97f2d6cd
+    digest: eb12e9a15a1ab207af08b81fd1f8e04dd9dd6a8ee54b6c7f6c708256afcb12e6
     home: https://github.com/obervinov/helm-charts/blob/main/universal-template
     icon: https://helm.sh/img/helm.svg
     maintainers:
@@ -137,4 +137,4 @@ entries:
     urls:
     - https://obervinov.github.io/helm-charts/universal-template-1.0.0.tgz
     version: 1.0.0
-generated: "2023-03-01T13:29:33.963664+04:00"
+generated: "2023-03-01T14:14:03.192311+04:00"
