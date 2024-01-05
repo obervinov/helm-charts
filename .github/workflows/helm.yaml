@@ -5,7 +5,9 @@ name: Build Helm charts bundle
 on:
   push:
     branches:
-      - main
+      - "*"
+      - "**"
+      - "*/*"
 
 jobs:
   helm-repository-build:
