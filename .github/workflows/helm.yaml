@@ -1,0 +1,12 @@
+---
+name: Build Helm charts bundle
+
+# yamllint disable-line rule:truthy
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  helm-repository-build:
+    uses: obervinov/_templates/.github/workflows/helm.yaml@fix/v1.0.6

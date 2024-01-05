@@ -42,6 +42,8 @@ This is a helm-registry for storing my helm-packages.
 ## <img src="https://github.com/obervinov/content/blob/main/ico/helm.svg" width="30"> How to add a repository to yourself and set a chart
 ```sh
 helm repo add obervinov https://obervinov.github.io/helm-charts/
+# or
+helm repo add obervinov https://helm-charts.charafee.cfd/helm-charts/
 helm repo update
 helm search repo obervinov
 ```

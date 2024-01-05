@@ -44,12 +44,12 @@ printf "============================\n"
 printf "Creating helm package:\n" 
 for chart in ${charts[@]}; do
     printf " + %s\n" $chart
-    helm package ./${chart} --dependency-update
+    helm package ./${chart} --dependency-update --destination ./charts
 done
 printf "============================\n"
 
 # Update helm index
 printf "Building helm index.yaml\n"
-helm repo index --url https://obervinov.github.io/helm-charts --merge index.yaml .
+helm repo index charts --url https://obervinov.github.io/helm-charts --merge index.yaml .
 printf "============================\n"
 printf "*** DONE ***\n"
