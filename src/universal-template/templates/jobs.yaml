@@ -21,6 +21,18 @@ spec:
   ttlSecondsAfterFinished: {{ default 300 .ttlSecondsAfterFinished }}
   template:
     spec:
+      {{- if .affinity }}
+      affinity:
+      {{-   toYaml .affinity | nindent 8 }}
+      {{- end }}
+      {{- if .nodeSelector }}
+      nodeSelector:
+      {{-   toYaml .nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if .tolerations }}
+      tolerations:
+      {{-   toYaml .tolerations | nindent 8 }}
+      {{- end }}
       {{- if .initContainers }}
       initContainers:
       {{-   range .initContainers }}

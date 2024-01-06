@@ -33,6 +33,18 @@ spec:
           {{-     include "universal-template.containers.init.template" . | nindent 10 }}
           {{-   end }}
           {{- end }}
+          {{- if .affinity }}
+          affinity:
+          {{-   toYaml .affinity | nindent 10 }}
+          {{- end }}
+          {{- if .nodeSelector }}
+          nodeSelector:
+          {{-   toYaml .nodeSelector | nindent 10 }}
+          {{- end }}
+          {{- if .tolerations }}
+          tolerations:
+          {{-   toYaml .tolerations | nindent 10 }}
+          {{- end }}
           containers:
           - name: {{ $fullName }}-cronjob
             image: {{ .image.repository }}:{{ default $.Values.version .image.version }}

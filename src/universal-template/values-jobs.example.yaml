@@ -56,6 +56,21 @@ jobs:
     # for the job to be considered Complete
     # Default: 1
     completions: 1
+    # Redefine the affinity of the pod
+    affinity: {}
+    # nodeAffinity:
+    #   requiredDuringSchedulingIgnoredDuringExecution:
+    #     nodeSelectorTerms:
+    #       - matchExpressions:
+    #           - key: kubernetes.io/e2e-az-name
+    #             operator: In
+    #             values:
+    #               - e2e-az1
+    #               - e2e-az2
+    # Redefine the nodeSelector of the pod
+    nodeSelector: {}
+    # Redefine the tolerations of the pod
+    tolerations: []
 
     # Description of the ConfigMap
     configmap:

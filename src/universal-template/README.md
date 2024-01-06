@@ -1,5 +1,5 @@
-# Universal helm chart for rolling out any service
-## Main
+# Universal helm chart for rolling out difference services
+## About helm-chart
 This universal helm chart template is designed to simplify rolling out simple releases and speed up the helm implementation process. There is no need to write new charts for each microservice, you can use one by changing only values.yaml<br></br>
 As an example, gitlab-ci will be used to use and integrate the helm chart.
 
@@ -55,7 +55,12 @@ vault kv get -format=yaml -field=data bucket1/secret1 > .helm/vault.secret.yaml
 helm repo add obervinov https://obervinov.github.io/helm-charts
 helm repo update
 ```
-4. Creating your own file `values.yaml`<br />A basic example can be taken here [here](values-base.example.yaml).<br />Example for [cronjobs](values-cronjobs.example.yaml).<br />Example for [jobs](values-jobs.example.yaml).<br />Example for [rbac](values-rbac.example.yaml).<br />Full description of all available values [here](values.yaml) or execute the command `helm show values obervinov/universal-template`
+4. Creating your own file `values.yaml`
+  - a basic example can be taken [here](values-base.example.yaml)
+  - example for [cronjobs](values-cronjobs.example.yaml)
+  - example for [jobs](values-jobs.example.yaml)
+  - example for [rbac](values-rbac.example.yaml)
+  - full description of all available values [here](values.yaml) or execute the command `helm show values obervinov/universal-template`
 
 5. We are installing a release from this chart
 ```bash
