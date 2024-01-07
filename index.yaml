@@ -3,9 +3,9 @@ entries:
   gitlab-runners:
   - apiVersion: v2
     appVersion: alpine-v12.6.0
-    created: "2024-01-07T11:52:02.379098808Z"
+    created: "2024-01-07T11:56:40.680971169Z"
     description: This is a chart with gitlab-runners for devops k8s
-    digest: 52326ebc890cbf61d3896a1080d92c11d42e17d8f9646f42ac5b63c43c7ef73b
+    digest: 9b2cbab4b98964be5be9e2082caab0987c81885d4934791c06d1720b476461de
     home: https://github.com/obervinov/helm-charts/blob/main/src/gitlab-runners
     icon: https://helm.sh/img/helm.svg
     keywords:
@@ -27,14 +27,14 @@ entries:
   jaeger-stack:
   - apiVersion: v2
     appVersion: 1.32.0
-    created: "2024-01-07T11:52:02.381494312Z"
+    created: "2024-01-07T11:56:40.684191825Z"
     dependencies:
     - condition: elasticsearch.enabled
       name: elasticsearch
       repository: https://helm.elastic.co
       version: ^7.11.1
     description: Helm-chart with jaeger-stack
-    digest: 8d10a00c85f14f74823401f526086807445b733e0b5ba55848310590bdfea990
+    digest: 290fe416242e9964fea081e3c8bdddab590e9bb59a3908b147ac04907d788ebe
     home: https://github.com/obervinov/helm-charts/blob/main/src/jaeger-stack
     icon: https://helm.sh/img/helm.svg
     keywords:
@@ -56,9 +56,9 @@ entries:
   k8s-haproxy:
   - apiVersion: v2
     appVersion: 2.1.1-alpine
-    created: "2024-01-07T11:52:02.381851782Z"
+    created: "2024-01-07T11:56:40.684541841Z"
     description: Helm-chart with daemonset-proxy by haproxy
-    digest: 1a556c235e224829212b941824c0fad0c484d6e03d86d529f015ae2edbae9b4a
+    digest: ef7e8a0c81cb31fc7aeac89885afd2764bf9b2aba746a4d9512819a37bff7d2d
     home: https://github.com/obervinov/helm-charts/blob/main/src/k8s-haproxy
     icon: https://helm.sh/img/helm.svg
     keywords:
@@ -80,9 +80,9 @@ entries:
   kibana:
   - apiVersion: v1
     appVersion: 8.5.1
-    created: "2024-01-07T11:52:02.382491953Z"
+    created: "2024-01-07T11:56:40.685181309Z"
     description: Non official Elastic helm chart for Kibana
-    digest: 58c9b500a772496ef3e068c03dd247f96a593ab94a3f01a25365803241d2cb79
+    digest: 3f607072cdbf8040d152c02fedd8a4cfd6bbc6f30d420a7eec0fa640568149f8
     home: https://github.com/obervinov/helm-charts/blob/main/src/kibana
     icon: https://helm.elastic.co/icons/kibana.png
     maintainers:
@@ -98,10 +98,10 @@ entries:
   promoperators:
   - apiVersion: v2
     appVersion: 1.0.1
-    created: "2024-01-07T11:52:02.382747703Z"
+    created: "2024-01-07T11:56:40.685460802Z"
     description: This chart is designed for easy installation of custom ServiceMonitor's
       or PodMonitor's for Prometheus Operator
-    digest: 9458c911163e810d45fc729188b059032744bb5e9246a264a02df40c314c94d0
+    digest: 9cd2f9b39244e83cd6c84eecf41ac10cc8c206091992b1c0516a6d6870e4d1c5
     home: https://github.com/obervinov/helm-charts/blob/main/src/promoperators
     icon: https://helm.sh/img/helm.svg
     maintainers:
@@ -118,12 +118,12 @@ entries:
   universal-template:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2024-01-07T11:52:02.384652115Z"
+    created: "2024-01-07T11:56:40.687576005Z"
     description: This universal helm chart template is designed to simplify rolling
       out simple releases and speed up the helm implementation process. There is no
       need to write new charts for each microservice, you can use one by changing
       only values.yaml
-    digest: b310a7672f82b2bb94858373d0feeedc949bf9467359b1e073fa8af606b01e83
+    digest: b019eaffdf1001455abaae97f2814add750ed75bf2f3a4122c5114f71367533c
     home: https://github.com/obervinov/helm-charts/blob/main/src/universal-template
     icon: https://helm.sh/img/helm.svg
     maintainers:
@@ -139,7 +139,7 @@ entries:
     version: 1.0.1
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2024-01-07T11:52:02.383694318Z"
+    created: "2024-01-07T11:56:40.686421442Z"
     description: This universal helm chart template is designed to simplify rolling
       out simple releases and speed up the helm implementation process. There is no
       need to write new charts for each microservice, you can use one by changing
@@ -158,4 +158,4 @@ entries:
     urls:
     - https://helm-charts.charafee.cfd/helm-charts/charts/universal-template-1.0.0.tgz
     version: 1.0.0
-generated: "2024-01-07T11:52:02.378318154Z"
+generated: "2024-01-07T11:56:40.680209162Z"
