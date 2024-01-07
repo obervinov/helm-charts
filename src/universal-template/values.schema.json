@@ -32,6 +32,9 @@
                     "deployment": {
                         "type": "object",
                         "properties": {
+                            "affinity": {
+                                "type": "object"
+                            },
                             "envs": {
                                 "type": "object",
                                 "properties": {
@@ -59,6 +62,9 @@
                                         "type": "string"
                                     }
                                 }
+                            },
+                            "nodeSelector": {
+                                "type": "object"
                             },
                             "otlp": {
                                 "type": "object",
@@ -191,6 +197,9 @@
                                         "type": "string"
                                     }
                                 }
+                            },
+                            "tolerations": {
+                                "type": "array"
                             }
                         }
                     },
