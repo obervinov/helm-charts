@@ -3,11 +3,7 @@ This repository contains helm charts for all occasions.
 
 This is a helm-registry for storing my helm-packages.
 
-[![pages-build-deployment](https://github.com/obervinov/helm-charts/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/obervinov/helm-charts/actions/workflows/pages/pages-build-deployment)
-
-[![Build Helm charts bundle](https://github.com/obervinov/helm-charts/actions/workflows/helm.yaml/badge.svg)](https://github.com/obervinov/helm-charts/actions/workflows/helm.yaml)
-
-[![Create GitHub Release](https://github.com/obervinov/helm-charts/actions/workflows/release.yaml/badge.svg)](https://github.com/obervinov/helm-charts/actions/workflows/release.yaml)
+[![pages-build-deployment](https://github.com/obervinov/helm-charts/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/obervinov/helm-charts/actions/workflows/pages/pages-build-deployment) [![Build Helm charts bundle](https://github.com/obervinov/helm-charts/actions/workflows/helm.yaml/badge.svg)](https://github.com/obervinov/helm-charts/actions/workflows/helm.yaml) [![Create GitHub Release](https://github.com/obervinov/helm-charts/actions/workflows/release.yaml/badge.svg)](https://github.com/obervinov/helm-charts/actions/workflows/release.yaml)
 
 ## <img src="https://github.com/obervinov/content/blob/main/ico/helm_registry.png" width="30"> List of helm charts available for installation
 <table>
