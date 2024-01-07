@@ -1,0 +1,39 @@
+{{- if .Values.agentPool }}
+{{-   $apiVersion := .Values.global.apiVersion }}
+{{-   $namesapce := .Values.global.namespace }}
+{{-   $agent := .Values.global.agent }}
+{{-   $organization := .Values.global.organization }}
+{{-   $terraformApiTokenSecret := .Values.global.terraformApiTokenSecret }}
+{{-   range .Values.agentPool }}
+apiVersion: {{ $apiVersion }}
+kind: AgentPool
+metadata:
+  name: {{ .name }}-agent-pool
+  namespace: {{ $namesapce }}
+spec:
+  agentDeployment:
+    replicas: {{ .replicas }}
+    spec:
+      containers:
+      - image: hashicorp/tfc-agent:latest
+        name: tfc-agent
+        {{- if .resources }}
+        {{ toYaml .resources | indent 10 }}
+        {{- else }}
+        resources:
+          limits:
+            memory: 512Mi
+          requests:
+            memory: 128Mi
+        {{- end }}
+      serviceAccountName: {{ $agent.serviceAccountName }}
+  agentTokens:
+  - name: tfc-agent-tokens
+  name: {{ .name }}
+  organization: {{ $organization }}
+  token:
+    secretKeyRef:
+      key: token
+      name: {{ $terraformApiTokenSecret }}
+{{-   end }}
+{{- end }}

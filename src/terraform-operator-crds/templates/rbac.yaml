@@ -1,0 +1,46 @@
+{{- if .Values.agentPools && .Values.rbac.rules }}
+{{-   $rbac := .Values.rbac }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: terraform-agentpool
+rules:
+{{-   range $rbac.rules }}
+- apiGroups:
+  {{- range .apiGroups }}
+    - {{ . }}
+  {{- end }}
+  resources:
+  {{- range .resources }}
+    - {{ . }}
+  {{- end }}
+  verbs:
+  {{- range .verbs }}
+    - {{ . }}
+  {{- end }}
+{{-   end }}
+...
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: terraform-agentpool
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: terraform-agentpool
+subjects:
+- kind: ServiceAccount
+  name: terraform-agentpool
+  namespace: {{ .Release.Namespace }}
+...
+---
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  name: terraform-agentpool
+  namespace: {{ .Release.Namespace }}
+...
+{{- end }}
