@@ -4,6 +4,7 @@ All available parameters and their values are described in [values.yaml](values.
 Helm dependencies that are needed to scan the chart are in the dependencies section [Chart.yaml](Chart.yaml)
 
 This chart generating CRDs for [this operator](https://github.com/hashicorp/terraform-cloud-operator).
+
 Supported:
 - Workspace
 - AgentPool
@@ -36,6 +37,7 @@ global:
     repository: "organization1/terraform-repo"
   tags:
     - "tag1"
+    - "tag2"
 
 workspaces:
   - name: workspace1
@@ -44,7 +46,8 @@ workspaces:
     notificationName: Notify from workspace1
     applyMethod: auto-approve
     additionalTags:
-      - "additionalTag1"
+      - "tag3"
+      - "tag4"
     environmentVariables:
       - name: TF_VAR_region
         description: "AWS region"
@@ -57,7 +60,7 @@ workspaces:
         value: "us-east-1"
 
 agentPools:
-  - name: agentpool1
+  - name: agent-pool-1
     replicas: 1
     resources:
       limits:
