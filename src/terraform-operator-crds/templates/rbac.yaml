@@ -1,4 +1,4 @@
-{{- if .Values.agentPools && .Values.rbac.rules }}
+{{- if .Values.rbac.rules }}
 {{-   $rbac := .Values.rbac }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
