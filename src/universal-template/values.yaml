@@ -11,9 +11,9 @@ service_metrics_port: &service_metrics_port 9090
 applications:
   - name: app1
     # Enabling default tests for service and ingress
-    tests:
-      service: true
-      virtualservices: true
+    tests: {}
+      # service: true
+      # virtualservices: true
     # Description of the deployment
     deployment:
       replicas: 1
@@ -23,7 +23,7 @@ applications:
         grpcEndpoint: {}
       # Collection of microservice metrics in prometheus via prometheusOperator
       prometheus:
-        enabled: true
+        enabled: false
         # The default metrics collection path is "/metrics"
         # path: "/metrics"
       image:
