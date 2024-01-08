@@ -247,15 +247,7 @@
                         }
                     },
                     "tests": {
-                        "type": "object",
-                        "properties": {
-                            "service": {
-                                "type": "boolean"
-                            },
-                            "virtualservices": {
-                                "type": "boolean"
-                            }
-                        }
+                        "type": "object"
                     }
                 }
             }
