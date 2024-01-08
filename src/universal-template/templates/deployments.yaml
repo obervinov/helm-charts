@@ -125,8 +125,10 @@ spec:
             path: {{ .name | lower }}
           {{-   end }}
       {{- end }}
+      {{- if .deployment.image.pullsecrets }}
       imagePullSecrets:
         - name: {{ .deployment.image.pullsecrets }}
+      {{- end }}
 ...
 
 {{-   end }}

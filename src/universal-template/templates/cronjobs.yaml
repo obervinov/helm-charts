@@ -93,8 +93,10 @@ spec:
                 path: {{ .name | lower }}
               {{-   end }}
           {{- end }}
+          {{- if .image.pullsecrets }}
           imagePullSecrets:
           - name: {{ .image.pullsecrets }}
+          {{- end }}
           restartPolicy: {{ default "Never" .restartPolicy }}
 ...
 {{-   end -}}
