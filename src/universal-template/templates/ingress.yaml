@@ -16,7 +16,7 @@ metadata:
     {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
   annotations:
   {{- if .ingressAnnotations}}
-    {{ .ingressAnnotations }}
+    {{ toYaml .ingressAnnotations | nindent 4 }}
   {{- end }}
 spec:
   {{- if .tls }}
