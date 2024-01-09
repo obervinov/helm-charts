@@ -102,8 +102,8 @@ spec:
           name: {{ $fullName }}-volume
         spec:
           accessModes:
-          {{- if volume.accessModes }}
-          {{-   range volume.accessModes }}
+          {{- if .volume.accessModes }}
+          {{-   range .volume.accessModes }}
           - {{ . | quote }}
           {{-   end }}
           {{- else }}
@@ -111,9 +111,9 @@ spec:
           {{- end }}
           resources:
             requests:
-              storage: {{ volume.size }}
-          {{- if volume.storageClassName }}
-          storageClassName: {{ volume.storageClassName }}
+              storage: {{ .volume.size }}
+          {{- if .volume.storageClassName }}
+          storageClassName: {{ .volume.storageClassName }}
           {{- end }}
       {{- end }}
   backoffLimit: {{ .backoffLimit | default 1 }}
