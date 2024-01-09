@@ -72,3 +72,17 @@ rbac:
         - get
         - list
         - watch
+
+# Modules for managing in Terraform Cloud.
+# https://github.com/hashicorp/terraform-cloud-operator/blob/main/docs/module.md
+# modules:
+#   - name: module1
+#     source: "https://github.com/obervinov/terraform-setup-environment"
+#     version: "1.0.0"
+#     variables:
+#       - var1
+#       - var2
+#     outputs:
+#       - output1
+#       - output2
+#     workspaces: workspace1

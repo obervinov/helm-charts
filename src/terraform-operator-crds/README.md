@@ -13,6 +13,7 @@ Supported:
 ### Examples
 ```yaml
 ---
+# Global parameters which are applied to all workspaces, agents and modules.
 global:
   apiVersion: app.terraform.io/v1alpha2
   namespace: default
@@ -37,39 +38,43 @@ global:
     repository: "organization1/terraform-repo"
   tags:
     - "tag1"
-    - "tag2"
 
+# Workspaces for managing in Terraform Cloud.
+# https://github.com/hashicorp/terraform-cloud-operator/blob/main/docs/workspace.md
 workspaces:
   - name: workspace1
     description: "Workspace 1"
     workingDirectory: "infrastructure/service1"
     notificationName: Notify from workspace1
-    applyMethod: auto-approve
+    # applyMethod: auto-approve
     additionalTags:
-      - "tag3"
-      - "tag4"
-    environmentVariables:
-      - name: TF_VAR_region
-        description: "AWS region"
-        sensitive: false
-        value: "us-east-1"
-    terraformVariables:
-      - name: TF_VAR_region
-        description: "AWS region"
-        sensitive: false
-        value: "us-east-1"
+      - "tag2"
+    # environmentVariables:
+    #   - name: TF_VAR_region
+    #     description: "AWS region"
+    #     sensitive: false
+    #     value: "us-east-1"
+    # terraformVariables:
+    #   - name: TF_VAR_region
+    #     description: "AWS region"
+    #     sensitive: false
+    #     value: "us-east-1"
 
+# Agents for managing in Terraform Cloud.
+# https://github.com/hashicorp/terraform-cloud-operator/blob/main/docs/agentpool.md
 agentPools:
   - name: agent-pool-1
     replicas: 1
-    resources:
-      limits:
-        cpu: null
-        memory: 512Mi
-      requests:
-        cpu: null
-        memory: 128Mi
+    # Resources per agent in the pool.
+    # resources:
+    #   limits:
+    #     cpu: null
+    #     memory: 512Mi
+    #   requests:
+    #     cpu: null
+    #     memory: 128Mi
 
+# For agent pools permissions in kubernetes cluster.
 rbac:
   rules:
     - apiGroups:
@@ -81,4 +86,19 @@ rbac:
         - get
         - list
         - watch
+
+# Modules for managing in Terraform Cloud.
+# https://github.com/hashicorp/terraform-cloud-operator/blob/main/docs/module.md
+modules:
+  - name: module1
+    source: "https://github.com/obervinov/terraform-setup-environment"
+    version: "1.0.0"
+    variables:
+      - var1
+      - var2
+    outputs:
+      - output1
+      - output2
+    workspaces: workspace1
+
 ```
