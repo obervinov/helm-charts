@@ -96,14 +96,14 @@ spec:
       - name: {{ .image.pullsecrets }}
       {{- end }}
       restartPolicy: {{ .restartPolicy | default "Never" }}
-      {{- if .deployment.volume }}
+      {{- if .volume }}
       volumeClaimTemplates:
       - metadata:
           name: {{ $fullName }}-volume
         spec:
           accessModes:
-          {{- if .deployment.volume.accessModes }}
-          {{-   range .deployment.volume.accessModes }}
+          {{- if volume.accessModes }}
+          {{-   range volume.accessModes }}
           - {{ . | quote }}
           {{-   end }}
           {{- else }}
@@ -111,9 +111,9 @@ spec:
           {{- end }}
           resources:
             requests:
-              storage: {{ .deployment.volume.size }}
-          {{- if .deployment.volume.storageClassName }}
-          storageClassName: {{ .deployment.volume.storageClassName }}
+              storage: {{ volume.size }}
+          {{- if volume.storageClassName }}
+          storageClassName: {{ volume.storageClassName }}
           {{- end }}
       {{- end }}
   backoffLimit: {{ .backoffLimit | default 1 }}
