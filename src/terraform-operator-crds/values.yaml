@@ -13,28 +13,28 @@ global:
     executeMode: agent
     agentPool: default
     serviceAccountName: terraform-agent
-  notification:
-    type: email
-    triggers:
-      - "run:errored"
-    users:
-      - "user1@example.com"
-  vcs:
-    oAuthTokenID: 123
-    repository: "organization1/terraform-repo"
-  tags:
-    - "tag1"
+  # notification:
+  #   type: email
+  #   triggers:
+  #     - "run:errored"
+  #   users:
+  #     - "user1@example.com"
+  # vcs:
+  #   oAuthTokenID: qwerty123
+  #   repository: "organization1/terraform-repo"
+  # tags:
+  #   - "tag1"
 
 # Workspaces for managing in Terraform Cloud.
 # https://github.com/hashicorp/terraform-cloud-operator/blob/main/docs/workspace.md
-workspaces:
-  - name: workspace1
-    description: "Workspace 1"
-    workingDirectory: "infrastructure/service1"
-    notificationName: Notify from workspace1
-    # applyMethod: auto-approve
-    additionalTags:
-      - "tag2"
+workspaces: {}
+  # - name: workspace1
+  #   description: "Workspace 1"
+  #   workingDirectory: "infrastructure/service1"
+  #   notificationName: Notify from workspace1
+  #   # applyMethod: auto-approve
+  #   additionalTags:
+  #     - "tag2"
     # environmentVariables:
     #   - name: TF_VAR_region
     #     description: "AWS region"
