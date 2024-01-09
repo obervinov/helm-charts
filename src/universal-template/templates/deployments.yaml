@@ -129,6 +129,26 @@ spec:
       imagePullSecrets:
         - name: {{ .deployment.image.pullsecrets }}
       {{- end }}
+  {{- if .deployment.volume }}
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ $fullName }}-volume
+    spec:
+      accessModes:
+      {{- if .deployment.volume.accessModes }}
+      {{-   range .deployment.volume.accessModes }}
+      - {{ . | quote }}
+      {{-   end }}
+      {{- else }}
+      - ReadWriteOnce
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .deployment.volume.size }}
+      {{- if .deployment.volume.storageClassName }}
+      storageClassName: {{ .deployment.volume.storageClassName }}
+      {{- end }}
+  {{- end }}
 ...
 
 {{-   end }}
