@@ -3,27 +3,27 @@
 global:
   apiVersion: app.terraform.io/v1alpha2
   namespace: default
-# organization: organization1
-# terraformApiTokenSecret:
-#   name: terraform-operator
-#   key: token
-agent:
-  terraformVersion: 1.6.6
-  applyMethod: manual
-  executeMode: agent
-  agentPool: kubernetes-tfc-agent-pool
-  serviceAccountName: terraform-agent
-notification:
-#   type: email
-#   triggers:
-#     - "run:errored"
-#   users:
-#     - "user1@example.com"
-# vcs:
-#   oAuthTokenID: qwerty123
-#   repository: "organization1/terraform-repo"
-# tags:
-#   - "tag1"
+  # organization: organization1
+  # terraformApiTokenSecret:
+  #   name: terraform-operator
+  #   key: token
+  agent:
+    terraformVersion: 1.6.6
+    applyMethod: manual
+    executeMode: agent
+    agentPool: kubernetes-tfc-agent-pool
+    serviceAccountName: terraform-agent
+  notification:
+  #   type: email
+  #   triggers:
+  #     - "run:errored"
+  #   users:
+  #     - "user1@example.com"
+  # vcs:
+  #   oAuthTokenID: qwerty123
+  #   repository: "organization1/terraform-repo"
+  # tags:
+  #   - "tag1"
 
 # Workspaces for managing in Terraform Cloud.
 # https://github.com/hashicorp/terraform-cloud-operator/blob/main/docs/workspace.md
