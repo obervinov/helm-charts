@@ -1,4 +1,4 @@
-{{- if .Values.global.workspaces }}
+{{- if .Values.workspaces }}
 {{-   $apiVersion := .Values.global.apiVersion }}
 {{-   $namespace := .Values.gloabl.namespace }}
 {{-   $organization := .Values.global.organization }}
