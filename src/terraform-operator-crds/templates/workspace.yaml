@@ -1,6 +1,6 @@
 {{- if .Values.workspaces }}
 {{-   $apiVersion := .Values.global.apiVersion }}
-{{-   $namespace := .Values.gloabl.namespace }}
+{{-   $namespace := .Values.global.namespace }}
 {{-   $organization := .Values.global.organization }}
 {{-   $terraformApiTokenSecret := .Values.global.terraformApiTokenSecret }}
 {{-   $terraformAgentTokensSecret := .Values.global.terraformAgentTokensSecret }}
