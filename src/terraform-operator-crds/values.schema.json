@@ -2,45 +2,45 @@
     "$schema": "http://json-schema.org/schema#",
     "type": "object",
     "properties": {
-        "agent": {
-            "type": "object",
-            "properties": {
-                "agentPool": {
-                    "type": "string"
-                },
-                "applyMethod": {
-                    "type": "string"
-                },
-                "executeMode": {
-                    "type": "string"
-                },
-                "serviceAccountName": {
-                    "type": "string"
-                },
-                "terraformVersion": {
-                    "type": "string"
-                }
-            }
-        },
         "agentPools": {
             "type": "array"
         },
         "global": {
             "type": "object",
             "properties": {
+                "agent": {
+                    "type": "object",
+                    "properties": {
+                        "agentPool": {
+                            "type": "string"
+                        },
+                        "applyMethod": {
+                            "type": "string"
+                        },
+                        "executeMode": {
+                            "type": "string"
+                        },
+                        "serviceAccountName": {
+                            "type": "string"
+                        },
+                        "terraformVersion": {
+                            "type": "string"
+                        }
+                    }
+                },
                 "apiVersion": {
                     "type": "string"
                 },
                 "namespace": {
                     "type": "string"
+                },
+                "notification": {
+                    "type": "null"
                 }
             }
         },
         "modules": {
             "type": "array"
-        },
-        "notification": {
-            "type": "null"
         },
         "rbac": {
             "type": "object"
