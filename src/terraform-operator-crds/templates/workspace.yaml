@@ -8,7 +8,7 @@
 {{-   $notification := .Values.global.notification }}
 {{-   $vcs := .Values.global.vcs }}
 {{-   $globalTags := .Values.global.tags }}
-{{-   range .Values.global.workspaces }}
+{{-   range .Values.workspaces }}
 ---
 apiVersion: {{ $apiVersion }}
 kind: Workspace
