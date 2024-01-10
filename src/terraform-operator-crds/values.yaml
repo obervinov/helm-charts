@@ -4,7 +4,7 @@ global:
   apiVersion: app.terraform.io/v1alpha2
   namespace: terraform-operator
   organization: default
-  terraformApiTokenSecret: change_me
+  terraformApiTokenSecret: tfc-operator
   agent:
     terraformVersion: 1.6.6
     applyMethod: manual
