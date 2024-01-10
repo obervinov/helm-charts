@@ -2,7 +2,7 @@
 # Global parameters which are applied to all workspaces, agents and modules.
 global:
   apiVersion: app.terraform.io/v1alpha2
-  namespace: default
+  namespace: terraform-operator
   organization: default
   terraformApiTokenSecret: change_me
   agent:
@@ -35,27 +35,27 @@ workspaces: []
 #   description: "Workspace 1"
 #   workingDirectory: "infrastructure/service1"
 #   notificationName: Notify from workspace1
-#   # applyMethod: auto-approve
+#   applyMethod: auto-approve
 #   additionalTags:
 #     - "tag2"
-  # environmentVariables:
-  #   - name: TF_VAR_region
-  #     description: "AWS region"
-  #     sensitive: false
-  #     value: "us-east-1"
-  #   - name: TF_VAR_region
-  #     description: "AWS region"
-  #     sensitive: true
-  #     value: "us-east-1"
-  #   - name: TF_VAR_region
-  #     description: "AWS region"
-  #     sensitive: true
-  #     valueFrom:
-  # terraformVariables:
-  #   - name: TF_VAR_region
-  #     description: "AWS region"
-  #     sensitive: false
-  #     value: "us-east-1"
+#   environmentVariables:
+#     - name: TF_VAR_region
+#       description: "AWS region"
+#       sensitive: false
+#       value: "us-east-1"
+#     - name: TF_VAR_region
+#       description: "AWS region"
+#       sensitive: true
+#       value: "us-east-1"
+#     - name: TF_VAR_region
+#       description: "AWS region"
+#       sensitive: true
+#       valueFrom:
+#   terraformVariables:
+#     - name: TF_VAR_region
+#       description: "AWS region"
+#       sensitive: false
+#       value: "us-east-1"
 
 # Agents for managing in Terraform Cloud.
 # https://github.com/hashicorp/terraform-cloud-operator/blob/main/docs/agentpool.md
