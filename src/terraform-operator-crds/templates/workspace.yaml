@@ -24,6 +24,7 @@ spec:
   description: {{ .description }}
   executionMode: {{ $agent.executionMode }}
   name: {{ .name }}-workspace
+  {{- if $notification }}
   notifications:
   - emailUsers:
     {{- range $notification.emailUsers }}
@@ -36,6 +37,7 @@ spec:
     - {{ . }}
     {{- end }}
     type: {{ $notification.type }}
+  {{- end }}
   organization: {{ $organization }}
   tags:
   {{- range $globalTags }}
