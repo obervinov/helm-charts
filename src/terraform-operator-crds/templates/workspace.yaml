@@ -5,9 +5,9 @@
 {{-   $terraformApiTokenSecret := .Values.global.terraformApiTokenSecret }}
 {{-   $terraformAgentTokensSecret := .Values.global.terraformAgentTokensSecret }}
 {{-   $agent := .Values.global.agent }}
-{{-   $notification := .Values.global.notification }}
-{{-   $vcs := .Values.global.vcs }}
-{{-   $globalTags := .Values.global.tags }}
+{{-   $notification := .Values.global.workspace.notification }}
+{{-   $vcs := .Values.global.workspace.vcs }}
+{{-   $globalTags := .Values.global.workspace.tags }}
 {{-   range .Values.workspaces }}
 ---
 apiVersion: {{ $apiVersion }}
@@ -53,7 +53,7 @@ spec:
       {{- if .sensitive }}
       valueFrom:
         secretKeyRef:
-          key: {{ .valueFrom.secretKeyRef.key }}
+          key: {{ default .valueFrom.secretKeyRef.key }}
           name: {{ .valueFrom.secretKeyRef.name }}
       {{- end }}
       {{- if not .sensitive }}
@@ -71,8 +71,13 @@ spec:
       {{- if .sensitive }}
       valueFrom:
         secretKeyRef:
+          {{- if .valueFrom }}
           key: {{ .valueFrom.secretKeyRef.key }}
           name: {{ .valueFrom.secretKeyRef.name }}
+          {{- else }}
+          key: {{ .name }}
+          name: workspacesecrets
+          {{- end }}
       {{- end }}
       {{- if not .sensitive }}
       value: {{ .value }}
