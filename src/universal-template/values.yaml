@@ -3,24 +3,26 @@
 ---
 # Tag for all default images
 version: "latest"
+
 # Anchors with ports of your services can be installed here for reuse
-service_port_http: &service_port_http 80
-service_metrics_port: &service_metrics_port 9090
+# service_port_http: &service_port_http 80
+# service_metrics_port: &service_metrics_port 9090
+
 # Applications - are a logical group for a microservice that includes
 # deployment, tests, service, ingress, configmap, secret
 applications:
   - name: app1
     # Enabling default tests for service and ingress
     tests: {}
-      # service: true
-      # virtualservices: true
+    # service: true
+    # virtualservices: true
     # Description of the deployment
     deployment:
       replicas: 1
       # Connecting the sidecar of the jaeger-agent container
       otlp:
         enabled: false
-        grpcEndpoint: {}
+        # grpcEndpoint: {}
       # Collection of microservice metrics in prometheus via prometheusOperator
       prometheus:
         enabled: false
@@ -28,15 +30,17 @@ applications:
         # path: "/metrics"
       image:
         # Image Link
-        repository: group/image
-        version: "1.0.0"
-        # Secret name with dockerconfig (for private registry)
-        pullsecrets: secret-registry-user
+        repository: ""
+        version: ""
+        # Secret name with docker config (for private registry)
+        pullsecrets: ""
         # `IfNotPresent` - only if the image is missing locally
         # `Always` - the image is pumped out every time the hearth is started
         # `Never` - it is never pumped out, only local images
         imagePullPolicy: IfNotPresent
         # If it is necessary to predefine or replace the commands/arguments
+        commands: []
+        args: []
         # commands:
         #   - bash
         # args:
@@ -45,254 +49,281 @@ applications:
       strategy:
         type: RollingUpdate
       # Container environment variables
-      envs:
-        LOG_LEVEL: info
+      envs: {}
+      # envs:
+      #   LOG_LEVEL: info
       # Environment variables to extract from the secret
       envsSecret: []
+      # envsSecret:
       #  - name: SECRET_USERNAME
       #    keySecret: username
-      podAnnotations:
+      podAnnotations: {}
         # An annotation that calculates the checksum of your values.yaml file
         # Guarantees a restart of the hearth if values.yaml has changed
-        checksum/values.yaml: "helm/values.yaml"
-      probes:
-        livenessProbe:
-          httpGet:
-            path: /health/liveness
-            port: *service_metrics_port
-          initialDelaySeconds: 30
-          periodSeconds: 5
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /health/readiness
-            port: *service_metrics_port
-          initialDelaySeconds: 15
-          periodSeconds: 5
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
-      # Redefine resource quotas
-      resources:
-        requests:
-          memory: "256Mi"
-          cpu: "250m"
-        limits:
-          memory: "512Mi"
-          cpu: "500m"
+      # podAnnotations:
+      #   checksum/values.yaml: "helm/values.yaml"
+      probes: {}
+      # probes:
+      #   livenessProbe:
+      #     httpGet:
+      #       path: /health/liveness
+      #       port: *service_metrics_port
+      #     initialDelaySeconds: 30
+      #     periodSeconds: 5
+      #     timeoutSeconds: 5
+      #     successThreshold: 1
+      #     failureThreshold: 3
+      #   readinessProbe:
+      #     httpGet:
+      #       path: /health/readiness
+      #       port: *service_metrics_port
+      #     initialDelaySeconds: 15
+      #     periodSeconds: 5
+      #     timeoutSeconds: 5
+      #     successThreshold: 1
+      #     failureThreshold: 3
+      # Redefine resource
+      resources: {}
+      # resources:
+      #   requests:
+      #     memory: "256Mi"
+      #     cpu: "250m"
+      #   limits:
+      #     memory: "512Mi"
+      #     cpu: "500m"
       # Redefine the affinity of the pod
       affinity: {}
-      # nodeAffinity:
-      #   requiredDuringSchedulingIgnoredDuringExecution:
-      #     nodeSelectorTerms:
-      #       - matchExpressions:
-      #           - key: kubernetes.io/e2e-az-name
-      #             operator: In
-      #             values:
-      #               - e2e-az1
-      #               - e2e-az2
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #         - matchExpressions:
+      #             - key: kubernetes.io/e2e-az-name
+      #               operator: In
+      #               values:
+      #                 - e2e-az1
+      #                 - e2e-az2
       # Redefine the nodeSelector of the pod
       nodeSelector: {}
       # Redefine the tolerations of the pod
       tolerations: []
+
     # Description of the Service
-    service:
-      - name: http
-        port: *service_port_http
-        protocol: TCP
-        targetPort: *service_port_http
-      - name: http-metrics
-        port: *service_metrics_port
-        protocol: TCP
-        targetPort: *service_metrics_port
+    service: []
+    # service:
+    #   - name: http
+    #     port: *service_port_http
+    #     protocol: TCP
+    #     targetPort: *service_port_http
+    #   - name: http-metrics
+    #     port: *service_metrics_port
+    #     protocol: TCP
+    #     targetPort: *service_metrics_port
+
     # Description of the Ingress
-    ingress:
-      - name: http
-        # apiVersion: networking.k8s.io/v1
-        # kind: Ingress
-        ingressAnnotations: {}
-        # tls: true
-        # tlsSecretName: {}
-        host: my-service.example.com
-        # path: {}
-        # pathType: {}
-        # servicePort: {}
-        # ingressClassName: {}
+    ingress: []
+    # ingress:
+    #   - name: http
+    #     # apiVersion: networking.k8s.io/v1
+    #     # kind: Ingress
+    #     ingressAnnotations: {}
+    #     # tls: true
+    #     # tlsSecretName: {}
+    #     host: my-service.example.com
+    #     # path: {}
+    #     # pathType: {}
+    #     # servicePort: {}
+    #     # ingressClassName: {}
+
     # Description of the ConfigMap
-    configmap:
+    configmap: {}
       # The contents of the config can be set via
       # `--set-file "applications[0].configmap[0].data"="config.json"`
       # `mountPath` - the path in the container where all configs will be mapped
       # `files[0].name` - the name of the file in the container
       # `files[0].data` - the config body is set via the --set-file parameter
-      mountPath: "/configs"
-      files:
-        - name: "config.json"
-          data: {}
+    # configmap:
+    #   mountPath: "/configs"
+    #   files:
+    #     - name: "config.json"
+    #       data: {}
+
     # Description of the Secret
     secret: {}
-# An example of a fully described value file for describing the simplest cornjob
+
+
+
+# An example of a fully described value file for describing the simplest cronjob
 # Description of the cronjob
-cronjobs:
-  - name: cronjob-example
-    image:
-      # Image Link
-      repository: group/image-cronjob
-      version: "1.0.0"
-      # Secret name with dockerconfig (for private registry)
-      pullsecrets: secret-registry-user
-      # `IfNotPresent` - only if the image is missing locally
-      # `Always` - the image is pumped out every time the hearth is started
-      # `Never` - it is never pumped out, only local images
-      imagePullPolicy: IfNotPresent
-    # Redefine resource quotas
-    resources:
-      requests:
-        memory: "256Mi"
-        cpu: "250m"
-      limits:
-        memory: "512Mi"
-        cpu: "500m"
-    # If it is necessary to predefine or replace the commands/arguments
-    commands:
-      - sh
-    args:
-      - -c
-      - env
-    # Container environment variables
-    envs:
-      LOG_LEVEL: info
-    # Environment variables to extract from the secret
-    envsSecret: []
-    #  - name: SECRET_USERNAME
-    #    keySecret: username
-    # Sheduling plan (as in the crown)
-    schedule: "* * * * *"
-    # Storing the history of jobs completed with an error
-    failedJobsHistoryLimit: 1
-    # Storing the history of jobs completed successfully
-    successfulJobsHistoryLimit: 0
-    # The policy of restarting jobs if the pod failed with an error
-    # Default `Never``
-    restartPolicy: "OnFailure"
-    # The time (sec) after which completed (success/faild) jobs will be cleared
-    # Default: 360
-    ttlSecondsAfterFinished: 360
-    # The time (in seconds) after which the job will be forcibly terminated
-    # Default: 600
-    activeDeadlineSeconds: 650
-    # The number of attempts to restart the job, if it failed with an error
-    # Default: 3
-    backoffLimit: 1
-    # Policy of simultaneous launch of instances of jobs
-    # Allow, Forbid, Replace
-    # Default: "Forbid"
-    concurrencyPolicy: "Forbid"
-    # Allowed number of jobs running at the same time
-    parallelism: 1
-    # The number of pods that must end with success in order
-    # for the job to be considered Complete
-    # Default: 1
-    completions: 1
-    # Description of the ConfigMap
-    configmap:
-      # The contents of the config can be set via
-      # `--set-file "cronjobs[0].configmap[0].data"="config.json"`
-      # `mountPath` - the path in the container where all configs will be mapped
-      # `files[0].name` - the name of the file in the container
-      # `files[0].data` - the config body is set via the --set-file parameter
-      mountPath: "/configs"
-      files:
-        - name: "config.json"
-          data: {}
-    # Description of the Secret
-    secret: {}
+cronjobs: []
+# cronjobs:
+#   - name: cronjob-example
+#     image:
+#       # Image Link
+#       repository: group/image-cronjob
+#       version: "1.0.0"
+#       # Secret name with dockerconfig (for private registry)
+#       pullsecrets: secret-registry-user
+#       # `IfNotPresent` - only if the image is missing locally
+#       # `Always` - the image is pumped out every time the hearth is started
+#       # `Never` - it is never pumped out, only local images
+#       imagePullPolicy: IfNotPresent
+#     # Redefine resource quotas
+#     resources: {}
+#     # resources:
+#     #   requests:
+#     #     memory: "256Mi"
+#     #     cpu: "250m"
+#     #   limits:
+#     #     memory: "512Mi"
+#     #     cpu: "500m"
+#     # If it is necessary to predefine or replace the commands/arguments
+#     commands:
+#       - sh
+#     args:
+#       - -c
+#       - env
+#     # Container environment variables
+#     envs:
+#       LOG_LEVEL: info
+#     # Environment variables to extract from the secret
+#     envsSecret: []
+#     #  - name: SECRET_USERNAME
+#     #    keySecret: username
+#     # Sheduling plan (as in the crown)
+#     schedule: "* * * * *"
+#     # Storing the history of jobs completed with an error
+#     failedJobsHistoryLimit: 1
+#     # Storing the history of jobs completed successfully
+#     successfulJobsHistoryLimit: 0
+#     # The policy of restarting jobs if the pod failed with an error
+#     # Default `Never``
+#     restartPolicy: "OnFailure"
+#     # The time (sec) after which completed (success/faild) jobs will be cleared
+#     # Default: 360
+#     ttlSecondsAfterFinished: 360
+#     # The time (in seconds) after which the job will be forcibly terminated
+#     # Default: 600
+#     activeDeadlineSeconds: 650
+#     # The number of attempts to restart the job, if it failed with an error
+#     # Default: 3
+#     backoffLimit: 1
+#     # Policy of simultaneous launch of instances of jobs
+#     # Allow, Forbid, Replace
+#     # Default: "Forbid"
+#     concurrencyPolicy: "Forbid"
+#     # Allowed number of jobs running at the same time
+#     parallelism: 1
+#     # The number of pods that must end with success in order
+#     # for the job to be considered Complete
+#     # Default: 1
+#     completions: 1
+#     # Description of the ConfigMap
+#     configmap:
+#       # The contents of the config can be set via
+#       # `--set-file "cronjobs[0].configmap[0].data"="config.json"`
+#       # `mountPath` - the path in the container where all configs will be mapped
+#       # `files[0].name` - the name of the file in the container
+#       # `files[0].data` - the config body is set via the --set-file parameter
+#       mountPath: "/configs"
+#       files:
+#         - name: "config.json"
+#           data: {}
+#     # Description of the Secret
+#     secret: {}
+
+
+
 # An example of a fully described value file for describing the simplest job
 # Description of the job
-jobs:
-  - name: job-example
-    image:
-      # Image Link
-      repository: group/image-job
-      version: "1.0.0"
-      # Secret name with dockerconfig (for private registry)
-      pullsecrets: secret-registry-user
-      # `IfNotPresent` - only if the image is missing locally
-      # `Always` - the image is pumped out every time the hearth is started
-      # `Never` - it is never pumped out, only local images
-      imagePullPolicy: IfNotPresent
-    # Redefine resource quotas
-    resources:
-      requests:
-        memory: "256Mi"
-        cpu: "250m"
-      limits:
-        memory: "512Mi"
-        cpu: "500m"
-    # If it is necessary to predefine or replace the commands/arguments
-    commands:
-      - sh
-    args:
-      - -c
-      - env
-    # Container environment variables
-    envs:
-      LOG_LEVEL: info
-    # Environment variables to extract from the secret
-    envsSecret: []
-    #  - name: SECRET_USERNAME
-    #    keySecret: username
-    # The policy of restarting jobs if the pod failed with an error
-    # Default `Never``
-    restartPolicy: "OnFailure"
-    # The time (sec) after which completed (success/faild) jobs will be cleared
-    # Default: 360
-    ttlSecondsAfterFinished: 360
-    # The time (in seconds) after which the job will be forcibly terminated
-    # Default: 600
-    activeDeadlineSeconds: 650
-    # The number of attempts to restart the job, if it failed with an error
-    # Default: 3
-    backoffLimit: 1
-    # Policy of simultaneous launch of instances of jobs
-    # Allow, Forbid, Replace
-    # Default: "Forbid"
-    concurrencyPolicy: "Forbid"
-    # Allowed number of jobs running at the same time
-    parallelism: 1
-    # The number of pods that must end with success in order
-    # for the job to be considered Complete
-    # Default: 1
-    completions: 1
-    # Description of the ConfigMap
-    configmap:
-      # The contents of the config can be set via
-      # `--set-file "cronjobs[0].configmap[0].data"="config.json"`
-      # `mountPath` - the path in the container where all configs will be mapped
-      # `files[0].name` - the name of the file in the container
-      # `files[0].data` - the config body is set via the --set-file parameter
-      mountPath: "/configs"
-      files:
-        - name: "config.json"
-          data: {}
-    # Description of the Secret
-    secret: {}
-# An example of a fully described value file for describing the simplest rbac
-# Description of the rbac
+jobs: []
+# jobs:
+#   - name: job-example
+#     image:
+#       # Image Link
+#       repository: group/image-job
+#       version: "1.0.0"
+#       # Secret name with dockerconfig (for private registry)
+#       pullsecrets: secret-registry-user
+#       # `IfNotPresent` - only if the image is missing locally
+#       # `Always` - the image is pumped out every time the hearth is started
+#       # `Never` - it is never pumped out, only local images
+#       imagePullPolicy: IfNotPresent
+#     # Redefine resource quotas
+#     resources: {}
+#     # resources:
+#     #   requests:
+#     #     memory: "256Mi"
+#     #     cpu: "250m"
+#     #   limits:
+#     #     memory: "512Mi"
+#     #     cpu: "500m"
+#     # If it is necessary to predefine or replace the commands/arguments
+#     commands:
+#       - sh
+#     args:
+#       - -c
+#       - env
+#     # Container environment variables
+#     envs:
+#       LOG_LEVEL: info
+#     # Environment variables to extract from the secret
+#     envsSecret: []
+#     #  - name: SECRET_USERNAME
+#     #    keySecret: username
+#     # The policy of restarting jobs if the pod failed with an error
+#     # Default `Never``
+#     restartPolicy: "OnFailure"
+#     # The time (sec) after which completed (success/faild) jobs will be cleared
+#     # Default: 360
+#     ttlSecondsAfterFinished: 360
+#     # The time (in seconds) after which the job will be forcibly terminated
+#     # Default: 600
+#     activeDeadlineSeconds: 650
+#     # The number of attempts to restart the job, if it failed with an error
+#     # Default: 3
+#     backoffLimit: 1
+#     # Policy of simultaneous launch of instances of jobs
+#     # Allow, Forbid, Replace
+#     # Default: "Forbid"
+#     concurrencyPolicy: "Forbid"
+#     # Allowed number of jobs running at the same time
+#     parallelism: 1
+#     # The number of pods that must end with success in order
+#     # for the job to be considered Complete
+#     # Default: 1
+#     completions: 1
+#     # Description of the ConfigMap
+#     configmap:
+#       # The contents of the config can be set via
+#       # `--set-file "cronjobs[0].configmap[0].data"="config.json"`
+#       # `mountPath` - the path in the container where all configs will be mapped
+#       # `files[0].name` - the name of the file in the container
+#       # `files[0].data` - the config body is set via the --set-file parameter
+#       mountPath: "/configs"
+#       files:
+#         - name: "config.json"
+#           data: {}
+#     # Description of the Secret
+#     secret: {}
+
+
+
+# # An example of a fully described value file for describing the simplest rbac
+# # Description of the rbac
 # ServiceAccount, Role, RoleBinding
-rbac:
-  - name: serviceaccount-example
-    rules:
-      # The name of the api to which access is required for the service account
-      - apiGroups:
-          - ""
-        # List of resources that ServiceAccount will have access to
-        resources:
-          - pods
-        # List of rights to resources that ServiceAccount will have
-        verbs:
-          - get
-          - watch
-          - list
+rbac: []
+# rbac:
+#   - name: serviceaccount-example
+#     rules:
+#       # The name of the api to which access is required for the service account
+#       - apiGroups:
+#           - ""
+#         # List of resources that ServiceAccount will have access to
+#         resources:
+#           - pods
+#         # List of rights to resources that ServiceAccount will have
+#         verbs:
+#           - get
+#           - watch
+#           - list
