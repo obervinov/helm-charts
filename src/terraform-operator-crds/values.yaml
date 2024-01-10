@@ -13,15 +13,18 @@ global:
     executeMode: agent
     agentPool: kubernetes-tfc-agent-pool
     serviceAccountName: terraform-agent
-  notification:
+  notification: {}
+  # notification:
   #   type: email
   #   triggers:
   #     - "run:errored"
   #   users:
   #     - "user1@example.com"
+  vcs: {}
   # vcs:
   #   oAuthTokenID: qwerty123
   #   repository: "organization1/terraform-repo"
+  tags: []
   # tags:
   #   - "tag1"
 
