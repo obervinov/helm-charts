@@ -27,7 +27,7 @@ global:
 
 # Workspaces for managing in Terraform Cloud.
 # https://github.com/hashicorp/terraform-cloud-operator/blob/main/docs/workspace.md
-workspaces: {}
+workspaces: []
 # - name: workspace1
 #   description: "Workspace 1"
 #   workingDirectory: "infrastructure/service1"
@@ -48,7 +48,7 @@ workspaces: {}
 
 # Agents for managing in Terraform Cloud.
 # https://github.com/hashicorp/terraform-cloud-operator/blob/main/docs/agentpool.md
-agentPools: {}
+agentPools: []
 # - name: agent-pool-1
 #   replicas: 1
 # Resources per agent in the pool.
@@ -75,7 +75,7 @@ rbac: {}
 
 # Modules for managing in Terraform Cloud.
 # https://github.com/hashicorp/terraform-cloud-operator/blob/main/docs/module.md
-modules: {}
+modules: []
 # - name: module1
 #   source: "https://github.com/obervinov/terraform-setup-environment"
 #   version: "1.0.0"
