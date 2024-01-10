@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/schema#",
+    "type": "object",
+    "properties": {
+        "agentPools": {
+            "type": "object"
+        },
+        "global": {
+            "type": "object",
+            "properties": {
+                "apiVersion": {
+                    "type": "string"
+                },
+                "namespace": {
+                    "type": "string"
+                }
+            }
+        },
+        "modules": {
+            "type": "object"
+        },
+        "rbac": {
+            "type": "object"
+        },
+        "workspaces": {
+            "type": "object"
+        }
+    }
+}
