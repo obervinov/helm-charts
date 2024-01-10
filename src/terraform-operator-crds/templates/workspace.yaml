@@ -14,7 +14,7 @@
 apiVersion: {{ $apiVersion }}
 kind: Workspace
 metadata:
-  name: {{ .name }}
+  name: {{ .name }}-workspace
   namespace: {{ $namespace }}
 spec:
   agentPool:
