@@ -58,8 +58,8 @@ applications:
       #  - name: SECRET_USERNAME
       #    keySecret: username
       podAnnotations: {}
-        # An annotation that calculates the checksum of your values.yaml file
-        # Guarantees a restart of the hearth if values.yaml has changed
+      # An annotation that calculates the checksum of your values.yaml file
+      # Guarantees a restart of the hearth if values.yaml has changed
       # podAnnotations:
       #   checksum/values.yaml: "helm/values.yaml"
       probes: {}
@@ -137,11 +137,11 @@ applications:
 
     # Description of the ConfigMap
     configmap: {}
-      # The contents of the config can be set via
-      # `--set-file "applications[0].configmap[0].data"="config.json"`
-      # `mountPath` - the path in the container where all configs will be mapped
-      # `files[0].name` - the name of the file in the container
-      # `files[0].data` - the config body is set via the --set-file parameter
+    # The contents of the config can be set via
+    # `--set-file "applications[0].configmap[0].data"="config.json"`
+    # `mountPath` - the path in the container where all configs will be mapped
+    # `files[0].name` - the name of the file in the container
+    # `files[0].data` - the config body is set via the --set-file parameter
     # configmap:
     #   mountPath: "/configs"
     #   files:
@@ -150,7 +150,6 @@ applications:
 
     # Description of the Secret
     secret: {}
-
 
 
 # An example of a fully described value file for describing the simplest cronjob
@@ -233,7 +232,6 @@ cronjobs: []
 #     secret: {}
 
 
-
 # An example of a fully described value file for describing the simplest job
 # Description of the job
 jobs: []
@@ -306,7 +304,6 @@ jobs: []
 #           data: {}
 #     # Description of the Secret
 #     secret: {}
-
 
 
 # # An example of a fully described value file for describing the simplest rbac
