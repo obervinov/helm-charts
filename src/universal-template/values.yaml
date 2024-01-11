@@ -46,8 +46,6 @@ applications:
         # args:
         #   - c
         #   - env
-      strategy:
-        type: RollingUpdate
       # Container environment variables
       envs: {}
       # envs:

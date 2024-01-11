@@ -17,12 +17,6 @@ spec:
   selector:
     matchLabels:
       {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 6 }}
-  strategy:
-  {{- if (eq .deployment.strategy.type "RollingUpdate") }}
-    type: {{ .deployment.strategy.type }}
-    rollingUpdate:
-      maxUnavailable: 1 {{ else }}
-    type: {{ .deployment.strategy.type }}  {{ end }}
   template:
     metadata:
       annotations:
