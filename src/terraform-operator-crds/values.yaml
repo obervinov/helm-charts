@@ -62,14 +62,14 @@ workspaces: []
 agentPools: []
 # - name: agent-pool-1
 #   replicas: 1
-# Resources per agent in the pool.
-# resources:
-#   limits:
-#     cpu: null
-#     memory: 512Mi
-#   requests:
-#     cpu: null
-#     memory: 128Mi
+#   # Resources per agent in the pool.
+#   resources:
+#     limits:
+#       cpu: null
+#       memory: 512Mi
+#     requests:
+#       cpu: null
+#       memory: 128Mi
 
 # For agent pools permissions in kubernetes cluster.
 rbac: {}

@@ -16,18 +16,18 @@ spec:
     replicas: {{ .replicas }}
     spec:
       containers:
-      - name: tfc-agent
-        image: hashicorp/tfc-agent:latest
-        {{- if .resources }}
-        resources:
-        {{ toYaml .resources | indent 10 }}
-        {{- else }}
-        resources:
-          limits:
-            memory: 512Mi
-          requests:
-            memory: 128Mi
-        {{- end }}
+        - name: tfc-agent
+          image: hashicorp/tfc-agent:latest
+          {{- if .resources }}
+          resources:
+          {{ toYaml .resources | indent 12 }}
+          {{- else }}
+          resources:
+            limits:
+              memory: 512Mi
+            requests:
+              memory: 128Mi
+          {{- end }}
       serviceAccountName: {{ $agent.serviceAccountName }}
   agentTokens:
   - name: tfc-agent-tokens
