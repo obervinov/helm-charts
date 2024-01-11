@@ -19,6 +19,7 @@ spec:
       - image: hashicorp/tfc-agent:latest
         name: tfc-agent
         {{- if .resources }}
+        resources:
         {{ toYaml .resources | indent 10 }}
         {{- else }}
         resources:
