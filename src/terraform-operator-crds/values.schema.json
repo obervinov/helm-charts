@@ -17,7 +17,7 @@
                         "applyMethod": {
                             "type": "string"
                         },
-                        "executeMode": {
+                        "executionMode": {
                             "type": "string"
                         },
                         "serviceAccountName": {
