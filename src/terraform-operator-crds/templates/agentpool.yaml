@@ -20,7 +20,7 @@ spec:
           image: hashicorp/tfc-agent:latest
           {{- if .resources }}
           resources:
-          {{ toYaml .resources | indent 12 }}
+{{ toYaml .resources | indent 12 }}
           {{- else }}
           resources:
             limits:
