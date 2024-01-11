@@ -1,10 +1,11 @@
-{{- if .Values.agentPool }}
+{{- if .Values.agentPools }}
 {{-   $apiVersion := .Values.global.apiVersion }}
 {{-   $namesapce := .Values.global.namespace }}
 {{-   $agent := .Values.global.agent }}
 {{-   $organization := .Values.global.organization }}
 {{-   $terraformApiTokenSecret := .Values.global.terraformApiTokenSecret }}
-{{-   range .Values.agentPool }}
+{{-   range .Values.agentPools }}
+---
 apiVersion: {{ $apiVersion }}
 kind: AgentPool
 metadata:
@@ -35,5 +36,6 @@ spec:
     secretKeyRef:
       key: token
       name: {{ $terraformApiTokenSecret }}
+...
 {{-   end }}
 {{- end }}
