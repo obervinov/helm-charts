@@ -76,14 +76,6 @@
                             "resources": {
                                 "type": "object"
                             },
-                            "strategy": {
-                                "type": "object",
-                                "properties": {
-                                    "type": {
-                                        "type": "string"
-                                    }
-                                }
-                            },
                             "tolerations": {
                                 "type": "array"
                             }
