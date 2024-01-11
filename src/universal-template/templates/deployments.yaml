@@ -40,7 +40,7 @@ spec:
       {{-   end }}
       {{- end }}
       containers:
-      {{- if .deployment.otlp.enabled }}
+      {{- if .deployment.otlp.enabled | default false }}
       {{-   include "universal-template.containers.otlp.template" . | nindent 6 }}
       {{- end }}
       {{- if .deployment.affinity }}
