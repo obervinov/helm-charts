@@ -8,7 +8,7 @@ global:
   agent:
     terraformVersion: 1.6.6
     applyMethod: manual
-    executeMode: agent
+    executionMode: agent
     agentPool: kubernetes-tfc-agent-pool
     serviceAccountName: terraform-agent
   workspace:
