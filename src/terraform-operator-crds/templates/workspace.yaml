@@ -43,7 +43,7 @@ spec:
   {{- range $globalTags }}
     - {{ . }}
   {{- end }}
-  {{ range .tags }}
+  {{ range .additionalTags }}
     - {{ . }}
   {{- end }}
   {{- if .terraformVariables }}
