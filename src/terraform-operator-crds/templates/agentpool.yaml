@@ -16,8 +16,8 @@ spec:
     replicas: {{ .replicas }}
     spec:
       containers:
-      - image: hashicorp/tfc-agent:latest
-        name: tfc-agent
+      - name: tfc-agent
+        image: hashicorp/tfc-agent:latest
         {{- if .resources }}
         resources:
         {{ toYaml .resources | indent 10 }}
