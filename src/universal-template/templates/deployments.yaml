@@ -40,8 +40,10 @@ spec:
       {{-   end }}
       {{- end }}
       containers:
-      {{- if .deployment.otlp.enabled | default false }}
+      {{- if .deployment.otlp }}
+      {{-   if .deployment.otlp.enabled }}
       {{-   include "universal-template.containers.otlp.template" . | nindent 6 }}
+      {{-   end }}
       {{- end }}
       {{- if .deployment.affinity }}
       affinity:
