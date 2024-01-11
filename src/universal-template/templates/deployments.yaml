@@ -13,7 +13,11 @@ metadata:
     {{- include "universal-template.labels" $ | nindent 4 }}
     {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 4 }}
 spec:
+  {{- if .deployment.replicas }}
   replicas: {{ .deployment.replicas | int }}
+  {{- else }}
+  replicas: 1
+  {{- end }}
   selector:
     matchLabels:
       {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 6 }}

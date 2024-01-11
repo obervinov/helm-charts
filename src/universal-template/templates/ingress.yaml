@@ -9,7 +9,7 @@
 apiVersion: {{ default "networking.k8s.io/v1" .apiVersion }}
 kind: {{ default "Ingress" .kind }}
 metadata:
-  name: {{ $fullName }}-{{ .name }}-ingress
+  name: {{ $fullName }}-{{ .name }}
   namespace: {{ $.Release.Namespace }}
   labels:
     {{- include "universal-template.labels" $ | nindent 4 }}
@@ -33,7 +33,7 @@ spec:
         pathType: {{ default "Prefix" .pathType }}
         backend:
           service:
-            name: {{ $fullName }}-svc
+            name: {{ $fullName }}
             port:
               number: {{ default 80 .servicePort }}
   ingressClassName: {{ default "nginx" .ingressClassName }}
