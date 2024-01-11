@@ -10,144 +10,144 @@ version: "latest"
 
 # Applications - are a logical group for a microservice that includes
 # deployment, tests, service, ingress, configmap, secret
-applications:
-  - name: app1
-    # Enabling default tests for service and ingress
-    tests: {}
-    # service: true
-    # virtualservices: true
-    # Description of the deployment
-    deployment:
-      replicas: 1
-      # Connecting the sidecar of the jaeger-agent container
-      otlp:
-        enabled: false
-        # grpcEndpoint: {}
-      # Collection of microservice metrics in prometheus via prometheusOperator
-      prometheus:
-        enabled: false
-        # The default metrics collection path is "/metrics"
-        # path: "/metrics"
-      image:
-        # Image Link
-        repository: ""
-        version: ""
-        # Secret name with docker config (for private registry)
-        pullsecrets: ""
-        # `IfNotPresent` - only if the image is missing locally
-        # `Always` - the image is pumped out every time the hearth is started
-        # `Never` - it is never pumped out, only local images
-        imagePullPolicy: IfNotPresent
-        # If it is necessary to predefine or replace the commands/arguments
-        commands: []
-        args: []
-        # commands:
-        #   - bash
-        # args:
-        #   - c
-        #   - env
-      # Container environment variables
-      envs: {}
-      # envs:
-      #   LOG_LEVEL: info
-      # Environment variables to extract from the secret
-      envsSecret: []
-      # envsSecret:
-      #  - name: SECRET_USERNAME
-      #    keySecret: username
-      podAnnotations: {}
-      # An annotation that calculates the checksum of your values.yaml file
-      # Guarantees a restart of the hearth if values.yaml has changed
-      # podAnnotations:
-      #   checksum/values.yaml: "helm/values.yaml"
-      probes: {}
-      # probes:
-      #   livenessProbe:
-      #     httpGet:
-      #       path: /health/liveness
-      #       port: *service_metrics_port
-      #     initialDelaySeconds: 30
-      #     periodSeconds: 5
-      #     timeoutSeconds: 5
-      #     successThreshold: 1
-      #     failureThreshold: 3
-      #   readinessProbe:
-      #     httpGet:
-      #       path: /health/readiness
-      #       port: *service_metrics_port
-      #     initialDelaySeconds: 15
-      #     periodSeconds: 5
-      #     timeoutSeconds: 5
-      #     successThreshold: 1
-      #     failureThreshold: 3
-      # Redefine resource
-      resources: {}
-      # resources:
-      #   requests:
-      #     memory: "256Mi"
-      #     cpu: "250m"
-      #   limits:
-      #     memory: "512Mi"
-      #     cpu: "500m"
-      # Redefine the affinity of the pod
-      affinity: {}
-      # affinity:
-      #   nodeAffinity:
-      #     requiredDuringSchedulingIgnoredDuringExecution:
-      #       nodeSelectorTerms:
-      #         - matchExpressions:
-      #             - key: kubernetes.io/e2e-az-name
-      #               operator: In
-      #               values:
-      #                 - e2e-az1
-      #                 - e2e-az2
-      # Redefine the nodeSelector of the pod
-      nodeSelector: {}
-      # Redefine the tolerations of the pod
-      tolerations: []
+applications: []
+# - name: app1
+#   # Enabling default tests for service and ingress
+#   tests: {}
+#   # service: true
+#   # virtualservices: true
+#   # Description of the deployment
+#   deployment:
+#     replicas: 1
+#     # Connecting the sidecar of the jaeger-agent container
+#     otlp:
+#       enabled: false
+#       # grpcEndpoint: {}
+#     # Collection of microservice metrics in prometheus via prometheusOperator
+#     prometheus:
+#       enabled: false
+#       # The default metrics collection path is "/metrics"
+#       # path: "/metrics"
+#     image:
+#       # Image Link
+#       repository: ""
+#       version: ""
+#       # Secret name with docker config (for private registry)
+#       pullsecrets: ""
+#       # `IfNotPresent` - only if the image is missing locally
+#       # `Always` - the image is pumped out every time the hearth is started
+#       # `Never` - it is never pumped out, only local images
+#       imagePullPolicy: IfNotPresent
+#       # If it is necessary to predefine or replace the commands/arguments
+#       commands: []
+#       args: []
+#       # commands:
+#       #   - bash
+#       # args:
+#       #   - c
+#       #   - env
+#     # Container environment variables
+#     envs: {}
+#     # envs:
+#     #   LOG_LEVEL: info
+#     # Environment variables to extract from the secret
+#     envsSecret: []
+#     # envsSecret:
+#     #  - name: SECRET_USERNAME
+#     #    keySecret: username
+#     podAnnotations: {}
+#     # An annotation that calculates the checksum of your values.yaml file
+#     # Guarantees a restart of the hearth if values.yaml has changed
+#     # podAnnotations:
+#     #   checksum/values.yaml: "helm/values.yaml"
+#     probes: {}
+#     # probes:
+#     #   livenessProbe:
+#     #     httpGet:
+#     #       path: /health/liveness
+#     #       port: *service_metrics_port
+#     #     initialDelaySeconds: 30
+#     #     periodSeconds: 5
+#     #     timeoutSeconds: 5
+#     #     successThreshold: 1
+#     #     failureThreshold: 3
+#     #   readinessProbe:
+#     #     httpGet:
+#     #       path: /health/readiness
+#     #       port: *service_metrics_port
+#     #     initialDelaySeconds: 15
+#     #     periodSeconds: 5
+#     #     timeoutSeconds: 5
+#     #     successThreshold: 1
+#     #     failureThreshold: 3
+#     # Redefine resource
+#     resources: {}
+#     # resources:
+#     #   requests:
+#     #     memory: "256Mi"
+#     #     cpu: "250m"
+#     #   limits:
+#     #     memory: "512Mi"
+#     #     cpu: "500m"
+#     # Redefine the affinity of the pod
+#     affinity: {}
+#     # affinity:
+#     #   nodeAffinity:
+#     #     requiredDuringSchedulingIgnoredDuringExecution:
+#     #       nodeSelectorTerms:
+#     #         - matchExpressions:
+#     #             - key: kubernetes.io/e2e-az-name
+#     #               operator: In
+#     #               values:
+#     #                 - e2e-az1
+#     #                 - e2e-az2
+#     # Redefine the nodeSelector of the pod
+#     nodeSelector: {}
+#     # Redefine the tolerations of the pod
+#     tolerations: []
 
-    # Description of the Service
-    service: []
-    # service:
-    #   - name: http
-    #     port: *service_port_http
-    #     protocol: TCP
-    #     targetPort: *service_port_http
-    #   - name: http-metrics
-    #     port: *service_metrics_port
-    #     protocol: TCP
-    #     targetPort: *service_metrics_port
+#   # Description of the Service
+#   service: []
+#   # service:
+#   #   - name: http
+#   #     port: *service_port_http
+#   #     protocol: TCP
+#   #     targetPort: *service_port_http
+#   #   - name: http-metrics
+#   #     port: *service_metrics_port
+#   #     protocol: TCP
+#   #     targetPort: *service_metrics_port
 
-    # Description of the Ingress
-    ingress: []
-    # ingress:
-    #   - name: http
-    #     # apiVersion: networking.k8s.io/v1
-    #     # kind: Ingress
-    #     ingressAnnotations: {}
-    #     # tls: true
-    #     # tlsSecretName: {}
-    #     host: my-service.example.com
-    #     # path: {}
-    #     # pathType: {}
-    #     # servicePort: {}
-    #     # ingressClassName: {}
+#   # Description of the Ingress
+#   ingress: []
+#   # ingress:
+#   #   - name: http
+#   #     # apiVersion: networking.k8s.io/v1
+#   #     # kind: Ingress
+#   #     ingressAnnotations: {}
+#   #     # tls: true
+#   #     # tlsSecretName: {}
+#   #     host: my-service.example.com
+#   #     # path: {}
+#   #     # pathType: {}
+#   #     # servicePort: {}
+#   #     # ingressClassName: {}
 
-    # Description of the ConfigMap
-    configmap: {}
-    # The contents of the config can be set via
-    # `--set-file "applications[0].configmap[0].data"="config.json"`
-    # `mountPath` - the path in the container where all configs will be mapped
-    # `files[0].name` - the name of the file in the container
-    # `files[0].data` - the config body is set via the --set-file parameter
-    # configmap:
-    #   mountPath: "/configs"
-    #   files:
-    #     - name: "config.json"
-    #       data: {}
+#   # Description of the ConfigMap
+#   configmap: {}
+#   # The contents of the config can be set via
+#   # `--set-file "applications[0].configmap[0].data"="config.json"`
+#   # `mountPath` - the path in the container where all configs will be mapped
+#   # `files[0].name` - the name of the file in the container
+#   # `files[0].data` - the config body is set via the --set-file parameter
+#   # configmap:
+#   #   mountPath: "/configs"
+#   #   files:
+#   #     - name: "config.json"
+#   #       data: {}
 
-    # Description of the Secret
-    secret: {}
+#   # Description of the Secret
+#   secret: {}
 
 
 # An example of a fully described value file for describing the simplest cronjob
