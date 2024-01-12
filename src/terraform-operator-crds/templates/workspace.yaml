@@ -95,7 +95,7 @@ spec:
   terraformVersion: {{ $agent.terraformVersion }}
   {{- if .remoteStateSharing }}
   remoteStateSharing:
-    {{ toYaml .remoteStateSharing | indent 4 }}
+{{ toYaml .remoteStateSharing | indent 4 }}
   {{- end }}
   token:
     secretKeyRef:
