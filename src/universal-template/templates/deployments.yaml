@@ -125,6 +125,12 @@ spec:
             path: {{ .name | lower }}
           {{-   end }}
       {{- end }}
+      {{- if .deployment.volume }}
+        volumeMounts:
+        - name: {{ $fullName }}-volume
+          mountPath: {{ .deployment.volume.mountPath }}
+      {{- end }}
+      {{- if .deployment.image.pullsecrets }}
       {{- if .deployment.image.pullsecrets }}
       imagePullSecrets:
         - name: {{ .deployment.image.pullsecrets }}

@@ -105,7 +105,13 @@ applications: []
 #     nodeSelector: {}
 #     # Redefine the tolerations of the pod
 #     tolerations: []
-
+#     # Add volumes to the pod
+#     volume: []
+#     # volume:
+#     #   size: 1Gi
+#     #   accessModes: [ "ReadWriteOnce" ]
+#     #   storageClassName: "standard"
+#     #   mountPath: "/data"
 #   # Description of the Service
 #   service: []
 #   # service:
@@ -228,6 +234,13 @@ cronjobs: []
 #           data: {}
 #     # Description of the Secret
 #     secret: {}
+#     # Add volumes to the pod
+#     volume: []
+#     # volume:
+#     #   size: 1Gi
+#     #   accessModes: [ "ReadWriteOnce" ]
+#     #   storageClassName: "standard"
+#     #   mountPath: "/data"
 
 
 # An example of a fully described value file for describing the simplest job
@@ -302,6 +315,13 @@ jobs: []
 #           data: {}
 #     # Description of the Secret
 #     secret: {}
+#     # Add volumes to the pod
+#     volume: []
+#     # volume:
+#     #   size: 1Gi
+#     #   accessModes: [ "ReadWriteOnce" ]
+#     #   storageClassName: "standard"
+#     #   mountPath: "/data"
 
 
 # # An example of a fully described value file for describing the simplest rbac

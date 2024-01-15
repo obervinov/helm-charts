@@ -91,6 +91,11 @@ spec:
             path: {{ .name | lower }}
           {{-   end }}
       {{- end }}
+      {{- if .volume }}
+        volumeMounts:
+        - name: {{ $fullName }}-volume
+          mountPath: {{ .volume.mountPath }}
+      {{- end }}
       {{- if .image.pullsecrets }}
       imagePullSecrets:
       - name: {{ .image.pullsecrets }}
