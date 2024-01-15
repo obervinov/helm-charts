@@ -134,7 +134,6 @@ spec:
           mountPath: {{ .deployment.volume.mountPath }}
       {{- end }}
       {{- if .deployment.image.pullsecrets }}
-      {{- if .deployment.image.pullsecrets }}
       imagePullSecrets:
         - name: {{ .deployment.image.pullsecrets }}
       {{- end }}
