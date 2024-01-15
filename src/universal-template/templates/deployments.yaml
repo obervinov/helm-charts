@@ -16,18 +16,6 @@ metadata:
   {{- toYaml .deployment.extraLabels | nindent 4 }}
   {{- end }}
 spec:
-  {{- if .deployment.affinity }}
-  affinity:
-    {{- toYaml .deployment.affinity | nindent 4 }}
-  {{- end }}
-  {{- if .deployment.nodeSelector }}
-  nodeSelector:
-    {{- toYaml .deployment.nodeSelector | nindent 4 }}
-  {{- end }}
-  {{- if .deployment.tolerations }}
-  tolerations:
-    {{- toYaml .deployment.tolerations | nindent 4 }}
-  {{- end }}
   {{- if .deployment.replicas }}
   replicas: {{ .deployment.replicas | int }}
   {{- else }}
@@ -52,6 +40,18 @@ spec:
         {{- include "universal-template.labels" $ | nindent 8 }}
         {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 8 }}
     spec:
+      {{- if .deployment.affinity }}
+      affinity:
+        {{- toYaml .deployment.affinity | nindent 8 }}
+      {{- end }}
+      {{- if .deployment.nodeSelector }}
+      nodeSelector:
+        {{- toYaml .deployment.nodeSelector | nindent 8 }}
+      {{- end }}
+      {{- if .deployment.tolerations }}
+      tolerations:
+        {{- toYaml .deployment.tolerations | nindent 8 }}
+      {{- end }}
       {{- if .deployment.initContainers }}
       initContainers:
       {{-   range .deployment.initContainers }}
