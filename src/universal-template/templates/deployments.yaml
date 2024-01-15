@@ -12,6 +12,9 @@ metadata:
   labels:
     {{- include "universal-template.labels" $ | nindent 4 }}
     {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 4 }}
+  {{- if .deployment.extraLabels }}
+  {{- toYaml .deployment.extraLabels | nindent 4 }}
+  {{- end }}
 spec:
   {{- if .deployment.replicas }}
   replicas: {{ .deployment.replicas | int }}

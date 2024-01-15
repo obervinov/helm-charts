@@ -55,6 +55,10 @@ applications: []
 #     # envsSecret:
 #     #  - name: SECRET_USERNAME
 #     #    keySecret: username
+#     # Additional labels for the deployment
+#     extraLabels: {}
+#     # extraLabels:
+#     #   app.kubernetes.io/instance: "app1"
 #     podAnnotations: {}
 #     # An annotation that calculates the checksum of your values.yaml file
 #     # Guarantees a restart of the hearth if values.yaml has changed
