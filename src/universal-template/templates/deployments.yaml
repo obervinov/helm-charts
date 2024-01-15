@@ -16,6 +16,18 @@ metadata:
   {{- toYaml .deployment.extraLabels | nindent 4 }}
   {{- end }}
 spec:
+  {{- if .deployment.affinity }}
+  affinity:
+    {{- toYaml .deployment.affinity | nindent 4 }}
+  {{- end }}
+  {{- if .deployment.nodeSelector }}
+  nodeSelector:
+    {{- toYaml .deployment.nodeSelector | nindent 4 }}
+  {{- end }}
+  {{- if .deployment.tolerations }}
+  tolerations:
+    {{- toYaml .deployment.tolerations | nindent 4 }}
+  {{- end }}
   {{- if .deployment.replicas }}
   replicas: {{ .deployment.replicas | int }}
   {{- else }}
@@ -51,18 +63,6 @@ spec:
       {{-   if .deployment.otlp.enabled }}
       {{-   include "universal-template.containers.otlp.template" . | nindent 6 }}
       {{-   end }}
-      {{- end }}
-      {{- if .deployment.affinity }}
-      affinity:
-        {{- toYaml .deployment.affinity | nindent 8 }}
-      {{- end }}
-      {{- if .deployment.nodeSelector }}
-      nodeSelector:
-        {{- toYaml .deployment.nodeSelector | nindent 8 }}
-      {{- end }}
-      {{- if .deployment.tolerations }}
-      tolerations:
-        {{- toYaml .deployment.tolerations | nindent 8 }}
       {{- end }}
       - name: {{ .name }}
         image: {{ .deployment.image.repository }}:{{ default $.Values.version .deployment.image.version }}
