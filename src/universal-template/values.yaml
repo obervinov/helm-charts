@@ -49,7 +49,7 @@ applications: []
 #     # Container environment variables
 #     envs: []
 #     # envs:
-#     #   LOG_LEVEL: info
+#     #   LOG_LEVEL: INFO
 #     # Environment variables to extract from the secret
 #     envsSecret: []
 #     # envsSecret:
