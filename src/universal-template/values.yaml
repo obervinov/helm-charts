@@ -47,10 +47,9 @@ applications: []
 #       #   - c
 #       #   - env
 #     # Container environment variables
-#     envs: {}
+#     envs: []
 #     # envs:
-#     #   - name: LOG_LEVEL
-#     #     value: info
+#     #   LOG_LEVEL: info
 #     # Environment variables to extract from the secret
 #     envsSecret: []
 #     # envsSecret:
