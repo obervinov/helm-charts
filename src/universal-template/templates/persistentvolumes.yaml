@@ -1,5 +1,5 @@
-{{- if .Values.persistentVolumes }}
-{{-   range .Values.persistentVolumes }}
+{{- if .Values.applications.persistentVolumes }}
+{{-   range .Values.applications.persistentVolumes }}
 {{-     $name := .name }}
 {{-     $fullName := include "universal-template.fullName" (list $ . $name) }}
 {{-     $accessMode := .accessMode }}
