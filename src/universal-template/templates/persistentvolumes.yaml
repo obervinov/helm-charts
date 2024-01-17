@@ -20,6 +20,7 @@ spec:
   {{- if $accessMode }}
   {{-  range $accessMode }}
   - {{ . }}
+  {{-   end }}
   {{- else }}
   - ReadWriteOnce
   {{- end }}
@@ -51,6 +52,7 @@ spec:
   {{- if $accessMode }}
   {{-  range $accessMode }}
   - {{ . }}
+  {{-   end }}
   {{- else }}
   - ReadWriteOnce
   {{- end }}
