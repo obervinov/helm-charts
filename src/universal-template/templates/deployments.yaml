@@ -66,7 +66,11 @@ spec:
       {{- end }}
       - name: {{ .name }}
         image: {{ .deployment.image.repository }}:{{ default $.Values.version .deployment.image.version }}
+        {{- if .deployment.image.imagePullPolicy }}
         imagePullPolicy: {{ .deployment.image.imagePullPolicy }}
+        {{- else }}
+        imagePullPolicy: IfNotPresent
+        {{- end }}
         {{- if .deployment.resources }}
         resources: {{- toYaml .deployment.resources | nindent 10 }}
         {{- else }}
