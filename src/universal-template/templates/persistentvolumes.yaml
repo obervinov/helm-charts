@@ -1,11 +1,11 @@
 {{- if .Values.applications }}
 {{-   range .Values.applications }}
 {{-     if .deployment.persistentVolume }}
-{{-       $name := .name }}
+{{-       $name := .deployment.persistentVolume.name }}
 {{-       $fullName := include "universal-template.fullName" (list $ . $name) }}
-{{-       $accessMode := .accessMode }}
-{{-       $size := .size }}
-{{-       $storageClassName := .storageClassName }}
+{{-       $accessModes := .deployment.persistentVolume.accessModes }}
+{{-       $size := .deployment.persistentVolume.size }}
+{{-       $storageClassName := .deployment.persistentVolume.storageClassName }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -17,8 +17,8 @@ metadata:
   namespace: {{ $.Release.Namespace }}
 spec:
   accessModes:
-  {{- if $accessMode }}
-  {{-  range $accessMode }}
+  {{- if $accessModes }}
+  {{-  range $accessModes }}
     - {{ . }}
   {{-   end }}
   {{- else }}
