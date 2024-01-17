@@ -40,7 +40,7 @@ Initcontainers template
   - name: {{ .name }}
     valueFrom:
       secretKeyRef:
-        name: {{ $fullName }}-secret
+        name: {{ $fullName }}
         key: {{ .keySecret }}
   {{-   end }}
   {{- end }}

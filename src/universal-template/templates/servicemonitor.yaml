@@ -12,7 +12,7 @@ metadata:
     {{- include "universal-template.labels" $ | nindent 4 }}
     {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 4 }}
     {{- include "universal-template.prometheus.labels" $ | nindent 4 }}
-  name: {{ $fullName }}-sm
+  name: {{ $fullName }}
   namespace: {{ $.Release.Namespace }}
 spec:
   endpoints:

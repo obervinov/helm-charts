@@ -8,7 +8,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ $fullName }}-{{ now | unixEpoch }}-job
+  name: {{ $fullName }}-{{ now | unixEpoch }}
   namespace: {{ $.Release.Namespace }}
   labels:
     {{- include "universal-template.labels" $ | nindent 4 }}
