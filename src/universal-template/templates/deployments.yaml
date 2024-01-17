@@ -134,13 +134,13 @@ spec:
       {{- end }}
       {{- if .deployment.volume }}
       - name: {{ .deployment.volume.name }} 
-      {{-   if .deployment.volume.type "persistentVolumeClaim" }}
+      {{-   if eq .deployment.volume.type "persistentVolumeClaim" }}
         persistentVolumeClaim:
           claimName: {{ .deployment.volume.claimName }}
-      {{-   else if .deployment.volume.type "hostPath" }}
+      {{-   else if eq .deployment.volume.type "hostPath" }}
         hostPath:
           path: {{ .deployment.volume.path }}
-      {{-   else if .deployment.volume.type "emptyDir" }}
+      {{-   else if eq .deployment.volume.type "emptyDir" }}
         emptyDir: {}
       {{-   end }}
       {{- end }}
