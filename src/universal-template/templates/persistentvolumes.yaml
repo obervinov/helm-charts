@@ -1,12 +1,13 @@
-{{- if .Values.applications.persistentVolumes }}
-{{-   range .Values.applications.persistentVolumes }}
-{{-     $name := .name }}
-{{-     $fullName := include "universal-template.fullName" (list $ . $name) }}
-{{-     $accessMode := .accessMode }}
-{{-     $size := .size }}
-{{-     $reclaimPolicy := .reclaimPolicy }}
-{{-     $storageClass := .storageClass }}
-{{-     $volumeMode := .volumeMode }}
+{{- if .Values.applications }}
+{{-   if .Values.applications.persistentVolumes }}
+{{-     range .Values.applications.persistentVolumes }}
+{{-       $name := .name }}
+{{-       $fullName := include "universal-template.fullName" (list $ . $name) }}
+{{-       $accessMode := .accessMode }}
+{{-       $size := .size }}
+{{-       $reclaimPolicy := .reclaimPolicy }}
+{{-       $storageClass := .storageClass }}
+{{-       $volumeMode := .volumeMode }}
 ---
 apiVersion: v1
 kind: PersistentVolume
@@ -67,5 +68,6 @@ spec:
   {{- end }}
   volumeName: pvc-{{ $fullName }}
 ...
+{{-     end }}
 {{-   end }}
 {{- end }}
