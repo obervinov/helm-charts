@@ -1,14 +1,11 @@
 {{- if .Values.applications }}
 {{-   range .Values.applications }}
-{{-     if .persistentVolumes }}
-{{-       range .persistentVolumes }}
-{{-         $name := .name }}
-{{-         $fullName := include "universal-template.fullName" (list $ . $name) }}
-{{-         $accessMode := .accessMode }}
-{{-         $size := .size }}
-{{-         $reclaimPolicy := .reclaimPolicy }}
-{{-         $storageClass := .storageClass }}
-{{-         $volumeMode := .volumeMode }}
+{{-     if .deployment.persistentVolume }}
+{{-       $name := .name }}
+{{-       $fullName := include "universal-template.fullName" (list $ . $name) }}
+{{-       $accessMode := .accessMode }}
+{{-       $size := .size }}
+{{-       $storageClassName := .storageClassName }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -22,23 +19,18 @@ spec:
   accessModes:
   {{- if $accessMode }}
   {{-  range $accessMode }}
-  - {{ . }}
+    - {{ . }}
   {{-   end }}
   {{- else }}
-  - ReadWriteOnce
+    - ReadWriteOnce
   {{- end }}
   resources:
     requests:
       storage: {{ $size }}
-  {{- if $storageClass }}
-  storageClassName: {{ $storageClass }}
+  {{- if $storageClassName }}
+  storageClassName: {{ $storageClassName }}
   {{- end }}
-  {{- if $volumeMode }}
-  volumeMode: {{ $volumeMode }}
-  {{- end }}
-  volumeName: {{ $fullName }}
 ...
-{{-       end }}
 {{-     end }}
 {{-   end }}
 {{- end }}

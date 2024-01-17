@@ -117,44 +117,32 @@ spec:
         {{- if .deployment.probes }}
         {{- toYaml .deployment.probes | nindent 8 }}
         {{- end }}
-        {{- if or .configMap .deployment.volume }}
+      {{- if or .configMap .deployment.persistentVolume }}
         volumeMounts:
-        {{- end }}
         {{- if .configmap }}
         - name: volume-configs
           mountPath: {{ .configmap.mountPath | lower }}
           readOnly: true
         {{- end }}
-        {{- if .deployment.volume }}
-        - name: {{ .deployment.volume.name }}
-          mountPath: {{ .deployment.volume.mountPath }}
-          {{- if .deployment.volume.subPath }}
-          subPath: {{ .deployment.volume.subPath }}
-          {{- end }}
+        {{- if .deployment.persistentVolume }}
+        - name: {{ .deployment.persistentVolume.name }}
+          mountPath: {{ .deployment.persistentVolume.mountPath }}
         {{- end }}
-      {{- if or .configMap .deployment.volume }}
       volumes:
-      {{- end }}
-      {{- if .configmap }}
+      {{-   if .configmap }}
       - name: volume-configs
         configMap:
           name: {{ $fullName }}-cm
           items:
-          {{-   range .configmap.files }}
+          {{- range .configmap.files }}
           - key: {{ .name | lower }}
             path: {{ .name | lower }}
-          {{-   end }}
-      {{- end }}
-      {{- if .deployment.volume }}
-      - name: {{ .deployment.volume.name }} 
-      {{-   if eq .deployment.volume.type "persistentVolumeClaim" }}
+          {{- end }}
+      {{-   end }}
+      {{-   if .deployment.persistentVolume }}
+      - name: {{ .deployment.persistentVolume.name }} 
         persistentVolumeClaim:
           claimName: {{ .deployment.volume.claimName }}
-      {{-   else if eq .deployment.volume.type "hostPath" }}
-        hostPath:
-          path: {{ .deployment.volume.path }}
-      {{-   else if eq .deployment.volume.type "emptyDir" }}
-        emptyDir: {}
       {{-   end }}
       {{- end }}
       {{- if .deployment.image.pullsecrets }}

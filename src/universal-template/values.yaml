@@ -110,16 +110,12 @@ applications: []
 #     # Redefine the tolerations of the pod
 #     tolerations: []
 #     # Add volumes to the pod
-#     volume: []
-#     # volume:
+#     persistentVolume: []
+#     # persistentVolume:
 #     #   name: "data"
-#     #   # type can be: "emptyDir", "hostPath", "persistentVolumeClaim"
-#     #   type: "persistentVolumeClaim"
-#     #   claimName: "pvc-data"
-#     #   mountPath: "/data"
-#     #   # path for hostPath type
-#     #   # path: "/mnt/data"
-#     #   # subPath: "data"
+#     #   size: 1Gi
+#     #   accessModes: [ "ReadWriteOnce" ]
+#     #   storageClassName: "standard"
 #     #
 #   # Description of the Service
 #   service: []
@@ -163,15 +159,6 @@ applications: []
 
 #   # Description of the Secret
 #   secret: {}
-
-#   # Description of the Persistent Volumes
-#   persistentVolumes: []
-#   # persistentVolumes:
-#   #   - name: pv-example
-#   #     size: 1Gi
-#   #     accessModes: [ "ReadWriteOnce" ]
-#   #     storageClassName: standard
-#   #     volumeMode: Filesystem
 
 # An example of a fully described value file for describing the simplest cronjob
 # Description of the cronjob
