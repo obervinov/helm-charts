@@ -1,0 +1,69 @@
+{{- if .Values.persistentVolumes }}
+{{-   range .Values.persistentVolumes }}
+{{-     $name := .name }}
+{{-     $fullName := include "universal-template.fullName" (list $ . $name) }}
+{{-     $accessMode := .accessMode }}
+{{-     $size := .size }}
+{{-     $reclaimPolicy := .reclaimPolicy }}
+{{-     $storageClass := .storageClass }}
+{{-     $volumeMode := .volumeMode }}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pvc-{{ $fullName }}
+  labels:
+    {{- include "universal-template.labels" $ | nindent 4 }}
+    {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 4 }}
+spec:
+  accessModes:
+  {{- if $accessMode }}
+  {{-  range $accessMode }}
+  - {{ . }}
+  {{- else }}
+  - ReadWriteOnce
+  {{- end }}
+  capacity:
+    storage: {{ $size }}
+  {{- if $reclaimPolicy }}
+  persistentVolumeReclaimPolicy: {{ $reclaimPolicy }}
+  {{- else }}
+  persistentVolumeReclaimPolicy: Retain
+  {{- end }}
+  {{- if $storageClass }}
+  storageClassName: {{ $storageClass }}
+  {{- end }}
+  {{- if $volumeMode }}
+  volumeMode: {{ $volumeMode }}
+  {{- end }}
+...
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    {{- include "universal-template.labels" $ | nindent 4 }}
+    {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 4 }}
+  name: data-{{ $fullName }}
+  namespace: {{ $.Release.Namespace }}
+spec:
+  accessModes:
+  {{- if $accessMode }}
+  {{-  range $accessMode }}
+  - {{ . }}
+  {{- else }}
+  - ReadWriteOnce
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ $size }}
+  {{- if $storageClass }}
+  storageClassName: {{ $storageClass }}
+  {{- end }}
+  {{- if $volumeMode }}
+  volumeMode: {{ $volumeMode }}
+  {{- end }}
+  volumeName: pvc-{{ $fullName }}
+...
+{{-   end }}
+{{- end }}

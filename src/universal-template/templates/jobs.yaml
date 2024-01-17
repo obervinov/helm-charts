@@ -91,36 +91,11 @@ spec:
             path: {{ .name | lower }}
           {{-   end }}
       {{- end }}
-      {{- if .volume }}
-        volumeMounts:
-        - name: {{ $fullName }}-volume
-          mountPath: {{ .volume.mountPath }}
-      {{- end }}
       {{- if .image.pullsecrets }}
       imagePullSecrets:
       - name: {{ .image.pullsecrets }}
       {{- end }}
       restartPolicy: {{ .restartPolicy | default "Never" }}
-      {{- if .volume }}
-      volumeClaimTemplates:
-      - metadata:
-          name: {{ $fullName }}-volume
-        spec:
-          accessModes:
-          {{- if .volume.accessModes }}
-          {{-   range .volume.accessModes }}
-          - {{ . | quote }}
-          {{-   end }}
-          {{- else }}
-          - ReadWriteOnce
-          {{- end }}
-          resources:
-            requests:
-              storage: {{ .volume.size }}
-          {{- if .volume.storageClassName }}
-          storageClassName: {{ .volume.storageClassName }}
-          {{- end }}
-      {{- end }}
   backoffLimit: {{ .backoffLimit | default 1 }}
 ...
 

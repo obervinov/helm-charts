@@ -1,6 +1,6 @@
 {{- if .Values.applications }}
 {{-   range .Values.applications }}
-{{-     $name := .name -}}
+{{-     $name := .name }}
 {{-     $fullName := include "universal-template.fullName" (list $ . $name) }}
 
 ---
@@ -118,6 +118,10 @@ spec:
         - name: volume-configs
           mountPath: {{ .configmap.mountPath | lower }}
           readOnly: true
+        {{- if .deployment.volume }}
+        - name: {{ .deployment.volume.name }}
+          mountPath: {{ .deployment.volume.mountPath }}
+        {{- end }}
       volumes:
       - name: volume-configs
         configMap:
@@ -129,34 +133,21 @@ spec:
           {{-   end }}
       {{- end }}
       {{- if .deployment.volume }}
-        volumeMounts:
-        - name: {{ $fullName }}-volume
-          mountPath: {{ .deployment.volume.mountPath }}
+      - name: {{ .deployment.volume.name }} 
+      {{-   if .deployment.volume.type "persistentVolumeClaim" }}
+        persistentVolumeClaim:
+          claimName: {{ .deployment.volume.claimName }}
+      {{-   else if .deployment.volume.type "hostPath" }}
+        hostPath:
+          path: {{ .deployment.volume.path }}
+      {{-   else if .deployment.volume.type "emptyDir" }}
+        emptyDir: {}
+      {{-   end }}
       {{- end }}
       {{- if .deployment.image.pullsecrets }}
       imagePullSecrets:
         - name: {{ .deployment.image.pullsecrets }}
       {{- end }}
-  {{- if .deployment.volume }}
-  volumeClaimTemplates:
-  - metadata:
-      name: {{ $fullName }}-volume
-    spec:
-      accessModes:
-      {{- if .deployment.volume.accessModes }}
-      {{-   range .deployment.volume.accessModes }}
-      - {{ . | quote }}
-      {{-   end }}
-      {{- else }}
-      - ReadWriteOnce
-      {{- end }}
-      resources:
-        requests:
-          storage: {{ .deployment.volume.size }}
-      {{- if .deployment.volume.storageClassName }}
-      storageClassName: {{ .deployment.volume.storageClassName }}
-      {{- end }}
-  {{- end }}
 ...
 
 {{-   end }}
