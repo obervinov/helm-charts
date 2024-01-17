@@ -117,16 +117,25 @@ spec:
         {{- if .deployment.probes }}
         {{- toYaml .deployment.probes | nindent 8 }}
         {{- end }}
-      {{- if .configmap }}
+        {{- if or .configMap .deployment.volume }}
         volumeMounts:
+        {{- end }}
+        {{- if .configmap }}
         - name: volume-configs
           mountPath: {{ .configmap.mountPath | lower }}
           readOnly: true
+        {{- end }}
         {{- if .deployment.volume }}
         - name: {{ .deployment.volume.name }}
           mountPath: {{ .deployment.volume.mountPath }}
+          {{- if .deployment.volume.subPath }}
+          subPath: {{ .deployment.volume.subPath }}
+          {{- end }}
         {{- end }}
+      {{- if or .configMap .deployment.volume }}
       volumes:
+      {{- end }}
+      {{- if .configmap }}
       - name: volume-configs
         configMap:
           name: {{ $fullName }}-cm

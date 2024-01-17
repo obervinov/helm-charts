@@ -119,6 +119,7 @@ applications: []
 #     #   mountPath: "/data"
 #     #   # path for hostPath type
 #     #   # path: "/mnt/data"
+#     #   # subPath: "data"
 #     #
 #   # Description of the Service
 #   service: []
