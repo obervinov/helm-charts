@@ -11,43 +11,12 @@
 {{-         $volumeMode := .volumeMode }}
 ---
 apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: pvc-{{ $fullName }}
-  labels:
-    {{- include "universal-template.labels" $ | nindent 4 }}
-    {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 4 }}
-spec:
-  accessModes:
-  {{- if $accessMode }}
-  {{-  range $accessMode }}
-  - {{ . }}
-  {{-   end }}
-  {{- else }}
-  - ReadWriteOnce
-  {{- end }}
-  capacity:
-    storage: {{ $size }}
-  {{- if $reclaimPolicy }}
-  persistentVolumeReclaimPolicy: {{ $reclaimPolicy }}
-  {{- else }}
-  persistentVolumeReclaimPolicy: Retain
-  {{- end }}
-  {{- if $storageClass }}
-  storageClassName: {{ $storageClass }}
-  {{- end }}
-  {{- if $volumeMode }}
-  volumeMode: {{ $volumeMode }}
-  {{- end }}
-...
----
-apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   labels:
     {{- include "universal-template.labels" $ | nindent 4 }}
     {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 4 }}
-  name: data-{{ $fullName }}
+  name: pvc-{{ $fullName }}
   namespace: {{ $.Release.Namespace }}
 spec:
   accessModes:
@@ -67,7 +36,7 @@ spec:
   {{- if $volumeMode }}
   volumeMode: {{ $volumeMode }}
   {{- end }}
-  volumeName: pvc-{{ $fullName }}
+  volumeName: {{ $fullName }}
 ...
 {{-       end }}
 {{-     end }}
