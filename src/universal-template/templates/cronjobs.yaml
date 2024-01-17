@@ -98,7 +98,6 @@ spec:
           - name: {{ .image.pullsecrets }}
           {{- end }}
           restartPolicy: {{ default "Never" .restartPolicy }}
-          {{- if .volume }}
 ...
 {{-   end -}}
 {{- end -}}
