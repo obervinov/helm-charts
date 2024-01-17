@@ -142,7 +142,7 @@ spec:
       {{-   if .deployment.persistentVolume }}
       - name: {{ .deployment.persistentVolume.name }} 
         persistentVolumeClaim:
-          claimName: {{ $fullName }}-{{ .deployment.volume.name }}
+          claimName: {{ $fullName }}-{{ .deployment.persistentVolume.name }}
       {{-   end }}
       {{- end }}
       {{- if .deployment.image.pullsecrets }}
