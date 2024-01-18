@@ -110,7 +110,7 @@ spec:
         - name: {{ .name }}
           valueFrom:
             secretKeyRef:
-              name: {{ $fullName }}-secret
+              name: {{ $fullName }}
               key: {{ .keySecret }}
         {{-   end }}
         {{- end }}
@@ -132,7 +132,7 @@ spec:
       {{-   if .configmap }}
       - name: volume-configs
         configMap:
-          name: {{ $fullName }}-cm
+          name: {{ $fullName }}
           items:
           {{- range .configmap.files }}
           - key: {{ .name | lower }}
