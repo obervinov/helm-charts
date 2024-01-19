@@ -1,13 +1,14 @@
 ---
-name: Build Helm charts bundle
+name: Test and Checks Helm-Charts bundle
 
 # yamllint disable-line rule:truthy
 on:
   push:
     branches:
-      - "*"
-      - "**"
-      - "*/*"
+      - "release/*"
+      - "fix/*"
+      - "feature/*"
+      - "hotfix/*"
 
 jobs:
   helm-repository-build:

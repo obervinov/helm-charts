@@ -1,11 +1,17 @@
 ---
-name: Create GitHub Release
+name: Build Helm-Charts bundle and create release
 
 # yamllint disable-line rule:truthy
 on:
-  push:
-    branches: [main]
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
 
 jobs:
+  helm-repository-build:
+    uses: obervinov/_templates/.github/workflows/helm.yaml@v1.0.12
   create-release:
     uses: obervinov/_templates/.github/workflows/release.yaml@v1.0.12
+    needs: [helm-repository-build]
