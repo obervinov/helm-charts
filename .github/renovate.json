@@ -1,4 +1,23 @@
 {
+  "extends": [
+    "config:base"
+  ],
+  "managers": [
+    {
+      "fileMatch": [
+        "(^|/)Chart\\.ya?ml$"
+      ],
+      "baseBranches": [
+        "main",
+        "/^release\\/.*/",
+        "/^fix\\/.*/"
+      ],
+      "commitMessageTopic": "Helm values {{depName}}",
+      "registryAliases": {
+        "stable": "https://charts.helm.sh/stable"
+      }
+    }
+  ],
   "labels": [
     "helm",
     "https://github.com/obervinov/helm-charts"
@@ -6,22 +25,7 @@
   "reviewers": [
     "obervinov"
   ],
-  "owners": [
-    "obervinov"
-  ],
   "assignees": [
     "obervinov"
-  ],
-  "baseBranches": [
-    "main",
-    "/^release\\/.*/",
-    "/^fix\\/.*/"
-  ],
-  "commitMessageTopic": "Helm values {{depName}}",
-  "registryAliases": {
-    "stable": "https://charts.helm.sh/stable"
-  },
-  "fileMatch": [
-    "(^|/)Chart\\.ya?ml$"
   ]
 }

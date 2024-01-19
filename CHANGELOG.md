@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## v1.0.1 - 2024-01-19
+### What's Changed
+**Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.0.0...v1.0.1 by @obervinov in https://github.com/obervinov/helm-charts/pull/25
+#### 🐛 Bug Fixes
+* [Correct errors in the workflows of this repository](https://github.com/obervinov/helm-charts/issues/24)
+* [Action Required: Fix Renovate Configuration](https://github.com/obervinov/helm-charts/issues/23)
+
 
 ## v1.0.0 - 2024-01-19
 ### What's Changed

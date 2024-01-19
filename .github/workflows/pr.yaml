@@ -1,5 +1,5 @@
 ---
-name: Test and Checks Helm-Charts bundle
+name: Checks and Build Helm-Charts Bundle
 
 # yamllint disable-line rule:truthy
 on:
