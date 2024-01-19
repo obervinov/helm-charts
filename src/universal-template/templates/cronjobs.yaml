@@ -8,7 +8,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ $fullName }}-cronjob
+  name: {{ $fullName }}
   namespace: {{ $.Release.Namespace }}
   labels:
     {{- include "universal-template.labels" $ | nindent 4 }}
@@ -32,6 +32,18 @@ spec:
           {{-   range .initContainers }}
           {{-     include "universal-template.containers.init.template" . | nindent 10 }}
           {{-   end }}
+          {{- end }}
+          {{- if .affinity }}
+          affinity:
+          {{-   toYaml .affinity | nindent 10 }}
+          {{- end }}
+          {{- if .nodeSelector }}
+          nodeSelector:
+          {{-   toYaml .nodeSelector | nindent 10 }}
+          {{- end }}
+          {{- if .tolerations }}
+          tolerations:
+          {{-   toYaml .tolerations | nindent 10 }}
           {{- end }}
           containers:
           - name: {{ $fullName }}-cronjob
@@ -81,8 +93,10 @@ spec:
                 path: {{ .name | lower }}
               {{-   end }}
           {{- end }}
+          {{- if .image.pullsecrets }}
           imagePullSecrets:
           - name: {{ .image.pullsecrets }}
+          {{- end }}
           restartPolicy: {{ default "Never" .restartPolicy }}
 ...
 {{-   end -}}

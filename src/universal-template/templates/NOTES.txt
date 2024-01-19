@@ -1,8 +1,5 @@
 ---
 Helm template version: {{ .Chart.Version }}
-You can find your service logs here: https://kibana.example.com
-You can see the status of your pods here: https://dashboard.example.com
-Collected otlp spans can be found here: https://jaeger.example.com
 
 {{- if .Values.applications }}
 {{-   range .Values.applications }}
@@ -31,9 +28,12 @@ Force redirect http -> https has been disabled.
 {{-     end }}
 
 
-{{-     if .deployment.otlp.enabled }}
+{{-     if .deployment.otlp }}
+{{-       if .deployment.otlp.enabled }}
 ---
 Sidecar jaeger-agent to be launching for deployment {{ .name }}
+Collected otlp spans can be found here: https://jaeger.example.com
+{{-       end }}
 {{-     end }}
 
 

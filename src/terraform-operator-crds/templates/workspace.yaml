@@ -1,0 +1,110 @@
+{{- if .Values.workspaces }}
+{{-   $apiVersion := .Values.global.apiVersion }}
+{{-   $namespace := .Values.global.namespace }}
+{{-   $organization := .Values.global.organization }}
+{{-   $terraformApiTokenSecret := .Values.global.terraformApiTokenSecret }}
+{{-   $terraformAgentTokensSecret := .Values.global.terraformAgentTokensSecret }}
+{{-   $agent := .Values.global.agent }}
+{{-   $workspaceDefaultServretName := .Values.global.workspace.defaultSecretName }}
+{{-   $notification := .Values.global.workspace.notification }}
+{{-   $vcs := .Values.global.workspace.vcs }}
+{{-   $globalTags := .Values.global.workspace.tags }}
+{{-   range .Values.workspaces }}
+---
+apiVersion: {{ $apiVersion }}
+kind: Workspace
+metadata:
+  name: {{ .name }}-workspace
+  namespace: {{ $namespace }}
+spec:
+  agentPool:
+    name: {{ $agent.agentPool }}
+  allowDestroyPlan: true
+  applyMethod: {{ $agent.applyMethod }}
+  description: {{ .description }}
+  executionMode: {{ $agent.executionMode }}
+  name: {{ .name }}-workspace
+  {{- if $notification }}
+  notifications:
+  - emailUsers:
+    {{- range $notification.emailUsers }}
+    - {{ . }}
+    {{- end }}
+    enabled: true
+    name: "Terraform Cloud: {{ .notificationName }}"
+    triggers:
+    {{- range $notification.triggers }}
+    - {{ . }}
+    {{- end }}
+    type: {{ $notification.type }}
+  {{- end }}
+  organization: {{ $organization }}
+  tags:
+  {{- range $globalTags }}
+    - {{ . }}
+  {{- end }}
+  {{ range .additionalTags }}
+    - {{ . }}
+  {{- end }}
+  {{- if .terraformVariables }}
+  terraformVariables:
+  {{-   range .terraformVariables }}
+    - description: {{ .description }}
+      hcl: false
+      name: {{ .name }}
+      sensitive: {{ .sensitive }}
+      {{- if .sensitive }}
+      valueFrom:
+        secretKeyRef:
+          {{- if .valueFrom }}
+          key: {{ .valueFrom.secretKeyRef.key }}
+          name: {{ .valueFrom.secretKeyRef.name }}
+          {{- else }}
+          key: {{ .name }}
+          name: {{ $workspaceDefaultServretName }}
+          {{- end }}
+      {{- end }}
+      {{- if not .sensitive }}
+      value: {{ .value }}
+      {{- end }}
+  {{-   end }}
+  {{- end }}
+  {{- if .enviromentVariables }}
+  enviromentVariables:
+  {{-   range .enviromentVariables }}
+    - description: {{ .description }}
+      hcl: false
+      name: {{ .name }}
+      sensitive: {{ .sensitive }}
+      {{- if .sensitive }}
+      valueFrom:
+        secretKeyRef:
+          {{- if .valueFrom }}
+          key: {{ .valueFrom.secretKeyRef.key }}
+          name: {{ .valueFrom.secretKeyRef.name }}
+          {{- else }}
+          key: {{ .name }}
+          name: {{ $workspaceDefaultServretName }}
+          {{- end }}
+      {{- end }}
+      {{- if not .sensitive }}
+      value: {{ .value }}
+      {{- end }}
+    {{-   end }}
+    {{- end }}
+  terraformVersion: {{ $agent.terraformVersion }}
+  {{- if .remoteStateSharing }}
+  remoteStateSharing:
+{{ toYaml .remoteStateSharing | indent 4 }}
+  {{- end }}
+  token:
+    secretKeyRef:
+      key: token
+      name: {{ $terraformApiTokenSecret }}
+  versionControl:
+    oAuthTokenID: {{ $vcs.oAuthTokenID }}
+    repository: {{ $vcs.repository }}
+  workingDirectory: {{ .workingDirectory }}
+...
+{{-   end }}
+{{- end }}

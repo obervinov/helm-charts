@@ -4,7 +4,7 @@ name: k8s-haproxy
 version: 1.0.0
 description: Helm-chart with daemonset-proxy by haproxy
 type: application
-home: https://github.com/obervinov/helm-charts/blob/main/k8s-haproxy
+home: https://github.com/obervinov/helm-charts/blob/main/src/k8s-haproxy
 
 keywords:
   - haproxy

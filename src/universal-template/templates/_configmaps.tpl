@@ -12,11 +12,11 @@ metadata:
     {{- include "universal-template.labels" $ | nindent 4 }}
     {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
   {{- if eq $type "applications" }}
-  name: {{ $fullName }}-cm
+  name: {{ $fullName }}
   {{- else if eq $type "jobs" }}
-  name: {{ $fullName }}-job-cm
+  name: {{ $fullName }}-job
   {{- else if eq $type "cronjobs" }}
-  name: {{ $fullName }}-cronjob-cm
+  name: {{ $fullName }}-cronjob
   {{- end }}
   namespace: {{ default $.Release.Namespace }}
 data:

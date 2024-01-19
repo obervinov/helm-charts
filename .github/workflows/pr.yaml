@@ -1,0 +1,15 @@
+---
+name: Test and Checks Helm-Charts bundle
+
+# yamllint disable-line rule:truthy
+on:
+  push:
+    branches:
+      - "release/*"
+      - "fix/*"
+      - "feature/*"
+      - "hotfix/*"
+
+jobs:
+  helm-repository-build:
+    uses: obervinov/_templates/.github/workflows/helm.yaml@v1.0.12

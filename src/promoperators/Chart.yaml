@@ -4,9 +4,9 @@ name: promoperators
 version: 1.0.1
 description: This chart is designed for easy installation of custom ServiceMonitor's or PodMonitor's for Prometheus Operator
 type: application
-home: https://github.com/obervinov/helm-charts/blob/main/promoperators
+home: https://github.com/obervinov/helm-charts/blob/main/src/promoperators
 sources:
-  - https://github.com/obervinov/helm-charts/blob/main/promoperators
+  - https://github.com/obervinov/helm-charts/blob/main/src/promoperators
 
 deprecated: false
 

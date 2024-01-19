@@ -1,0 +1,40 @@
+{{- if .Values.modules }}
+{{-   $namespace := .Values.global.namespace }}
+{{-   $organization := .Values.global.organization }}
+{{-   $terraformApiTokenSecret := .Values.global.terraformApiTokenSecret }}
+{{-   range .Values.modules }}
+---
+apiVersion: app.terraform.io/v1alpha2
+kind: Module
+metadata:
+  name: {{ .name }}-module
+  namespace: {{ $namespace }}
+spec:
+  organization: {{ $organization }}
+  token:
+    secretKeyRef:
+      key: token
+      name: {{ $terraformApiTokenSecret }}
+  destroyOnDeletion: true
+  module:
+    source: {{ .source }}
+    version: {{ .version }}
+    {{- if .variables }}
+    variables:
+    {{-   range .variables }}
+    - name: {{ .name }}
+    {{-   end }}
+    {{- end }}
+  {{- if .outputs }}
+  outputs:
+  {{-   range .outputs }}
+    - name: {{ .name }}
+  {{-   end }}
+  {{- end }}
+  {{- if .workspace }}
+  workspace:
+    name: {{ .workspace }}
+  {{- end }}
+...
+{{-   end }}
+{{- end }}

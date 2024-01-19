@@ -4,7 +4,7 @@ name: jaeger-stack
 version: 1.0.0
 description: Helm-chart with jaeger-stack
 type: application
-home: https://github.com/obervinov/helm-charts/blob/main/jaeger-stack
+home: https://github.com/obervinov/helm-charts/blob/main/src/jaeger-stack
 
 keywords:
   - metrics

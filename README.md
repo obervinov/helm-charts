@@ -3,6 +3,13 @@ This repository contains helm charts for all occasions.
 
 This is a helm-registry for storing my helm-packages.
 
+[![pages-build-deployment](https://github.com/obervinov/helm-charts/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/obervinov/helm-charts/actions/workflows/pages/pages-build-deployment) [![Test and Checks Helm-Charts bundle](https://github.com/obervinov/helm-charts/actions/workflows/pr.yaml/badge.svg)](https://github.com/obervinov/helm-charts/actions/workflows/pr.yaml) [![ Build Helm-Charts bundle and create release](https://github.com/obervinov/helm-charts/actions/workflows/release.yaml/badge.svg)](https://github.com/obervinov/helm-charts/actions/workflows/release.yaml)
+
+## <img src="https://github.com/obervinov/_templates/blob/main/icons/github-actions.png" width="25" title="github-actions"> GitHub Actions
+| Name  | Version |
+| ------------------------ | ----------- |
+| GitHub Actions Templates | [v1.0.12](https://github.com/obervinov/_templates/tree/v1.0.12) |
+
 ## <img src="https://github.com/obervinov/content/blob/main/ico/helm_registry.png" width="30"> List of helm charts available for installation
 <table>
   <tr>
@@ -14,53 +21,40 @@ This is a helm-registry for storing my helm-packages.
     <td>https://obervinov.github.io/helm-charts/index.yaml</td>
   </tr>
   <tr>
-    <td><b>Promoperators</b></td>
+    <td><b>Prometheus Operators</b></td>
     <td>https://github.com/obervinov/helm-charts/tree/main/src/promoperators</td>
   </tr>
   <tr>
-    <td><b>Gitlab-runners</b></td>
+    <td><b>Gitlab Runners</b></td>
     <td>https://github.com/obervinov/helm-charts/tree/main/src/gitlab-runners</td>
   </tr>
   <tr>
-    <td><b>K8s-haproxy</b></td>
+    <td><b>K8s Haproxy</b></td>
     <td>https://github.com/obervinov/helm-charts/tree/main/src/k8s-haproxy</td>
   </tr>
   <tr>
-    <td><b>Jaeger-stack</b></td>
+    <td><b>Jaeger Stack</b></td>
     <td>https://github.com/obervinov/helm-charts/tree/main/src/jaeger-stack</td>
   </tr>
   <tr>
-    <td><b>Universal-template</b></td>
+    <td><b>Universal Template</b></td>
     <td>https://github.com/obervinov/helm-charts/tree/main/src/universal-template</td>
   </tr>
   <tr>
     <td><b>Kibana</b></td>
     <td>https://github.com/obervinov/helm-charts/tree/main/src/kibana</td>
   </tr>
+  <tr>
+    <td><b>Terraform Operator CRDs</b></td>
+    <td>https://github.com/obervinov/helm-charts/tree/main/src/terraform-operator-crds</td>
+  </tr>
 </table>
 
 ## <img src="https://github.com/obervinov/content/blob/main/ico/helm.svg" width="30"> How to add a repository to yourself and set a chart
 ```sh
 helm repo add obervinov https://obervinov.github.io/helm-charts/
+# or
+helm repo add obervinov https://helm-charts.charafee.cfd/helm-charts/
 helm repo update
 helm search repo obervinov
-```
-### <img src="https://github.com/obervinov/content/blob/main/ico/helm.svg" width="30"> How to automatic build and publish helm-package
-```sh
-./build-helm-package.sh
-```
-### <img src="https://github.com/obervinov/content/blob/main/ico/7264022.png" width="30"> How to build a json-schema (values.schema.json)
-```sh
-helm plugin install https://github.com/karuppiah7890/helm-schema-gen.git
-helm schema-gen values.yaml > values.schema.json
-```
-
-### <img src="https://github.com/obervinov/content/blob/main/ico/4072573.png" width="30"> How to create a helm registry using github pages
-```sh
-helm package ./${CHART_PATH}
-helm repo index --url https://obervinov.github.io/helm-charts/ .
-# or
-helm repo index --url https://obervinov.github.io/helm-charts/ --merge index.yaml .
-# view helm index
-cat index.yaml
 ```

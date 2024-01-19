@@ -2,9 +2,9 @@ apiVersion: v1
 appVersion: 8.5.1
 description: Non official Elastic helm chart for Kibana
 icon: https://helm.elastic.co/icons/kibana.png
-home: https://github.com/obervinov/helm-charts/blob/main/kibana
+home: https://github.com/obervinov/helm-charts/blob/main/src/kibana
 sources:
-  - https://github.com/obervinov/helm-charts/blob/main/kibana
+  - https://github.com/obervinov/helm-charts/blob/main/src/kibana
 maintainers:
   - name: obervinov
     email: obervinov@pm.me

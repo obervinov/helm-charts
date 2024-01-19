@@ -1,0 +1,47 @@
+{{- if .Values.rbac.rules }}
+{{-   $rbac := .Values.rbac }}
+{{-   $agent := .Values.global.agent }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ $agent.serviceAccountName }}
+rules:
+{{-   range $rbac.rules }}
+- apiGroups:
+  {{- range .apiGroups }}
+    - {{ . }}
+  {{- end }}
+  resources:
+  {{- range .resources }}
+    - {{ . }}
+  {{- end }}
+  verbs:
+  {{- range .verbs }}
+    - {{ . }}
+  {{- end }}
+{{-   end }}
+...
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ $agent.serviceAccountName }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ $agent.serviceAccountName }}
+subjects:
+- kind: ServiceAccount
+  name: {{ $agent.serviceAccountName }}
+  namespace: {{ .Release.Namespace }}
+...
+---
+apiVersion: v1
+automountServiceAccountToken: true
+kind: ServiceAccount
+metadata:
+  name: {{ $agent.serviceAccountName }}
+  namespace: {{ .Release.Namespace }}
+...
+{{- end }}
