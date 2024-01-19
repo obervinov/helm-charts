@@ -11,4 +11,4 @@ on:
 
 jobs:
   helm-repository-build:
-    uses: obervinov/_templates/.github/workflows/helm.yaml@v1.0.11
+    uses: obervinov/_templates/.github/workflows/helm.yaml@v1.0.12
