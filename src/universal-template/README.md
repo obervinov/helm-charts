@@ -8,6 +8,7 @@ This Helm chart provides a universal template for deploying applications on Kube
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Configuration](#configuration)
+- [Extended Configuration](#extended-configuration)
 - [Usage](#usage)
 - [Examples](#examples)
 - [Contributing](#contributing)
@@ -220,10 +221,6 @@ applications:
 ## Contributing
 
 Contributions are welcome! Feel free to submit issues and pull requests.
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
 
 
 ## Usage example for Gitlab-CI
