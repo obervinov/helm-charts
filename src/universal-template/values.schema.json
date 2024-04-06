@@ -1,38 +1,4 @@
 {
     "$schema": "http://json-schema.org/schema#",
-    "type": "object",
-    "properties": {
-        "applications": {
-            "type": "array",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "app": {
-                        "type": "object"
-                    },
-                    "configmap": {
-                        "type": "object"
-                    },
-                    "ingress": {
-                        "type": "object"
-                    },
-                    "monitoring": {
-                        "type": "object"
-                    },
-                    "name": {
-                        "type": "string"
-                    },
-                    "rbac": {
-                        "type": "array"
-                    },
-                    "secret": {
-                        "type": "object"
-                    },
-                    "service": {
-                        "type": "object"
-                    }
-                }
-            }
-        }
-    }
+    "type": "object"
 }
