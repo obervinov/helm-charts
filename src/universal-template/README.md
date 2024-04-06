@@ -44,61 +44,7 @@ The following table lists the configurable parameters of the chart and their def
 | `rbac`                      | RBAC configuration                         | See values.yaml                    |
 | `monitoring`                | Monitoring configuration                   | See values.yaml                    |
 
-## Usage
-
-To use this Helm chart, follow these steps:
-
-1. Prepare your application configurations.
-2. Modify the `values.yaml` file according to your requirements.
-3. Install the chart using the `helm install` command.
-
-## Examples
-
-Here's an example of how to deploy a simple application using this Helm chart:
-
-```yaml
-applications:
-  - name: app1
-    app:
-      type: deployment
-      replicas: 1
-      image:
-        repository: "my-registry/app1"
-        tag: "1.0.0"
-        pullPolicy: IfNotPresent
-        pullSecrets:
-          - my-secret
-      envs:
-        - name: LOG_LEVEL
-          value: INFO
-      resources:
-        requests:
-          memory: "256Mi"
-          cpu: "250m"
-        limits:
-          memory: "512Mi"
-          cpu: "500m"
-    service:
-      type: ClusterIP
-      ports:
-        - name: http
-          port: 80
-          protocol: TCP
-          targetPort: 80
-    ingress:
-      useTLS: true
-      fqdn: my-service.example.com
-      paths:
-        - path: /
-          pathType: Prefix
-          servicePort: 80
-          serviceName: app1
-      ingressClassName: nginx
-```
-Here's an expanded version of the configuration section in the README, including a table with descriptions of all parameters from the `values.yaml` file:
-
-```markdown
-## Configuration
+## Extended Configuration
 
 The following table lists the configurable parameters of the chart and their default values:
 
@@ -218,9 +164,58 @@ The following table lists the configurable parameters of the chart and their def
 | Parameter                   | Description                               | Default                            |
 |-----------------------------|-------------------------------------------|------------------------------------|
 | `monitoring.prometheus`     | Prometheus configuration                  | `[]`                               |
-```
 
-This expanded configuration section provides a comprehensive overview of all the parameters available in the Helm chart's `values.yaml` file. Adjustments can be made to fit specific deployment requirements.
+## Usage
+
+To use this Helm chart, follow these steps:
+
+1. Prepare your application configurations.
+2. Modify the `values.yaml` file according to your requirements.
+3. Install the chart using the `helm install` command.
+
+## Examples
+
+Here's an example of how to deploy a simple application using this Helm chart:
+
+```yaml
+applications:
+  - name: app1
+    app:
+      type: deployment
+      replicas: 1
+      image:
+        repository: "my-registry/app1"
+        tag: "1.0.0"
+        pullPolicy: IfNotPresent
+        pullSecrets:
+          - my-secret
+      envs:
+        - name: LOG_LEVEL
+          value: INFO
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "250m"
+        limits:
+          memory: "512Mi"
+          cpu: "500m"
+    service:
+      type: ClusterIP
+      ports:
+        - name: http
+          port: 80
+          protocol: TCP
+          targetPort: 80
+    ingress:
+      useTLS: true
+      fqdn: my-service.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+          servicePort: 80
+          serviceName: app1
+      ingressClassName: nginx
+```
 
 ## Contributing
 
@@ -229,6 +224,7 @@ Contributions are welcome! Feel free to submit issues and pull requests.
 ## License
 
 This project is licensed under the [MIT License](LICENSE).
+
 
 ## Usage example for Gitlab-CI
 **To work, you will also need to add vault-client and kubectl to the image**
