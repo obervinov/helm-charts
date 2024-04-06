@@ -3,19 +3,36 @@
     "type": "object",
     "properties": {
         "applications": {
-            "type": "array"
-        },
-        "cronjobs": {
-            "type": "array"
-        },
-        "jobs": {
-            "type": "array"
-        },
-        "rbac": {
-            "type": "array"
-        },
-        "version": {
-            "type": "string"
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "app": {
+                        "type": "object"
+                    },
+                    "configmap": {
+                        "type": "object"
+                    },
+                    "ingress": {
+                        "type": "object"
+                    },
+                    "monitoring": {
+                        "type": "object"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "rbac": {
+                        "type": "array"
+                    },
+                    "secret": {
+                        "type": "object"
+                    },
+                    "service": {
+                        "type": "object"
+                    }
+                }
+            }
         }
     }
 }

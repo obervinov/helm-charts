@@ -4,11 +4,16 @@ Helm template version: {{ .Chart.Version }}
 {{- if .Values.applications }}
 {{-   range .Values.applications }}
 
-{{-     if .deployment.prometheus }}
-{{-       if .deployment.prometheus.enabled }}
+{{-     if .monitoring.prometheus }}
+{{-       range .monitoring.prometheus }}
 ---
-Prometheus Operator has been enabled.
-The collected metrics can be found here: http://prometheus.example.com
+Prometheus Operator has been enabled:
+{{-         if eq .kind "ServiceMonitor" }}
++ ServiceMonitor/{{ .name }}
+{{-         end }}
+{{          if eq .kind "PodMonitor" }}
++ PodMonitor/{{ .name }}
+{{-         end }}
 {{-       end }}
 {{-     end }}
 
@@ -16,38 +21,15 @@ The collected metrics can be found here: http://prometheus.example.com
 ---
 Ingresses URLs:
 {{-       $name := .name }}
-{{-       range .ingress }}
-{{ .name }}://{{ .host }}
-{{-         if .tls }}
-{{ .name }}s://{{ .host }}
-Force redircet http -> https enabled.
+{{-       if .ingress.useTLS }}
+https://{{ .fqdn }}
 {{-         else }}
-Force redirect http -> https has been disabled.
-{{-          end }}
-{{-       end }}
-{{-     end }}
-
-
-{{-     if .deployment.otlp }}
-{{-       if .deployment.otlp.enabled }}
----
-Sidecar jaeger-agent to be launching for deployment {{ .name }}
-Collected otlp spans can be found here: https://jaeger.example.com
-{{-       end }}
-{{-     end }}
-
-
-{{-     if .tests }}
-{{-       if and (.tests.service) (.tests.virtualservices) }}
----
-Launched tests for
-{{-         if .tests.service }}
-- service
+http://{{ .fqdn }}
 {{-         end }}
-{{-         if .tests.virtualservices }}
-- virtualservices
-{{-         end }}
-{{-       end }}
 {{-     end }}
+
 {{-   end }}
 {{- end }}
+
+Repository with charts: https://github.com/obervinov/helm-charts
+Current chart template version: {{ $.Chart.Version }}

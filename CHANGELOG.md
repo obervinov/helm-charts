@@ -2,6 +2,16 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v1.0.2 - 2024-04-06
+### What's Changed
+**Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.0.1...v1.0.2 by @obervinov in https://github.com/obervinov/helm-charts/pull/
+#### 🚀 Features
+* [Universal-template: add `StatefulSet` support for applications](https://github.com/obervinov/helm-charts/issues/29)
+* Global refactoring of Helm-chart `universal-template`: simplified structure, removed all obsolete and redundant designs 
+#### 📚 Documentation
+* Universal-template: documentation update
+#### 💥 Breaking Changes
+* Global refactoring of Helm-chart `universal-template`: the structure of the chart and values-file has been changed globally, old versions of values-file are completely incompatible with the new release!
 
 ## v1.0.1 - 2024-01-19
 ### What's Changed

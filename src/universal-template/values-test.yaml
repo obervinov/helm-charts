@@ -1,0 +1,219 @@
+# An example of a fully described value file for describing the simplest release
+# The file is divided into sections:
+# - tests - the section describes the tests that will be run after the release
+# - app - the section describes the applications that will be deployed (deployment, statefulset, job, cronjob)
+# - service - the section describes the service that will be deployed
+# - ingress - the section describes the ingress that will be deployed
+# - configmap - the section describes the configmap that will be deployed
+# - secret - the section describes the secret that will be deployed
+# - rbac - the section describes the rbac that will be deployed
+---
+# Anchors with ports of your services can be installed here for reuse
+# service_port_http: &service_port_http 80
+# service_metrics_port: &service_metrics_port 9090
+
+# Applications - are a logical group for a microservice that includes
+# app (deployment, statefulset, job, cronjob), service, ingress, configmap, secret
+applications:
+  - name: app1
+    # Description of the application instance
+    app:
+      # Type of application (can be deployment, statefulset, job, cronjob)
+      type: deployment
+      # Additional labels
+      extraLabels:
+        app.kubernetes.io/instance: "app1"
+      # Number of replicas for the application
+      replicas: 1
+      # Custom pod annotations
+      extraAnnotations:
+        checksum/values.yaml: "helm/values.yaml"
+      # Image settings
+      image:
+        repository: "my-registry/app1"
+        tag: "1.0.0"
+        pullPolicy: IfNotPresent
+        pullSecrets:
+          - my-secret
+        commands:
+          - bash
+        args:
+          - -c
+          - env
+      # Environment variables
+      envs:
+        - name: LOG_LEVEL
+          value: INFO
+        # Environment variables to extract from the secret
+        - name: SECRET_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: my-secret
+              key: username
+      # Resources
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "250m"
+        limits:
+          memory: "512Mi"
+          cpu: "500m"
+      # Persistent volume
+      persistentVolumes:
+        - name: "data"
+          size: 1Gi
+          accessModes: [ "ReadWriteOnce" ]
+          storageClassName: "standard"
+          mountPath: "/data"
+      # Affinity
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/e2e-az-name
+                    operator: In
+                    values:
+                      - e2e-az1
+      # NodeSelector
+      nodeSelector:
+        disktype: ssd
+      # Tolerations
+      tolerations:
+        - key: "key"
+          operator: "Equal"
+          value: "value"
+          effect: "NoSchedule"
+      # Probes
+      probes:
+        livenessProbe:
+          httpGet:
+            path: /health/liveness
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health/readiness
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /health/startup
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 3
+      # Only for batch applications
+      cronjob:
+        schedule: "*/1 * * * *"
+        failedJobsHistoryLimit: 1
+        successfulJobsHistoryLimit: 0
+        restartPolicy: "OnFailure"
+        ttlSecondsAfterFinished: 360
+        activeDeadlineSeconds: 650
+        backoffLimit: 1
+        concurrencyPolicy: "Forbid"
+        parallelism: 1
+        completions: 1
+      # Only for batch applications
+      job:
+        restartPolicy: "OnFailure"
+        ttlSecondsAfterFinished: 360
+        activeDeadlineSeconds: 650
+        backoffLimit: 1
+        concurrencyPolicy: "Forbid"
+        parallelism: 1
+        completions: 1
+
+    # Description of the Service
+    service:
+      externalTrafficPolicy: Cluster
+      externalIPs:
+        - 1.1.1.1
+      extraAnnotations:
+        checksum/values.yaml: "helm/values.yaml"
+      # Type of service (can be ClusterIP, NodePort, LoadBalancer)
+      type: ClusterIP
+      ports:
+        - name: http
+          port: 80
+          protocol: TCP
+          targetPort: 80
+
+    # Description of the Ingress
+    ingress:
+      apiVersion: networking.k8s.io/v1
+      kind: Ingress
+      extraAnnotations:
+        checksum/values.yaml: "helm/values.yaml"
+      useTLS: true
+      fqdn: my-service.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+          servicePort: 80
+          serviceName: app1
+      ingressClassName: nginx
+
+    # Description of the ConfigMap
+    # The contents of the config can be set via
+    # `--set-file "applications[0].configmap[0].data"="config.json"`
+    # `mountPath` - the path in the container where all configs will be mapped
+    # `files[0].name` - the name of the file in the container
+    # `files[0].data` - the config body is set via the --set-file parameter
+    configmap:
+      mountPath: "/configs"
+      files:
+        - name: "config.json"
+          data: {}
+
+    # Description of the Secret
+    secret: {}
+
+    # Description of the RBAC
+    rbac:
+      - rules:
+          - apiGroups:
+              - ""
+            resources:
+              - pods
+            verbs:
+              - get
+              - watch
+              - list
+
+    # Description of the Monitoring
+    # The monitoring section is used to create a ServiceMonitor for Prometheus
+    monitoring:
+      prometheus:
+        - name: ServiceMonitor1
+          apiVersion: monitoring.coreos.com/v1
+          kind: ServiceMonitor
+          # Don't set the namespace if you want to use the release namespace
+          namespacesSelector:
+            - monitoring
+          endpoints:
+            - port: http
+              path: /metrics
+              interval: 15s
+              scheme: http
+        - name: PodMonitor1
+          apiVersion: monitoring.coreos.com/v1
+          kind: PodMonitor
+          namespacesSelector:
+            - monitoring
+          endpoints:
+            - port: http
+              path: /metrics
+              interval: 15s
+              scheme: http

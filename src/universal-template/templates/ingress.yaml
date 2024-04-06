@@ -1,44 +1,50 @@
 {{- if .Values.applications -}}
 {{-   range .Values.applications -}}
 {{-     if and (.ingress) (.service) -}}
-{{-       $name := .name }}
-{{-       $fullName := include "universal-template.fullName" (list $ . $name) }}
-{{-       $indexLength := (len .ingress) -}}
- 
-{{-         range .ingress }}
-apiVersion: {{ default "networking.k8s.io/v1" .apiVersion }}
-kind: {{ default "Ingress" .kind }}
+{{-       $name             := .name }}
+{{-       $fullName         := include "universal-template.fullName" (list $ . $name) }}
+{{-       $namespace        := $.Release.Namespace }}
+{{-       $apiVersion       := .ingress.apiVersion }}
+{{-       $kind             := .ingress.Kind }}
+{{-       $extraAnnotations := .ingress.extraAnnotations }}
+{{-       $useTLS           := .ingress.useTLS }}
+{{-       $fqdn             := .ingress.fqdn }}
+{{-       $paths            := .ingress.paths }}
+{{-       $ingressClassName := .ingress.ingressClassName }}
+apiVersion: {{ default "networking.k8s.io/v1" $apiVersion }}
+kind: {{ default "Ingress" $kind }}
 metadata:
-  name: {{ $fullName }}-{{ .name }}
-  namespace: {{ $.Release.Namespace }}
+  name: {{ $fullName }}
+  namespace: {{ $namespace }}
   labels:
     {{- include "universal-template.labels" $ | nindent 4 }}
     {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
+  {{- if $extraAnnotations }}
   annotations:
-  {{- if .ingressAnnotations}}
-    {{ toYaml .ingressAnnotations | nindent 4 }}
+  {{-   toYaml $extraAnnotations | nindent 4 }}
   {{- end }}
 spec:
-  {{- if .tls }}
+  {{- if $useTLS }}
   tls:
     - hosts:
-        - {{ .host }}
-      secretName: {{ .tlsSecretName }}
+        - {{ $fqdn }}
+      secretName: {{ $fullName }}-tls
   {{- end }}
   rules:
-  - host: {{ .host }}
+  - host: {{ $fqdn }}
     http:
       paths:
-      - path: {{ default "/" .path }}
-        pathType: {{ default "Prefix" .pathType }}
+      {{- range $paths }}
+      - path: {{ .path }}
+        pathType: {{ .pathType }}
         backend:
           service:
             name: {{ $fullName }}
             port:
-              number: {{ default 80 .servicePort }}
-  ingressClassName: {{ default "nginx" .ingressClassName }}
+              number: {{ .servicePort }}
+      {{- end }}
+  ingressClassName: {{ default "nginx" $ingressClassName }}
 ...
-{{-       end -}}
 {{-     end -}}
 {{-   end }}
 {{- end }}

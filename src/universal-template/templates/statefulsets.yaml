@@ -1,0 +1,164 @@
+{{- if .Values.applications }}
+{{-   range .Values.applications }}
+{{-     if .app }}
+{{-       if eq .app.type "statefulset"}}
+{{-         $configMap         := .configMap }}
+{{-         $service           := .service }}
+{{-         $name              := .name }}
+{{-         $namespace         := $.Release.Namespace }}
+{{-         $fullName          := include "universal-template.fullName" (list $ . $name) }}
+{{-         $extraLabels       := .app.extraLabels }}
+{{-         $replicas          := .app.replicas }}
+{{-         $extraAnnotations  := .app.extraAnnotations }}
+{{-         $image             := .app.image }}
+{{-         $envs              := .app.envs }}
+{{-         $resources         := .app.resources }}
+{{-         $persistentVolumes := .app.persistentVolumes }}
+{{-         $tolerations       := .app.tolerations }}
+{{-         $affinity          := .app.affinity }}
+{{          $nodeSelector      := .app.nodeSelector }}
+{{-         $probes            := .app.probes }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $fullName }}
+  namespace: {{ $namespace }}
+  labels:
+    {{- include "universal-template.labels" $ | nindent 4 }}
+    {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 4 }}
+    {{- if $extraLabels }}
+    {{-   toYaml $extraLabels | nindent 4 }}
+    {{- end }}
+spec:
+  serviceName: {{ $fullName }}
+  replicas: {{ default 1 $replicas }}
+  selector:
+    matchLabels:
+      {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "universal-template.labels" $ | nindent 8 }}
+        {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 8 }}
+        {{- if $extraLabels }}
+        {{-   toYaml $extraLabels | nindent 8 }}
+        {{- end }}
+      {{- if $extraAnnotations }}
+      annotations:
+      {{-   toYaml $extraAnnotations | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- if $image.pullSecrets }}
+      imagePullSecrets:
+      {{-   range $image.pullSecrets }}
+        - name: {{ . }}
+      {{-   end }}
+      {{- end }}
+      containers:
+        - name: {{ $name }}
+          image: {{ $image.repositry }}:{{ $image.tag }}
+          imagePullPolicy: {{ default "IfNotPresent" $image.pullPolicy }}
+          {{- if $image.commands }}
+          command:
+          {{-   range $image.commands }}
+            - {{ . }}
+          {{-   end }}
+          {{- end }}
+          {{- if $image.args }}
+          args:
+          {{-   range $image.args }}
+            - {{ . }}
+          {{-   end }}
+          {{- end }}
+          {{- if $service }}
+          ports:
+          {{-   range $service.ports }}
+            - containerPort: {{ .targetPort }}
+              name: {{ .name }}
+              protocol: {{ .protocol }}
+          {{-   end }}
+          {{- end }}
+          {{- if $envs }}
+          env:
+          {{-   range $envs }}
+            - name: {{ .name }}
+          {{-     if .valueFrom }}
+              valueFrom:
+              secretKeyRef:
+                name: {{ .valueFrom.secretKeyRef.name }}
+                key: {{ .valueFrom.secretKeyRef.key }}
+          {{-     else }}
+              value: {{ .value }}
+          {{-     end }}
+          {{-   end }}
+          {{- end }}
+          {{- if $resources }}
+          resources:
+          {{-   toYaml $resources | nindent 12 }}
+          {{- end }}
+          {{- if or $configMap $persistentVolumes }}
+            volumeMounts:
+          {{-   if $configMap }}
+              - name: volume-configs
+                mountPath: {{ $configMap.mountPath | lower }}
+                readOnly: true
+          {{-   end }}
+          {{-   if $persistentVolumes }}
+              - name: {{ $persistentVolumes.name }}
+                mountPath: {{ $persistentVolumes.mountPath }}
+          {{-   end }}
+          {{- end }}
+          {{- if $probes }}
+          livenessProbe:
+          {{-   toYaml $probes.livenessProbe | nindent 12 }}
+          readinessProbe:
+          {{-   toYaml $probes.readinessProbe | nindent 12 }}
+          startupProbe:
+          {{-   toYaml $probes.startupProbe | nindent 12 }}
+          {{- end }}
+        {{- if or $configMap $persistentVolumes }}
+        volumes:
+        {{-   if $configMap }}
+          - name: volume-configs
+            configMap:
+            name: {{ $fullName }}
+            items:
+        {{-     range $configMap.files }}
+            - key: {{ .name | lower }}
+                path: {{ .name | lower }}
+        {{-     end }}
+        {{-   end }}
+        {{-   if $persistentVolumes }}
+          - name: {{ $persistentVolumes.name }}
+            mountPath: {{ $persistentVolumes.mountPath }}
+        {{-   end }}
+        {{- end }}
+      {{- if $tolerations }}
+      tolerations:
+      {{-   toYaml $tolerations | nindent 8 }}
+      {{- end }}
+      {{- if $affinity }}
+      affinity:
+      {{-   toYaml $affinity | nindent 8 }}
+      {{- end }}
+      {{- if $nodeSelector }}
+      nodeSelector:
+      {{-   toYaml $nodeSelector | nindent 8 }}
+      {{- end }}
+  {{- if $persistentVolumes }}
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ $persistentVolumes.name }}
+    spec:
+      accessModes: {{ $persistentVolumes.accessModes }}
+      storageClassName: {{ $persistentVolumes.storageClassName }}
+      resources:
+        requests:
+          storage: {{ $persistentVolumes.size }}
+  {{- end }}
+...
+{{-       end }}
+{{-     end }}
+{{-   end }}
+{{- end }}
