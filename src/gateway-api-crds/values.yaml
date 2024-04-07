@@ -1,4 +1,5 @@
 ---
+gateways: []
 # gateways:
 #   - name: gateway1
 #     hostnames:
