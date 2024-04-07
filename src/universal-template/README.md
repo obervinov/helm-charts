@@ -1,89 +1,198 @@
-# Universal helm chart for rolling out difference services
-## About helm-chart
-This universal helm chart template is designed to simplify rolling out simple releases and speed up the helm implementation process. There is no need to write new charts for each microservice, you can use one by changing only values.yaml<br></br>
-As an example, gitlab-ci will be used to use and integrate the helm chart.
+# Universal Helm Chart for Kubernetes Applications
 
-## How to use it
-### Simple values for `deployment` with `configMap`
+This Helm chart provides a universal template for deploying applications on Kubernetes. It encompasses various resources such as deployments, services, ingresses, configmaps, secrets, RBAC, and monitoring configurations.
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Extended Configuration](#extended-configuration)
+- [Usage](#usage)
+- [Examples](#examples)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Overview
+
+This Helm chart enables you to deploy applications on Kubernetes with ease. It includes configurations for different types of applications, services, ingresses, and more. You can customize each component according to your requirements using Helm values.
+
+## Prerequisites
+
+- Kubernetes cluster
+- Helm installed
+
+## Installation
+
+To install the chart, use the following command:
+
+```bash
+helm install <release-name> <chart-name>
+```
+
+## Configuration
+
+The following table lists the configurable parameters of the chart and their default values:
+
+| Parameter                   | Description                               | Default                            |
+|-----------------------------|-------------------------------------------|------------------------------------|
+| `applications`              | List of application configurations       | See values.yaml                    |
+| `service`                   | Service configuration                      | See values.yaml                    |
+| `ingress`                   | Ingress configuration                      | See values.yaml                    |
+| `configmap`                 | ConfigMap configuration                    | See values.yaml                    |
+| `secret`                    | Secret configuration                       | See values.yaml                    |
+| `rbac`                      | RBAC configuration                         | See values.yaml                    |
+| `monitoring`                | Monitoring configuration                   | See values.yaml                    |
+
+## Extended Configuration
+
+The following table lists the configurable parameters of the chart and their default values:
+
+### Global Parameters
+
+| Parameter             | Description                                   | Default                  |
+|-----------------------|-----------------------------------------------|--------------------------|
+| `global.namespace`    | Namespace for resources                      | `default`                |
+| `global.imagePullSecrets` | List of image pull secrets                | `[]`                     |
+| `global.extraVolumeMounts` | Additional volume mounts for all applications | `[]`                   |
+| `global.extraVolumes` | Additional volumes for all applications      | `[]`                     |
+
+### Applications
+
+| Parameter                   | Description                               | Default                            |
+|-----------------------------|-------------------------------------------|------------------------------------|
+| `applications`              | List of application configurations       | `[]`                               |
+
+#### Application Parameters
+
+| Parameter                   | Description                               | Default                            |
+|-----------------------------|-------------------------------------------|------------------------------------|
+| `name`                      | Name of the application                   | `""`                               |
+| `app.type`                  | Type of application (deployment, statefulset, job, cronjob) | `deployment`        |
+| `app.extraLabels`           | Additional labels for the application     | `{}`                               |
+| `app.replicas`              | Number of replicas for the application    | `1`                                |
+| `app.extraAnnotations`      | Additional annotations for the application| `{}`                               |
+| `app.image.repository`      | Image repository                          | `""`                               |
+| `app.image.tag`             | Image tag                                 | `""`                               |
+| `app.image.pullPolicy`      | Image pull policy                         | `IfNotPresent`                     |
+| `app.image.pullSecrets`     | List of image pull secrets                | `[]`                               |
+| `app.image.commands`        | Commands to run in the container          | `[]`                               |
+| `app.image.args`            | Arguments for the commands                | `[]`                               |
+| `app.envs`                  | Environment variables                     | `[]`                               |
+| `app.resources`             | Resource requests and limits              | `{}`                               |
+| `app.persistentVolumes`     | Persistent volumes                        | `[]`                               |
+| `app.affinity`              | Pod affinity                              | `{}`                               |
+| `app.nodeSelector`          | Node selector                             | `{}`                               |
+| `app.tolerations`           | Tolerations                               | `[]`                               |
+| `app.probes`                | Probes configuration                      | `{}`                               |
+| `app.job`                   | Job configuration                         | `{}`                               |
+| `app.cronjob`               | CronJob configuration                     | `{}`                               |
+
+### Service
+
+| Parameter                   | Description                               | Default                            |
+|-----------------------------|-------------------------------------------|------------------------------------|
+| `service`                   | Service configuration                      | `{}`                               |
+
+#### Service Parameters
+
+| Parameter                   | Description                               | Default                            |
+|-----------------------------|-------------------------------------------|------------------------------------|
+| `service.type`              | Type of service (ClusterIP, NodePort, LoadBalancer) | `ClusterIP`            |
+| `service.ports`             | Ports exposed by the service              | `[]`                               |
+| `service.externalTrafficPolicy` | External traffic policy                 | `Cluster`                          |
+| `service.externalIPs`       | External IPs for the service              | `[]`                               |
+| `service.extraAnnotations`  | Additional annotations for the service    | `{}`                               |
+
+### Ingress
+
+| Parameter                   | Description                               | Default                            |
+|-----------------------------|-------------------------------------------|------------------------------------|
+| `ingress`                   | Ingress configuration                     | `{}`                               |
+
+#### Ingress Parameters
+
+| Parameter                   | Description                               | Default                            |
+|-----------------------------|-------------------------------------------|------------------------------------|
+| `ingress.apiVersion`        | API version for the ingress resource      | `networking.k8s.io/v1`            |
+| `ingress.kind`              | Kind of the ingress resource              | `Ingress`                          |
+| `ingress.extraAnnotations`  | Additional annotations for the ingress    | `{}`                               |
+| `ingress.useTLS`            | Enable TLS for the ingress                | `false`                            |
+| `ingress.fqdn`              | Fully qualified domain name (FQDN)        | `""`                               |
+| `ingress.paths`             | Paths for routing traffic                 | `[]`                               |
+| `ingress.ingressClassName`  | Ingress class name                        | `""`                               |
+
+### ConfigMap
+
+| Parameter                   | Description                               | Default                            |
+|-----------------------------|-------------------------------------------|------------------------------------|
+| `configmap`                 | ConfigMap configuration                   | `{}`                               |
+
+#### ConfigMap Parameters
+
+| Parameter                   | Description                               | Default                            |
+|-----------------------------|-------------------------------------------|------------------------------------|
+| `configmap.mountPath`       | Mount path for the config files           | `""`                               |
+| `configmap.files`           | List of files in the ConfigMap            | `[]`                               |
+
+### Secret
+
+| Parameter                   | Description                               | Default                            |
+|-----------------------------|-------------------------------------------|------------------------------------|
+| `secret`                    | Secret configuration                      | `{}`                               |
+
+### RBAC
+
+| Parameter                   | Description                               | Default                            |
+|-----------------------------|-------------------------------------------|------------------------------------|
+| `rbac`                      | RBAC configuration                        | `[]`                               |
+
+#### RBAC Parameters
+
+| Parameter                   | Description                               | Default                            |
+|-----------------------------|-------------------------------------------|------------------------------------|
+| `rbac.rules`                | RBAC rules                                | `[]`                               |
+
+### Monitoring
+
+| Parameter                   | Description                               | Default                            |
+|-----------------------------|-------------------------------------------|------------------------------------|
+| `monitoring`                | Monitoring configuration                  | `[]`                               |
+
+#### Monitoring Parameters
+
+| Parameter                   | Description                               | Default                            |
+|-----------------------------|-------------------------------------------|------------------------------------|
+| `monitoring.prometheus`     | Prometheus configuration                  | `[]`                               |
+
+## Usage
+
+To use this Helm chart, follow these steps:
+
+1. Prepare your application configurations.
+2. Modify the `values.yaml` file according to your requirements.
+3. Install the chart using the `helm install` command.
+
+## Examples
+
+Here's an example of how to deploy a simple application using this Helm chart:
+
 ```yaml
-# An example of a fully described value file for describing the simplest release
-# deployment, service, login, configmap, secret
----
-# Tag for all default images
-version: "latest"
-# Anchors with ports of your services can be installed here for reuse
-service_port_http: &service_port_http 80
-service_metrics_port: &service_metrics_port 9090
-
-# Applications - are a logical group for a microservice that includes
-# deployment, tests, service, ingress, configmap, secret
 applications:
   - name: app1
-    # Enabling default tests for service and ingress
-    tests:
-      service: true
-      virtualservices: true
-    # Description of the deployment
-    deployment:
+    app:
+      type: deployment
       replicas: 1
-      # Connecting the sidecar of the jaeger-agent container
-      otlp:
-        enabled: false
-        grpcEndpoint: {}
-      # Collection of microservice metrics in prometheus via prometheusOperator
-      prometheus:
-        enabled: true
-        # The default metrics collection path is "/metrics"
-        # path: "/metrics"
       image:
-        # Image Link
-        repository: group/image
-        version: "1.0.0"
-        # Secret name with dockerconfig (for private registry)
-        pullsecrets: secret-registry-user
-        # `IfNotPresent` - only if the image is missing locally
-        # `Always` - the image is pumped out every time the hearth is started
-        # `Never` - it is never pumped out, only local images
-        imagePullPolicy: IfNotPresent
-        # If it is necessary to predefine or replace the commands/arguments
-        # commands:
-        #   - bash
-        # args:
-        #   - c
-        #   - env
-      strategy:
-        type: RollingUpdate
-      # Container environment variables
+        repository: "my-registry/app1"
+        tag: "1.0.0"
+        pullPolicy: IfNotPresent
+        pullSecrets:
+          - my-secret
       envs:
-        LOG_LEVEL: info
-      # Environment variables to extract from the secret
-      envsSecret: []
-      #  - name: SECRET_USERNAME
-      #    keySecret: username
-      podAnnotations:
-        # An annotation that calculates the checksum of your values.yaml file
-        # Guarantees a restart of the hearth if values.yaml has changed
-        checksum/values.yaml: "helm/values.yaml"
-      probes:
-        livenessProbe:
-          httpGet:
-            path: /health/liveness
-            port: *service_metrics_port
-          initialDelaySeconds: 30
-          periodSeconds: 5
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /health/readiness
-            port: *service_metrics_port
-          initialDelaySeconds: 15
-          periodSeconds: 5
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
-      # Redefine resource quotas
+        - name: LOG_LEVEL
+          value: INFO
       resources:
         requests:
           memory: "256Mi"
@@ -91,277 +200,30 @@ applications:
         limits:
           memory: "512Mi"
           cpu: "500m"
-      # Redefine the affinity of the pod
-      affinity: {}
-      # nodeAffinity:
-      #   requiredDuringSchedulingIgnoredDuringExecution:
-      #     nodeSelectorTerms:
-      #       - matchExpressions:
-      #           - key: kubernetes.io/e2e-az-name
-      #             operator: In
-      #             values:
-      #               - e2e-az1
-      #               - e2e-az2
-      # Redefine the nodeSelector of the pod
-      nodeSelector: {}
-      # Redefine the tolerations of the pod
-      tolerations: []
-    # Description of the Service
     service:
-      - name: http
-        port: *service_port_http
-        protocol: TCP
-        targetPort: *service_port_http
-      - name: http-metrics
-        port: *service_metrics_port
-        protocol: TCP
-        targetPort: *service_metrics_port
-
-    # Description of the Ingress
+      type: ClusterIP
+      ports:
+        - name: http
+          port: 80
+          protocol: TCP
+          targetPort: 80
     ingress:
-      - name: http
-        # apiVersion: networking.k8s.io/v1
-        # kind: Ingress
-        ingressAnnotations: {}
-        # tls: true
-        # tlsSecretName: {}
-        host: my-service.example.com
-        # path: {}
-        # pathType: {}
-        # servicePort: {}
-        # ingressClassName: {}
-
-    # Description of the ConfigMap
-    configmap:
-      # The contents of the config can be set via
-      # `--set-file "applications[0].configmap[0].data"="config.json"`
-      # `mountPath` - the path in the container where all configs will be mapped
-      # `files[0].name` - the name of the file in the container
-      # `files[0].data` - the config body is set via the --set-file parameter
-      mountPath: "/configs"
-      files:
-        - name: "config.json"
-          data: {}
-
-    # Description of the Secret
-    secret: {}
+      useTLS: true
+      fqdn: my-service.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+          servicePort: 80
+          serviceName: app1
+      ingressClassName: nginx
 ```
 
+## Contributing
 
-### Example values for `cronJobs`
-```yaml
-# An example of a fully described value file for describing the simplest cornjob
----
-# Description of the cronjob
-cronjobs:
-  - name: cronjob-example
-    image:
-      # Image Link
-      repository: group/image-cronjob
-      version: "1.0.0"
-      # Secret name with dockerconfig (for private registry)
-      pullsecrets: secret-registry-user
-      # `IfNotPresent` - only if the image is missing locally
-      # `Always` - the image is pumped out every time the hearth is started
-      # `Never` - it is never pumped out, only local images
-      imagePullPolicy: IfNotPresent
-    # Redefine resource quotas
-    resources:
-      requests:
-        memory: "256Mi"
-        cpu: "250m"
-      limits:
-        memory: "512Mi"
-        cpu: "500m"
-    # If it is necessary to predefine or replace the commands/arguments
-    commands:
-      - sh
-    args:
-      - -c
-      - env
-    # Container environment variables
-    envs:
-      LOG_LEVEL: info
-    # Environment variables to extract from the secret
-    envsSecret: []
-    #  - name: SECRET_USERNAME
-    #    keySecret: username
-    # Sheduling plan (as in the crown)
-    schedule: "* * * * *"
-    # Storing the history of jobs completed with an error
-    failedJobsHistoryLimit: 1
-    # Storing the history of jobs completed successfully
-    successfulJobsHistoryLimit: 0
-    # The policy of restarting jobs if the pod failed with an error
-    # Default `Never``
-    restartPolicy: "OnFailure"
-    # The time (sec) after which completed (success/faild) jobs will be cleared
-    # Default: 360
-    ttlSecondsAfterFinished: 360
-    # The time (in seconds) after which the job will be forcibly terminated
-    # Default: 600
-    activeDeadlineSeconds: 650
-    # The number of attempts to restart the job, if it failed with an error
-    # Default: 3
-    backoffLimit: 1
-    # Policy of simultaneous launch of instances of jobs
-    # Allow, Forbid, Replace
-    # Default: "Forbid"
-    concurrencyPolicy: "Forbid"
-    # Allowed number of jobs running at the same time
-    parallelism: 1
-    # The number of pods that must end with success in order
-    # for the job to be considered Complete
-    # Default: 1
-    completions: 1
-    # Redefine the affinity of the pod
-    affinity: {}
-    # nodeAffinity:
-    #   requiredDuringSchedulingIgnoredDuringExecution:
-    #     nodeSelectorTerms:
-    #       - matchExpressions:
-    #           - key: kubernetes.io/e2e-az-name
-    #             operator: In
-    #             values:
-    #               - e2e-az1
-    #               - e2e-az2
-    # Redefine the nodeSelector of the pod
-    nodeSelector: {}
-    # Redefine the tolerations of the pod
-    tolerations: []
-
-    # Description of the ConfigMap
-    configmap:
-      # The contents of the config can be set via
-      # `--set-file "cronjobs[0].configmap[0].data"="config.json"`
-      # `mountPath` - the path in the container where all configs will be mapped
-      # `files[0].name` - the name of the file in the container
-      # `files[0].data` - the config body is set via the --set-file parameter
-      mountPath: "/configs"
-      files:
-        - name: "config.json"
-          data: {}
-
-    # Description of the Secret
-    secret: {}
-```
-
-### Example values for `jobs`
-```yaml
-# An example of a fully described value file for describing the simplest job
----
-# Description of the job
-jobs:
-  - name: job-example
-    image:
-      # Image Link
-      repository: group/image-job
-      version: "1.0.0"
-      # Secret name with dockerconfig (for private registry)
-      pullsecrets: secret-registry-user
-      # `IfNotPresent` - only if the image is missing locally
-      # `Always` - the image is pumped out every time the hearth is started
-      # `Never` - it is never pumped out, only local images
-      imagePullPolicy: IfNotPresent
-    # Redefine resource quotas
-    resources:
-      requests:
-        memory: "256Mi"
-        cpu: "250m"
-      limits:
-        memory: "512Mi"
-        cpu: "500m"
-    # If it is necessary to predefine or replace the commands/arguments
-    commands:
-      - sh
-    args:
-      - -c
-      - env
-    # Container environment variables
-    envs:
-      LOG_LEVEL: info
-    # Environment variables to extract from the secret
-    envsSecret: []
-    #  - name: SECRET_USERNAME
-    #    keySecret: username
-    # The policy of restarting jobs if the pod failed with an error
-    # Default `Never``
-    restartPolicy: "OnFailure"
-    # The time (sec) after which completed (success/faild) jobs will be cleared
-    # Default: 360
-    ttlSecondsAfterFinished: 360
-    # The time (in seconds) after which the job will be forcibly terminated
-    # Default: 600
-    activeDeadlineSeconds: 650
-    # The number of attempts to restart the job, if it failed with an error
-    # Default: 3
-    backoffLimit: 1
-    # Policy of simultaneous launch of instances of jobs
-    # Allow, Forbid, Replace
-    # Default: "Forbid"
-    concurrencyPolicy: "Forbid"
-    # Allowed number of jobs running at the same time
-    parallelism: 1
-    # The number of pods that must end with success in order
-    # for the job to be considered Complete
-    # Default: 1
-    completions: 1
-    # Redefine the affinity of the pod
-    affinity: {}
-    # nodeAffinity:
-    #   requiredDuringSchedulingIgnoredDuringExecution:
-    #     nodeSelectorTerms:
-    #       - matchExpressions:
-    #           - key: kubernetes.io/e2e-az-name
-    #             operator: In
-    #             values:
-    #               - e2e-az1
-    #               - e2e-az2
-    # Redefine the nodeSelector of the pod
-    nodeSelector: {}
-    # Redefine the tolerations of the pod
-    tolerations: []
-
-    # Description of the ConfigMap
-    configmap:
-      # The contents of the config can be set via
-      # `--set-file "cronjobs[0].configmap[0].data"="config.json"`
-      # `mountPath` - the path in the container where all configs will be mapped
-      # `files[0].name` - the name of the file in the container
-      # `files[0].data` - the config body is set via the --set-file parameter
-      mountPath: "/configs"
-      files:
-        - name: "config.json"
-          data: {}
-
-    # Description of the Secret
-    secret: {}
-```
+Contributions are welcome! Feel free to submit issues and pull requests.
 
 
-### Example values for `rbac`
-```yaml
-# An example of a fully described value file for describing the simplest rbac
----
-# Description of the rbac
-# ServiceAccount, Role, RoleBinding
-rbac:
-  - name: serviceaccount-example
-    rules:
-      # The name of the api to which access is required for the service account
-      - apiGroups:
-          - ""
-        # List of resources that ServiceAccount will have access to
-        resources:
-          - pods
-        # List of rights to resources that ServiceAccount will have
-        verbs:
-          - get
-          - watch
-          - list
-```
-
-### Usage example for Gitlab-CI
+## Usage example for Gitlab-CI
 **To work, you will also need to add vault-client and kubectl to the image**
 ```yaml
 image: alpine/helm
@@ -413,12 +275,6 @@ helm repo add obervinov https://obervinov.github.io/helm-charts
 helm repo update
 ```
 4. Creating your own file `values.yaml`
-  - a basic example can be taken [here](#simple-values-for-deployment-with-configMap)
-  - example for [cronjobs](#example-values-for-cronjobs)
-  - example for [jobs](#example-values-for-jobs)
-  - example for [rbac](#example-values-for-rbac)
-  - full description of all available values [here](values.yaml) or execute the command `helm show values obervinov/universal-template`
-
 5. We are installing a release from this chart
 ```bash
 # ${HELM_RELEASE_NAME} - release name, consisting of the project name and the name of the current branch in gtilab
@@ -428,28 +284,4 @@ helm repo update
 # --namespace=${HELM_RELEASE_NAMESPACE} - namespace in the kube to install the chart
 # -f .helm/values.yaml - a link to the values file created in the previous step
 helm upgrade --install ${HELM_RELEASE_NAME} obervinov/universal-template --set-file "applications[0].configmap[0].data"="config/config.json" --set-file "applications[0].secret.data"=".helm/vault.secret.yaml" --namespace=${HELM_RELEASE_NAMESPACE} -f .helm/values.yaml
-```
-6. Running basic Helm tests<br />
-```bash
-# ${HELM_RELEASE_NAMESPACE} - namespace of the installed chart
-# ${HELM_RELEASE_NAME} - release name, consisting of the project name and the name of the current branch in gitlab
-# --logs output of logs from test pods
-helm test ${HELM_RELEASE_NAME} -n ${HELM_RELEASE_NAMESPACE} --logs
-```
-#### Allocation of resources to containers (resources):
-By default, there are limits in the protection template:
-```yaml
-  resources:
-    requests:
-      memory: "256Mi"
-      cpu: "250m"
-    limits:
-      memory: "512Mi"
-      cpu: "500m"
-```
-#### How to guarantee the deployment of new fruits after changing the config:
-In key `podAnnotations `adding a key `checksum/values.yaml` in the value, specify the path to file `values.yaml`
-```yaml
-        podAnnotations:
-          checksum/values.yaml: ".helm/values.yaml"
 ```

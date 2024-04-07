@@ -1,103 +1,113 @@
-
-{{- if .Values.jobs }}
-{{-   range .Values.jobs }}
-{{-     $name := .name }}
-{{-     $fullName := include "universal-template.fullName.jobs" (list $ . $name) }}
-
+{{- if .Values.applications }}
+{{-   range .Values.applications }}
+{{-     if .app }}
+{{-       if eq .app.type "job"}}
+{{-         $configMap        := .configMap }}
+{{-         $name             := .name }}
+{{-         $namespace        := $.Release.Namespace }}
+{{-         $fullName         := include "universal-template.fullName" (list $ . $name) }}
+{{-         $extraLabels      := .app.extraLabels }}
+{{-         $replicas         := .app.replicas }}
+{{-         $podAnnotations   := .app.podAnnotations }}
+{{-         $image            := .app.image }}
+{{-         $ports            := .app.ports }}
+{{-         $envs             := .app.envs }}
+{{-         $resources        := .app.resources }}
+{{-         $persistentVolume := .app.persistentVolume }}
+{{-         $tolerations      := .app.tolerations }}
+{{-         $affinity         := .app.affinity }}
+{{          $nodeSelector     := .app.nodeSelector }}
+{{-         $probes           := .app.probes }}
+{{-         $commands         := .app.commands }}
+{{-         $args             := .app.args }}
+{{-         $job              := .app.job }}
 ---
 apiVersion: batch/v1
 kind: Job
 metadata:
   name: {{ $fullName }}-{{ now | unixEpoch }}
-  namespace: {{ $.Release.Namespace }}
+  namespace: {{ $namespace }}
   labels:
     {{- include "universal-template.labels" $ | nindent 4 }}
     {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
 spec:
-  parallelism: {{ default 1 .parallelism }}
-  completions: {{ default 1 .completions }}
-  backoffLimit: {{ default 3 .backoffLimit }}
-  activeDeadlineSeconds: {{ default 600 .activeDeadlineSeconds }}
-  ttlSecondsAfterFinished: {{ default 300 .ttlSecondsAfterFinished }}
+  parallelism: {{ default 1 $job.parallelism }}
+  completions: {{ default 1 $job.completions }}
+  backoffLimit: {{ default 3 $job.backoffLimit }}
+  activeDeadlineSeconds: {{ default 600 $job.activeDeadlineSeconds }}
+  ttlSecondsAfterFinished: {{ default 300 $job.ttlSecondsAfterFinished }}
   template:
     spec:
-      {{- if .affinity }}
+      {{- if $affinity }}
       affinity:
-      {{-   toYaml .affinity | nindent 8 }}
+      {{-   toYaml $affinity | nindent 8 }}
       {{- end }}
-      {{- if .nodeSelector }}
+      {{- if $nodeSelector }}
       nodeSelector:
-      {{-   toYaml .nodeSelector | nindent 8 }}
+      {{-   toYaml $nodeSelector | nindent 8 }}
       {{- end }}
-      {{- if .tolerations }}
+      {{- if $tolerations }}
       tolerations:
-      {{-   toYaml .tolerations | nindent 8 }}
-      {{- end }}
-      {{- if .initContainers }}
-      initContainers:
-      {{-   range .initContainers }}
-      {{-     include "universal-template.containers.init.template" . | nindent 6 }}
-      {{-   end }}
+      {{-   toYaml $tolerations | nindent 8 }}
       {{- end }}
       containers:
-      - name: {{ $fullName }}-job
-        image: {{ .image.repository }}:{{ default $.Values.version .image.version }}
-        imagePullPolicy: {{ .image.imagePullPolicy }}
-        {{- if .resources }}
-        resources: {{- toYaml .resources | nindent 10 }}
-        {{- else }}
-        resources: {{- include "universal-template.resources.default" . | nindent 8 }}
+      - name: {{ $fullName }}
+        image: {{ $image.repository }}:{{ $image.tag }}
+        imagePullPolicy: {{ $image.pullPolicy }}
+        {{- if $resources }}
+        resources: {{- toYaml $resources | nindent 10 }}
         {{- end }}
+        {{- if $commands }}
         command:
-        {{-   range .commands }}
+        {{-   range $commands }}
           - {{ . | quote }}
         {{-   end }}
-        {{- if .args }}
+        {{- end }}
+        {{- if $args }}
         args:
-        {{-   range .args }}
+        {{-   range $args }}
           - {{ . | quote }}
         {{-   end }}
         {{- end }}
-        {{- if or (.envs) (.envsSecret) }}
+        {{- if $envs }}
         env:
-        {{- end }}
-        {{- if .envs }}
-        {{-   range $name, $value := .envs }}
-        - name: {{ $name | quote }}
-          value: {{ $value | quote }}
-        {{-   end }}
-        {{- end }}
-        {{- if and (.envsSecret) (.secret) }}
-        {{-   range .envsSecret }}
-        - name: {{ .name }}
-          valueFrom:
+        {{-   range $envs }}
+          - name: {{ .name }}
+        {{-     if .valueFrom }}
+            valueFrom:
             secretKeyRef:
-              name: {{ $fullName }}-job-secret
-              key: {{ .keySecret }}
+              name: {{ .valueFrom.secretKeyRef.name }}
+              key: {{ .valueFrom.secretKeyRef.key }}
+        {{-     else }}
+            value: {{ .value }}
+        {{-     end }}
         {{-   end }}
         {{- end }}
-      {{- if .configmap }}
+      {{- if $configMap }}
         volumeMounts:
         - name: volume-configs
-          mountPath: {{ .configmap.mountPath | lower }}
+          mountPath: {{ $configMap.mountPath | lower }}
           readOnly: true
       volumes:
       - name: volume-configs
         configMap:
-          name: {{ $fullName }}-job-cm
+          name: {{ $fullName }}
           items:
-          {{-   range .configmap.files }}
+          {{-   range $configMap.files }}
           - key: {{ .name | lower }}
             path: {{ .name | lower }}
           {{-   end }}
       {{- end }}
-      {{- if .image.pullsecrets }}
+      {{- if $image.pullSecrets }}
       imagePullSecrets:
-      - name: {{ .image.pullsecrets }}
+      {{-   range $image.pullSecrets }}
+        - name: {{ . }}
+      {{-   end }}
       {{- end }}
-      restartPolicy: {{ .restartPolicy | default "Never" }}
-  backoffLimit: {{ .backoffLimit | default 1 }}
+      restartPolicy: {{ $job.restartPolicy | default "Never" }}
+  backoffLimit: {{ $job.backoffLimit | default 1 }}
 ...
-
-{{-   end -}}
-{{- end -}}
+{{-       end }}
+{{-     end }}
+{{-   end }}
+{{- end }}

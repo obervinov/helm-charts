@@ -1,23 +1,39 @@
 {{- if .Values.applications }}
 {{-   range .Values.applications }}
-{{-     $name := .name }}
-{{-     $fullName := include "universal-template.fullName" (list $ . $name) }}
-
+{{-     if .app }}
+{{-       if eq .app.type "deployment"}}
+{{-         $configMap         := .configMap }}
+{{-         $service           := .service }}
+{{-         $name              := .name }}
+{{-         $namespace         := $.Release.Namespace }}
+{{-         $fullName          := include "universal-template.fullName" (list $ . $name) }}
+{{-         $extraLabels       := .app.extraLabels }}
+{{-         $replicas          := .app.replicas }}
+{{-         $extraAnnotations  := .app.extraAnnotations }}
+{{-         $image             := .app.image }}
+{{-         $ports             := .app.ports }}
+{{-         $envs              := .app.envs }}
+{{-         $resources         := .app.resources }}
+{{-         $persistentVolumes := .app.persistentVolumes }}
+{{-         $tolerations       := .app.tolerations }}
+{{-         $affinity          := .app.affinity }}
+{{          $nodeSelector      := .app.nodeSelector }}
+{{-         $probes            := .app.probes }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ $fullName }}
-  namespace: {{ $.Release.Namespace }}
+  namespace: {{ $namespace }}
   labels:
     {{- include "universal-template.labels" $ | nindent 4 }}
     {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 4 }}
-  {{- if .deployment.extraLabels }}
-  {{- toYaml .deployment.extraLabels | nindent 4 }}
-  {{- end }}
+    {{- if $extraLabels }}
+    {{-   toYaml $extraLabels | nindent 4 }}
+    {{- end }}
 spec:
-  {{- if .deployment.replicas }}
-  replicas: {{ .deployment.replicas | int }}
+  {{- if $replicas }}
+  replicas: {{ $replicas }}
   {{- else }}
   replicas: 1
   {{- end }}
@@ -26,130 +42,117 @@ spec:
       {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 6 }}
   template:
     metadata:
+      {{- if $extraAnnotations }}
       annotations:
-      {{- range $key, $value := .deployment.podAnnotations }}
-      {{- if contains "checksum" $key }}
-        {{ $key }}: {{ $.Files.Get $value | sha256sum | quote }}
-      {{- else if contains "prometheus.io" $key }}
-        {{ $key }}: {{ $value | squote }}
-      {{- else }}
-        {{ $key }}: {{ $value | quote }}
-      {{- end }}
+      {{-   toYaml $extraAnnotations | nindent 8 }}
       {{- end }}
       labels:
         {{- include "universal-template.labels" $ | nindent 8 }}
         {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 8 }}
+      {{- if $extraLabels }}
+      {{-   toYaml $extraLabels | nindent 8 }}
+      {{- end }}
     spec:
-      {{- if .deployment.affinity }}
+      {{- if $affinity }}
       affinity:
-        {{- toYaml .deployment.affinity | nindent 8 }}
+        {{- toYaml $affinity | nindent 8 }}
       {{- end }}
-      {{- if .deployment.nodeSelector }}
+      {{- if $nodeSelector }}
       nodeSelector:
-        {{- toYaml .deployment.nodeSelector | nindent 8 }}
+        {{- toYaml $nodeSelector | nindent 8 }}
       {{- end }}
-      {{- if .deployment.tolerations }}
+      {{- if $tolerations }}
       tolerations:
-        {{- toYaml .deployment.tolerations | nindent 8 }}
-      {{- end }}
-      {{- if .deployment.initContainers }}
-      initContainers:
-      {{-   range .deployment.initContainers }}
-      {{-     include "universal-template.containers.init.template" . | nindent 6 }}
-      {{-   end }}
+        {{- toYaml $tolerations | nindent 8 }}
       {{- end }}
       containers:
-      {{- if .deployment.otlp }}
-      {{-   if .deployment.otlp.enabled }}
-      {{-   include "universal-template.containers.otlp.template" . | nindent 6 }}
-      {{-   end }}
-      {{- end }}
-      - name: {{ .name }}
-        image: {{ .deployment.image.repository }}:{{ default $.Values.version .deployment.image.version }}
-        {{- if .deployment.image.imagePullPolicy }}
-        imagePullPolicy: {{ .deployment.image.imagePullPolicy }}
+      - name: {{ $name }}
+        image: {{ $image.repository }}:{{ $image.tag }}
+        {{- if $image.pullPolicy }}
+        imagePullPolicy: {{ $image.pullPolicy }}
         {{- else }}
         imagePullPolicy: IfNotPresent
         {{- end }}
-        {{- if .deployment.resources }}
-        resources: {{- toYaml .deployment.resources | nindent 10 }}
-        {{- else }}
-        resources: {{- include "universal-template.resources.default" . | nindent 10 }}
+        {{- if $resources }}
+        resources: {{- toYaml $resources | nindent 10 }}
         {{- end }}
-        {{- if .deployment.commands }}
+        {{- if $image.commands }}
         command:
-        {{-   range .deployment.commands }}
+        {{-   range $image.commands }}
           - {{ . | quote }}
         {{-   end }}
         {{- end }}
-        {{- if .deployment.args }}
+        {{- if $image.args }}
         args:
-        {{-   range .deployment.args }}
+        {{-   range $image.args }}
           - {{ . | quote }}
         {{-   end }}
         {{- end }}
-        {{- if .service }}
+        {{- if $service }}
         ports:
-        {{-   range .service }}
+        {{-   range $service.ports }}
         - name: {{ .name }}
-          containerPort: {{ .port | int }}
+          containerPort: {{ .targetPort | int }}
           protocol: {{ .protocol }}
         {{-   end }}
         {{- end }}
-        {{- if or (.deployment.envs) (.deployment.envsSecret) }}
+        {{- if $envs }}
         env:
-        {{- end }}
-        {{- if .deployment.envs }}
-        {{-   range $name, $value := .deployment.envs }}
-        - name: {{ $name | quote }}
-          value: {{ $value | quote }}
-        {{-   end }}
-        {{- end }}
-        {{- if .deployment.envsSecret }}
-        {{-   range .deployment.envsSecret }}
-        - name: {{ .name }}
-          valueFrom:
+        {{-   range $envs }}
+          - name: {{ .name }}
+        {{-     if .valueFrom }}
+            valueFrom:
             secretKeyRef:
-              name: {{ $fullName }}
-              key: {{ .keySecret }}
+              name: {{ .valueFrom.secretKeyRef.name }}
+              key: {{ .valueFrom.secretKeyRef.key }}
+        {{-     else }}
+            value: {{ .value }}
+        {{-     end }}
         {{-   end }}
         {{- end }}
-        {{- if .deployment.probes }}
-        {{- toYaml .deployment.probes | nindent 8 }}
+        {{- if $probes }}
+        {{- toYaml $probes | nindent 8 }}
         {{- end }}
-      {{- if or .configMap .deployment.persistentVolume }}
+        {{- if or $configMap $persistentVolumes }}
         volumeMounts:
-        {{- if .configmap }}
+        {{- if $configMap }}
         - name: volume-configs
-          mountPath: {{ .configmap.mountPath | lower }}
+          mountPath: {{ .configMap.mountPath | lower }}
           readOnly: true
         {{- end }}
-        {{- if .deployment.persistentVolume }}
-        - name: {{ .deployment.persistentVolume.name }}
-          mountPath: {{ .deployment.persistentVolume.mountPath }}
+        {{- if $persistentVolumes }}
+        {{-   range $persistentVolumes }}
+        - name: {{ .name }}
+          mountPath: {{ .mountPath }}
+        {{-   end }}
         {{- end }}
       volumes:
-      {{-   if .configmap }}
+      {{-   if $configMap }}
       - name: volume-configs
         configMap:
           name: {{ $fullName }}
           items:
-          {{- range .configmap.files }}
+          {{- range $configMap.files }}
           - key: {{ .name | lower }}
             path: {{ .name | lower }}
           {{- end }}
       {{-   end }}
-      {{-   if .deployment.persistentVolume }}
-      - name: {{ .deployment.persistentVolume.name }} 
+      {{-   if $persistentVolumes }}
+      {{-     range $persistentVolumes }}
+      - name: {{ .name }}
         persistentVolumeClaim:
-          claimName: pvc-{{ $fullName }}
+          claimName: {{ $fullName }}
+      {{-     end }}
       {{-   end }}
       {{- end }}
-      {{- if .deployment.image.pullsecrets }}
+      {{- if $image.pullSecrets }}
       imagePullSecrets:
-        - name: {{ .deployment.image.pullsecrets }}
+      {{-   range $image.pullSecrets }}
+      - name: {{ . }}
+      {{-   end }}
       {{- end }}
 ...
-
+{{-       end }}
+{{-     end }}
 {{-   end }}
 {{- end }}

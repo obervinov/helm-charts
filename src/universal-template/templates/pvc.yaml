@@ -1,0 +1,43 @@
+{{- if .Values.applications }}
+{{-   range .Values.applications }}
+{{-     if .app.persistentVolume }}
+{{-       if eq .app.type "deployment" }}
+{{-         $name := .name }}
+{{-         $fullName := include "universal-template.fullName" (list $ . $name) }}
+{{-         $namespace := $.Release.Namespace }}
+{{-         $persistentVolumes := .app.persistentVolumes }}
+{{-         range $persistentVolumes }}
+{{-           $size := .size }}
+{{-           $accessModes := .accessModes }}
+{{-           $storageClassName := .storageClassName }}
+{{-           $fullName := printf "%s-%s" $fullName .name }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    {{- include "universal-template.labels" $ | nindent 4 }}
+    {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 4 }}
+  name: {{ $fullName }}
+  namespace: {{ $namespace }}
+spec:
+  accessModes:
+  {{- if $accessModes }}
+  {{-  range $accessModes }}
+    - {{ . }}
+  {{-   end }}
+  {{- else }}
+    - ReadWriteOnce
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ $size }}
+  {{- if $storageClassName }}
+  storageClassName: {{ $storageClassName }}
+  {{- end }}
+...
+{{-         end }}
+{{-       end }}
+{{-     end }}
+{{-   end }}
+{{- end }}

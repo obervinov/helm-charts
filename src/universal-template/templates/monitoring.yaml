@@ -1,0 +1,64 @@
+{{- if .Values.applications }}
+{{-   range .Values.applications }}
+{{-     if .monitoring }}
+{{-       if .monitoring.prometheus }}
+{{-         range .monitoring.prometheus }}
+{{-           $apiVersion         := .apiVersion }}
+{{-           $kind               := .kind }}
+{{-           $name               := .name }}
+{{-           $fullName           := include "universal-template.fullName" (list $ . $name) }}
+{{-           $namespace          := $.Release.Namespace }}
+{{-           $namespacesSelector := .namespacesSelector }}
+{{-           $endpoints          := .endpoints }}
+{{-           $jobLabel           := .jobLabel }}
+---
+apiVersion: {{ default "monitoring.coreos.com/v1" $apiVersion }}
+kind: {{ default "ServiceMonitor" $kind }}
+metadata:
+  labels:
+    {{- include "universal-template.labels" $ | nindent 4 }}
+    {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 4 }}
+    {{- include "universal-template.prometheus.labels" $ | nindent 4 }}
+  name: {{ $fullName }}
+  namespace: {{ $namespace }}
+spec:
+{{- if $namespacesSelector }}
+  namespaceSelector:
+    matchNames:
+    {{- range $namespacesSelector }}
+      - {{ . }}
+    {{- end }}
+{{- else }}
+  namespaceSelector:
+    matchNames:
+      - {{ $namespace }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 4 }}
+{{- if eq $kind "ServiceMonitor" }}
+  endpoints:
+{{-   range $endpoints }}
+  - bearerTokenFile: {{ .bearerTokenFile }}
+    honorLabels: {{ default true .honorLabels }}
+    port: {{ .port }}
+    path: {{ default "/metrics" .path }}
+    interval: {{ default "30s" .interval }}
+    scheme: {{ default "http" .scheme }}
+{{-   end }}
+{{- else if eq $kind "PodMonitor" }}
+  podMetricsEndpoints:
+{{-   range $endpoints }}
+  - port: {{ .port }}
+    path: {{ default "/metrics" .path }}
+    interval: {{ default "30s" .interval }}
+    scheme: {{ default "http" .scheme }}
+{{-   end }}
+{{- end }}
+  jobLabel: {{ default "k8s-app" $jobLabel }}
+...
+{{-         end }}
+{{-       end }}
+{{-     end }}
+{{-   end }}
+{{- end }}

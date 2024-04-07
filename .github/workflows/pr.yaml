@@ -5,10 +5,10 @@ name: Checks and Build Helm-Charts Bundle
 on:
   push:
     branches:
-      - "release/*"
-      - "fix/*"
-      - "feature/*"
-      - "hotfix/*"
+      - '*'
+      - '*/*'
+      - '**'
+      - '!main'
 
 jobs:
   helm-repository-build:

@@ -1,14 +1,16 @@
-{{- if .Values.rbac }}
-{{-   range .Values.rbac }}
-{{-     $name := .name }}
-{{-     $fullName := include "universal-template.fullName.rbac" (list $ . $name) }}
-
+{{- if .Values.applications }}
+{{-   range .Values.applications }}
+{{-     if .rbac }}
+{{-       $name      := .name }}
+{{-       $fullName  := include "universal-template.fullName" (list $ . $name) }}
+{{-       $namespace := $.Release.Namespace }}
+{{-       $rbac     := .rbac }} 
 ---
 kind: ServiceAccount
 apiVersion: v1
 metadata:
   name: {{ $fullName }}
-  namespace: {{ $.Release.Namespace }}
+  namespace: {{ $namespace }}
   labels:
     {{- include "universal-template.labels" $ | nindent 4 }}
     {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
@@ -17,12 +19,12 @@ kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: {{ $fullName }}
-  namespace: {{ $.Release.Namespace }}
+  namespace: {{ $namespace }}
   labels:
     {{- include "universal-template.labels" $ | nindent 4 }}
     {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
 rules:
-{{- range .rules }}
+{{- range $rbac }}
   - apiGroups:
     {{-   range .apiGroups }}
       - {{ . | quote }}
@@ -41,18 +43,19 @@ kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: {{ $fullName }}
-  namespace: {{ $.Release.Namespace }}
+  namespace: {{ $namespace }}
   labels:
     {{- include "universal-template.labels" $ | nindent 4 }}
     {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
 subjects:
   - kind: ServiceAccount
-    name: {{ $fullName }}-sa
-    namespace: "{{ $.Release.Namespace }}"
+    name: {{ $fullName }}
+    namespace: {{ $namespace }}
 roleRef:
   kind: Role
-  name: {{ $fullName }}-role
+  name: {{ $fullName }}
   apiGroup: rbac.authorization.k8s.io
 ...
+{{-     end }}
 {{-   end }}
 {{- end }}
