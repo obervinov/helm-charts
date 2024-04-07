@@ -1,7 +1,7 @@
 ---
 apiVersion: v2
 name: gateway-api-crds
-version: 1.0.0
+version: 1.0.1
 description: This chart deploys the CRDs for the Gateway API
 type: application
 home: https://github.com/obervinov/helm-charts/blob/main/src/gateway-api-crds
