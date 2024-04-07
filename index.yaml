@@ -3,7 +3,25 @@ entries:
   gateway-api-crds:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2024-04-07T19:23:14.427329108Z"
+    created: "2024-04-07T19:52:53.67671251Z"
+    description: This chart deploys the CRDs for the Gateway API
+    digest: 17d5c2ad3eb471cffeda35f11e22cee0a00b4164f19fd50ea54557d0c754de05
+    home: https://github.com/obervinov/helm-charts/blob/main/src/gateway-api-crds
+    icon: https://helm.sh/img/helm.svg
+    maintainers:
+    - email: obervinov@pm.me
+      name: obervinov
+      url: https://github.com/obervinov
+    name: gateway-api-crds
+    sources:
+    - https://github.com/obervinov/helm-charts/blob/main/src/gateway-api-crds
+    type: application
+    urls:
+    - https://helm-charts.charafee.cfd/charts/gateway-api-crds-1.0.1.tgz
+    version: 1.0.1
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2024-04-07T19:52:53.676521553Z"
     description: This chart deploys the CRDs for the Gateway API
     digest: f5fe2e5d4fa95b2dc00928ddfab029ba230f663d49fb829d6d282d7c74dfda35
     home: https://github.com/obervinov/helm-charts/blob/main/src/gateway-api-crds
@@ -22,9 +40,9 @@ entries:
   gitlab-runners:
   - apiVersion: v2
     appVersion: alpine-v12.6.0
-    created: "2024-04-07T19:23:14.427993719Z"
+    created: "2024-04-07T19:52:53.677375729Z"
     description: This is a chart with gitlab-runners for devops k8s
-    digest: 61fe444a4dbd2a2b9448ff8059398a35e875a0f5fa44a264f86ea8d245735a4b
+    digest: db2e52bf833445302c683421149869b7aaf0b56b1a9826dd92dbaa21c9972f02
     home: https://github.com/obervinov/helm-charts/blob/main/src/gitlab-runners
     icon: https://helm.sh/img/helm.svg
     keywords:
@@ -46,14 +64,14 @@ entries:
   jaeger-stack:
   - apiVersion: v2
     appVersion: 1.32.0
-    created: "2024-04-07T19:23:14.430233542Z"
+    created: "2024-04-07T19:52:53.679604082Z"
     dependencies:
     - condition: elasticsearch.enabled
       name: elasticsearch
       repository: https://helm.elastic.co
       version: ^7.11.1
     description: Helm-chart with jaeger-stack
-    digest: ca5aff457b931ee4f519cb287ce3b07fbe2f18dc775a8e6e8b86fc2b2716b77c
+    digest: 0343c087c290839e245a5809005564bdc79eea7c6d2e0f71e77254a835bb425e
     home: https://github.com/obervinov/helm-charts/blob/main/src/jaeger-stack
     icon: https://helm.sh/img/helm.svg
     keywords:
@@ -75,9 +93,9 @@ entries:
   k8s-haproxy:
   - apiVersion: v2
     appVersion: 2.1.1-alpine
-    created: "2024-04-07T19:23:14.43069292Z"
+    created: "2024-04-07T19:52:53.67990297Z"
     description: Helm-chart with daemonset-proxy by haproxy
-    digest: ee57f24d49c9c15a3efd024abb4283b7fe2554f257178e320d4a20a7444776ad
+    digest: 014536ce53aa6e359bbf7d51badefc58dbbc8dc08441cb3815d245d566a3be28
     home: https://github.com/obervinov/helm-charts/blob/main/src/k8s-haproxy
     icon: https://helm.sh/img/helm.svg
     keywords:
@@ -99,9 +117,9 @@ entries:
   kibana:
   - apiVersion: v1
     appVersion: 8.5.1
-    created: "2024-04-07T19:23:14.431297839Z"
+    created: "2024-04-07T19:52:53.681100395Z"
     description: Non official Elastic helm chart for Kibana
-    digest: 9eafcc5ac2e4512be75b472dba442484c56ee35837fda8bb93e11ff588f06d26
+    digest: ad55628152a8e8248e7fb79fdb1cfc84e9622ba7d29bf48a169469932131c6b2
     home: https://github.com/obervinov/helm-charts/blob/main/src/kibana
     icon: https://helm.elastic.co/icons/kibana.png
     maintainers:
@@ -117,10 +135,10 @@ entries:
   promoperators:
   - apiVersion: v2
     appVersion: 1.0.1
-    created: "2024-04-07T19:23:14.43155568Z"
+    created: "2024-04-07T19:52:53.681405245Z"
     description: This chart is designed for easy installation of custom ServiceMonitor's
       or PodMonitor's for Prometheus Operator
-    digest: af1d0c628771cc21dfc0c4201c6b01e9ec7de2342b2d2ecb7d9fd5d744da4067
+    digest: 701d57e73e8d49c7197061ef223e6b014edeec151f3166fbd988ba27c0bed804
     home: https://github.com/obervinov/helm-charts/blob/main/src/promoperators
     icon: https://helm.sh/img/helm.svg
     maintainers:
@@ -135,6 +153,25 @@ entries:
     - https://helm-charts.charafee.cfd/charts/promoperators-1.0.1.tgz
     version: 1.0.1
   terraform-operator-crds:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2024-04-07T19:52:53.68169149Z"
+    description: 'This chart generating CRDs for Terraform Cloud Operator: Workspaces
+      and AgentPools'
+    digest: 7b7ce9347a52669bf52be3361ffb2238e95a77703dd5b6de31bd41bb62fac356
+    home: https://github.com/obervinov/helm-charts/blob/main/src/terraform-operator-crds
+    icon: https://helm.sh/img/helm.svg
+    maintainers:
+    - email: obervinov@pm.me
+      name: obervinov
+      url: https://github.com/obervinov
+    name: terraform-operator-crds
+    sources:
+    - https://github.com/obervinov/helm-charts/blob/main/src/terraform-operator-crds
+    type: application
+    urls:
+    - https://helm-charts.charafee.cfd/charts/terraform-operator-crds-1.0.1.tgz
+    version: 1.0.1
   - apiVersion: v2
     appVersion: 1.0.0
     created: "2024-04-07T19:23:14.432275575Z"
@@ -157,12 +194,12 @@ entries:
   universal-template:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2024-04-07T19:23:14.434435057Z"
+    created: "2024-04-07T19:52:53.683675175Z"
     description: This universal helm chart template is designed to simplify rolling
       out simple releases and speed up the helm implementation process. There is no
       need to write new charts for each microservice, you can use one by changing
       only values.yaml
-    digest: 80351db2eef96b05c400d0dcdc25b416ad6e5848921583ed3adeb8be2dd85af6
+    digest: a139f65e274236829185badd6f35619306ea0dacac265cd58f163f6b570ae524
     home: https://github.com/obervinov/helm-charts/blob/main/src/universal-template
     icon: https://helm.sh/img/helm.svg
     maintainers:
@@ -178,7 +215,7 @@ entries:
     version: 2.0.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2024-04-07T19:23:14.433905478Z"
+    created: "2024-04-07T19:52:53.683212952Z"
     description: This universal helm chart template is designed to simplify rolling
       out simple releases and speed up the helm implementation process. There is no
       need to write new charts for each microservice, you can use one by changing
@@ -199,7 +236,7 @@ entries:
     version: 1.0.1
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2024-04-07T19:23:14.433314234Z"
+    created: "2024-04-07T19:52:53.682573718Z"
     description: This universal helm chart template is designed to simplify rolling
       out simple releases and speed up the helm implementation process. There is no
       need to write new charts for each microservice, you can use one by changing
@@ -218,4 +255,4 @@ entries:
     urls:
     - https://helm-charts.charafee.cfd/charts/universal-template-1.0.0.tgz
     version: 1.0.0
-generated: "2024-04-07T19:23:14.426994083Z"
+generated: "2024-04-07T19:52:53.676184824Z"
