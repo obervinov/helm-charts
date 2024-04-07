@@ -81,9 +81,9 @@ spec:
               - name: {{ .name }}
             {{-     if .valueFrom }}
                 valueFrom:
-                secretKeyRef:
-                  name: {{ .valueFrom.secretKeyRef.name }}
-                  key: {{ .valueFrom.secretKeyRef.key }}
+                  secretKeyRef:
+                    name: {{ .valueFrom.secretKeyRef.name }}
+                    key: {{ .valueFrom.secretKeyRef.key }}
             {{-     else }}
                 value: {{ .value }}
             {{-     end }}
