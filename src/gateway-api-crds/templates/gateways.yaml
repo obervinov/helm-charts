@@ -1,0 +1,56 @@
+{{- if .Values.gateways }}
+{{-   range .Values.gateways }}
+{{-     $name := .name }}
+{{-     $namespace := $.Release.Namespace }}
+{{-     $hostnames := .hostnames }}
+{{-     $gatewayClass := .gatewayClass }}
+{{-     $extraAnnotations := .extraAnnotations }}
+{{-     $listeners := .listeners }}
+{{-     $serviceType := .serviceType }}
+{{-     $allowedNamespaces := .allowedNamespaces }}
+---
+apiVersion: gateway.networking.k8s.io/v1beta1
+kind: Gateway
+metadata:
+  annotations:
+{{-     if $serviceType }}
+    networking.istio.io/service-type: {{ $serviceType }}
+{{-     end }}
+{{-     if $extraAnnotations }}
+{{       toYaml $extraAnnotations | indent 4 }}
+{{-     end }}
+  name: {{ $name }}
+  namespace: {{ $namespace }}
+spec:
+  gatewayClassName: {{ $gatewayClass }}
+  listeners:
+{{-     range $hostnames }}
+{{-       $hostname := . }}
+{{-       range $listeners }}
+    - allowedRoutes:
+        namespaces:
+{{-       if $allowedNamespaces }}
+          from:
+{{-         range $allowedNamespaces }}
+            - {{ . }}
+{{-         end }}
+{{-       else }}
+          from: All
+{{-       end }}
+      hostname: {{ $hostname | quote }}
+      name: {{ .name }}
+      port: {{ .port }}
+      protocol: {{ .protocol }}
+{{-       if eq .protocol "HTTPS" }}
+      tls:
+        certificateRefs:
+          - group: ""
+            kind: Secret
+{{- $modifiedName := regexReplaceAll "(\\.|\\*)" $hostname "" }}
+            name: {{ $modifiedName }}-secret-tls
+        mode: Terminate
+{{-       end }}
+{{-     end }}
+{{-     end }}
+{{-   end }}
+{{- end }}

@@ -1,0 +1,53 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "properties": {
+        "gateways": {
+            "items": {
+                "properties": {
+                    "allowedNamespaces": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    },
+                    "extraAnnotations": {
+                        "properties": {},
+                        "type": "object"
+                    },
+                    "gatewayClass": {
+                        "type": "string"
+                    },
+                    "hostnames": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "type": "array"
+                    },
+                    "listeners": {
+                        "items": {
+                            "properties": {
+                                "name": {
+                                    "type": "string"
+                                },
+                                "port": {
+                                    "type": "integer"
+                                },
+                                "protocol": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "type": "array"
+                    },
+                    "name": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "type": ["array", "null"]
+        }
+    },
+    "type": "object"
+}
