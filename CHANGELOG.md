@@ -15,6 +15,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 * Global refactoring of Helm-chart `universal-template`: the structure of the chart and values-file has been changed globally, old versions of values-file are completely incompatible with the new release!
 #### 🐛 Bug Fixes
 * [Terraform-operator-crds: applyMethod behavior is wrong](https://github.com/obervinov/helm-charts/issues/27)
+* [The release creation workflow started twice](https://github.com/obervinov/helm-charts/issues/26)
+* [Renovate disabled to update helm dependencies](https://github.com/obervinov/helm-charts/issues/23)
 
 
 ## v1.0.1 - 2024-01-19
