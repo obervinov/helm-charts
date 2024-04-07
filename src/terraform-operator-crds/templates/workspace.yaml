@@ -20,7 +20,7 @@ spec:
   agentPool:
     name: {{ $agent.agentPool }}
   allowDestroyPlan: true
-  applyMethod: {{ $agent.applyMethod }}
+  applyMethod: {{ default $agent.applyMethod .applyMethod }}
   description: {{ .description }}
   executionMode: {{ $agent.executionMode }}
   name: {{ .name }}-workspace
