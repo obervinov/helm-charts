@@ -57,7 +57,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ $name }}
-          image: {{ $image.repositry }}:{{ $image.tag }}
+          image: {{ $image.repository }}:{{ $image.tag }}
           imagePullPolicy: {{ default "IfNotPresent" $image.pullPolicy }}
           {{- if $image.commands }}
           command:

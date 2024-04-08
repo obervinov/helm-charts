@@ -107,7 +107,7 @@ spec:
           {{- if $image.pullSecrets }}
           imagePullSecrets:
           {{-   range $image.pullSecrets }}
-            - name: {{ .name }}
+            - name: {{ . }}
           {{-   end }}
           {{- end }}
           restartPolicy: {{ default "Never" $cronJob.restartPolicy }}

@@ -19,7 +19,7 @@ applications:
     # Description of the application instance
     app:
       # Type of application (can be deployment, statefulset, job, cronjob)
-      type: deployment
+      type: statefulset
       # Additional labels
       extraLabels:
         app.kubernetes.io/instance: "app1"
@@ -220,3 +220,360 @@ applications:
               path: /metrics
               interval: 15s
               scheme: http
+  - name: app2
+    # Description of the application instance
+    app:
+      # Type of application (can be deployment, statefulset, job, cronjob)
+      type: deployment
+      # Additional labels
+      extraLabels:
+        app.kubernetes.io/instance: "app2"
+      # Number of replicas for the application
+      replicas: 1
+      # Custom pod annotations
+      extraAnnotations:
+        checksum/values.yaml: "helm/values.yaml"
+      # Image settings
+      image:
+        repository: "my-registry/app1"
+        tag: "1.0.0"
+        pullPolicy: IfNotPresent
+        pullSecrets:
+          - my-secret
+        commands:
+          - bash
+        args:
+          - -c
+          - env
+      # Environment variables
+      envs:
+        - name: LOG_LEVEL
+          value: INFO
+        # Environment variables to extract from the secret
+        - name: SECRET_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: my-secret
+              key: username
+      # Resources
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "250m"
+        limits:
+          memory: "512Mi"
+          cpu: "500m"
+      # Persistent volume
+      persistentVolume:
+        name: "data"
+        size: 1Gi
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: "standard"
+        mountPath: "/data"
+      # Affinity
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/e2e-az-name
+                    operator: In
+                    values:
+                      - e2e-az1
+      # NodeSelector
+      nodeSelector:
+        disktype: ssd
+      # Tolerations
+      tolerations:
+        - key: "key"
+          operator: "Equal"
+          value: "value"
+          effect: "NoSchedule"
+      # Probes
+      probes:
+        livenessProbe:
+          httpGet:
+            path: /health/liveness
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health/readiness
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /health/startup
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 3
+      # Only for batch applications
+      cronjob:
+        schedule: "*/1 * * * *"
+        failedJobsHistoryLimit: 1
+        successfulJobsHistoryLimit: 0
+        restartPolicy: "OnFailure"
+        ttlSecondsAfterFinished: 360
+        activeDeadlineSeconds: 650
+        backoffLimit: 1
+        concurrencyPolicy: "Forbid"
+        parallelism: 1
+        completions: 1
+      # Only for batch applications
+      job:
+        restartPolicy: "OnFailure"
+        ttlSecondsAfterFinished: 360
+        activeDeadlineSeconds: 650
+        backoffLimit: 1
+        concurrencyPolicy: "Forbid"
+        parallelism: 1
+        completions: 1
+  - name: app3
+    # Description of the application instance
+    app:
+      # Type of application (can be deployment, statefulset, job, cronjob)
+      type: job
+      # Additional labels
+      extraLabels:
+        app.kubernetes.io/instance: "app3"
+      # Number of replicas for the application
+      replicas: 1
+      # Custom pod annotations
+      extraAnnotations:
+        checksum/values.yaml: "helm/values.yaml"
+      # Image settings
+      image:
+        repository: "my-registry/app1"
+        tag: "1.0.0"
+        pullPolicy: IfNotPresent
+        pullSecrets:
+          - my-secret
+        commands:
+          - bash
+        args:
+          - -c
+          - env
+      # Environment variables
+      envs:
+        - name: LOG_LEVEL
+          value: INFO
+        # Environment variables to extract from the secret
+        - name: SECRET_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: my-secret
+              key: username
+      # Resources
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "250m"
+        limits:
+          memory: "512Mi"
+          cpu: "500m"
+      # Persistent volume
+      persistentVolume:
+        name: "data"
+        size: 1Gi
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: "standard"
+        mountPath: "/data"
+      # Affinity
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/e2e-az-name
+                    operator: In
+                    values:
+                      - e2e-az1
+      # NodeSelector
+      nodeSelector:
+        disktype: ssd
+      # Tolerations
+      tolerations:
+        - key: "key"
+          operator: "Equal"
+          value: "value"
+          effect: "NoSchedule"
+      # Probes
+      probes:
+        livenessProbe:
+          httpGet:
+            path: /health/liveness
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health/readiness
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /health/startup
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 3
+      # Only for batch applications
+      cronjob:
+        schedule: "*/1 * * * *"
+        failedJobsHistoryLimit: 1
+        successfulJobsHistoryLimit: 0
+        restartPolicy: "OnFailure"
+        ttlSecondsAfterFinished: 360
+        activeDeadlineSeconds: 650
+        backoffLimit: 1
+        concurrencyPolicy: "Forbid"
+        parallelism: 1
+        completions: 1
+      # Only for batch applications
+      job:
+        restartPolicy: "OnFailure"
+        ttlSecondsAfterFinished: 360
+        activeDeadlineSeconds: 650
+        backoffLimit: 1
+        concurrencyPolicy: "Forbid"
+        parallelism: 1
+        completions: 1
+  - name: app4
+    # Description of the application instance
+    app:
+      # Type of application (can be deployment, statefulset, job, cronjob)
+      type: cronjob
+      # Additional labels
+      extraLabels:
+        app.kubernetes.io/instance: "app4"
+      # Number of replicas for the application
+      replicas: 1
+      # Custom pod annotations
+      extraAnnotations:
+        checksum/values.yaml: "helm/values.yaml"
+      # Image settings
+      image:
+        repository: "my-registry/app1"
+        tag: "1.0.0"
+        pullPolicy: IfNotPresent
+        pullSecrets:
+          - my-secret
+        commands:
+          - bash
+        args:
+          - -c
+          - env
+      # Environment variables
+      envs:
+        - name: LOG_LEVEL
+          value: INFO
+        # Environment variables to extract from the secret
+        - name: SECRET_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: my-secret
+              key: username
+      # Resources
+      resources:
+        requests:
+          memory: "256Mi"
+          cpu: "250m"
+        limits:
+          memory: "512Mi"
+          cpu: "500m"
+      # Persistent volume
+      persistentVolume:
+        name: "data"
+        size: 1Gi
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: "standard"
+        mountPath: "/data"
+      # Affinity
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/e2e-az-name
+                    operator: In
+                    values:
+                      - e2e-az1
+      # NodeSelector
+      nodeSelector:
+        disktype: ssd
+      # Tolerations
+      tolerations:
+        - key: "key"
+          operator: "Equal"
+          value: "value"
+          effect: "NoSchedule"
+      # Probes
+      probes:
+        livenessProbe:
+          httpGet:
+            path: /health/liveness
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health/readiness
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /health/startup
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 3
+      # Only for batch applications
+      cronjob:
+        schedule: "*/1 * * * *"
+        failedJobsHistoryLimit: 1
+        successfulJobsHistoryLimit: 0
+        restartPolicy: "OnFailure"
+        ttlSecondsAfterFinished: 360
+        activeDeadlineSeconds: 650
+        backoffLimit: 1
+        concurrencyPolicy: "Forbid"
+        parallelism: 1
+        completions: 1
+      # Only for batch applications
+      job:
+        restartPolicy: "OnFailure"
+        ttlSecondsAfterFinished: 360
+        activeDeadlineSeconds: 650
+        backoffLimit: 1
+        concurrencyPolicy: "Forbid"
+        parallelism: 1
+        completions: 1
