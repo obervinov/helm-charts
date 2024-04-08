@@ -178,7 +178,10 @@ applications:
           data: {}
 
     # Description of the Secret
-    secret: {}
+    secret:
+      data: |
+        id: 123
+        secret-id: qwerty123
 
     # Description of the RBAC
     rbac:
