@@ -81,7 +81,7 @@ The following table lists the configurable parameters of the chart and their def
 | `app.image.args`            | Arguments for the commands                | `[]`                               |
 | `app.envs`                  | Environment variables                     | `[]`                               |
 | `app.resources`             | Resource requests and limits              | `{}`                               |
-| `app.persistentVolumes`     | Persistent volumes                        | `[]`                               |
+| `app.persistentVolume `     | Persistent volumes                        | `{}`                               |
 | `app.affinity`              | Pod affinity                              | `{}`                               |
 | `app.nodeSelector`          | Node selector                             | `{}`                               |
 | `app.tolerations`           | Tolerations                               | `[]`                               |
