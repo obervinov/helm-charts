@@ -60,12 +60,12 @@ applications: []
 #           memory: "512Mi"
 #           cpu: "500m"
 #       # Persistent volume
-#       persistentVolumes:
-#         - name: "data"
-#           size: 1Gi
-#           accessModes: [ "ReadWriteOnce" ]
-#           storageClassName: "standard"
-#           mountPath: "/data"
+#       persistentVolume:
+#         name: "data"
+#         size: 1Gi
+#         accessModes: [ "ReadWriteOnce" ]
+#         storageClassName: "standard"
+#         mountPath: "/data"
 #       # Affinity
 #       affinity:
 #         nodeAffinity:

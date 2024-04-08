@@ -81,9 +81,9 @@ spec:
               - name: {{ .name }}
             {{-     if .valueFrom }}
                 valueFrom:
-                secretKeyRef:
-                  name: {{ .valueFrom.secretKeyRef.name }}
-                  key: {{ .valueFrom.secretKeyRef.key }}
+                  secretKeyRef:
+                    name: {{ .valueFrom.secretKeyRef.name }}
+                    key: {{ .valueFrom.secretKeyRef.key }}
             {{-     else }}
                 value: {{ .value }}
             {{-     end }}
@@ -107,7 +107,7 @@ spec:
           {{- if $image.pullSecrets }}
           imagePullSecrets:
           {{-   range $image.pullSecrets }}
-            - name: {{ .name }}
+            - name: {{ . }}
           {{-   end }}
           {{- end }}
           restartPolicy: {{ default "Never" $cronJob.restartPolicy }}

@@ -13,7 +13,7 @@
 {{-         $image             := .app.image }}
 {{-         $envs              := .app.envs }}
 {{-         $resources         := .app.resources }}
-{{-         $persistentVolumes := .app.persistentVolumes }}
+{{-         $persistentVolume  := .app.persistentVolume }}
 {{-         $tolerations       := .app.tolerations }}
 {{-         $affinity          := .app.affinity }}
 {{          $nodeSelector      := .app.nodeSelector }}
@@ -57,7 +57,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ $name }}
-          image: {{ $image.repositry }}:{{ $image.tag }}
+          image: {{ $image.repository }}:{{ $image.tag }}
           imagePullPolicy: {{ default "IfNotPresent" $image.pullPolicy }}
           {{- if $image.commands }}
           command:
@@ -85,9 +85,9 @@ spec:
             - name: {{ .name }}
           {{-     if .valueFrom }}
               valueFrom:
-              secretKeyRef:
-                name: {{ .valueFrom.secretKeyRef.name }}
-                key: {{ .valueFrom.secretKeyRef.key }}
+                secretKeyRef:
+                  name: {{ .valueFrom.secretKeyRef.name }}
+                  key: {{ .valueFrom.secretKeyRef.key }}
           {{-     else }}
               value: {{ .value }}
           {{-     end }}
@@ -97,16 +97,16 @@ spec:
           resources:
           {{-   toYaml $resources | nindent 12 }}
           {{- end }}
-          {{- if or $configMap $persistentVolumes }}
+          {{- if or $configMap $persistentVolume }}
             volumeMounts:
           {{-   if $configMap }}
               - name: volume-configs
                 mountPath: {{ $configMap.mountPath | lower }}
                 readOnly: true
           {{-   end }}
-          {{-   if $persistentVolumes }}
-              - name: {{ $persistentVolumes.name }}
-                mountPath: {{ $persistentVolumes.mountPath }}
+          {{-   if $persistentVolume }}
+              - name: {{ $persistentVolume.name }}
+                mountPath: {{ $persistentVolume.mountPath }}
           {{-   end }}
           {{- end }}
           {{- if $probes }}
@@ -117,23 +117,23 @@ spec:
           startupProbe:
           {{-   toYaml $probes.startupProbe | nindent 12 }}
           {{- end }}
-        {{- if or $configMap $persistentVolumes }}
-        volumes:
-        {{-   if $configMap }}
-          - name: volume-configs
-            configMap:
-            name: {{ $fullName }}
-            items:
-        {{-     range $configMap.files }}
-            - key: {{ .name | lower }}
-                path: {{ .name | lower }}
-        {{-     end }}
-        {{-   end }}
-        {{-   if $persistentVolumes }}
-          - name: {{ $persistentVolumes.name }}
-            mountPath: {{ $persistentVolumes.mountPath }}
-        {{-   end }}
-        {{- end }}
+      {{- if or $configMap $persistentVolume }}
+      volumes:
+      {{-   if $configMap }}
+        - name: volume-configs
+          configMap:
+          name: {{ $fullName }}
+          items:
+      {{-     range $configMap.files }}
+          - key: {{ .name | lower }}
+              path: {{ .name | lower }}
+      {{-     end }}
+      {{-   end }}
+      {{-   if $persistentVolume }}
+        - name: {{ $persistentVolume.name }}
+          mountPath: {{ $persistentVolume.mountPath }}
+      {{-   end }}
+      {{- end }}
       {{- if $tolerations }}
       tolerations:
       {{-   toYaml $tolerations | nindent 8 }}
@@ -146,16 +146,16 @@ spec:
       nodeSelector:
       {{-   toYaml $nodeSelector | nindent 8 }}
       {{- end }}
-  {{- if $persistentVolumes }}
+  {{- if $persistentVolume }}
   volumeClaimTemplates:
-  - metadata:
-      name: {{ $persistentVolumes.name }}
-    spec:
-      accessModes: {{ $persistentVolumes.accessModes }}
-      storageClassName: {{ $persistentVolumes.storageClassName }}
-      resources:
-        requests:
-          storage: {{ $persistentVolumes.size }}
+    - metadata:
+        name: {{ $persistentVolume.name }}
+      spec:
+        accessModes: {{ $persistentVolume.accessModes }}
+        storageClassName: {{ $persistentVolume.storageClassName }}
+        resources:
+          requests:
+            storage: {{ $persistentVolume.size }}
   {{- end }}
 ...
 {{-       end }}

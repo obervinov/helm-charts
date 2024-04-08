@@ -4,15 +4,17 @@ Helm template version: {{ .Chart.Version }}
 {{- if .Values.applications }}
 {{-   range .Values.applications }}
 
-{{-     if .monitoring.prometheus }}
-{{-       range .monitoring.prometheus }}
+{{-     if .monitoring }}
+{{-       if .monitoring.prometheus }}
+{{-         range .monitoring.prometheus }}
 ---
 Prometheus Operator has been enabled:
-{{-         if eq .kind "ServiceMonitor" }}
+{{-           if eq .kind "ServiceMonitor" }}
 + ServiceMonitor/{{ .name }}
-{{-         end }}
-{{          if eq .kind "PodMonitor" }}
+{{-           end }}
+{{            if eq .kind "PodMonitor" }}
 + PodMonitor/{{ .name }}
+{{-           end }}
 {{-         end }}
 {{-       end }}
 {{-     end }}
