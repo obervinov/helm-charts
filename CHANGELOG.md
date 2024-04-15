@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 * [Universal-template: add emptyDir support for volumes](https://github.com/obervinov/helm-charts/issues/33)
 * [Universal-template: quotation mark escaping schedule](https://github.com/obervinov/helm-charts/issues/34)
 * [Universal-template: `affinity` and `nodeSelector` not provisioning in `cronJobs` and `Jobs`](https://github.com/obervinov/helm-charts/issues/35)
+* [Universal-template: `ConfigMap` not working](https://github.com/obervinov/helm-charts/issues/36)
 
 
 ## v1.0.3 - 2024-04-08

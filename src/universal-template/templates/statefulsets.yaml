@@ -127,11 +127,11 @@ spec:
       {{-   if $configMap }}
         - name: volume-configs
           configMap:
-          name: {{ $fullName }}
-          items:
+            name: {{ $fullName }}
+            items:
       {{-     range $configMap.files }}
-          - key: {{ .name | lower }}
-              path: {{ .name | lower }}
+              - key: {{ .name | lower }}
+                path: {{ .name | lower }}
       {{-     end }}
       {{-   end }}
       {{-   if $emptyDirVolume }}

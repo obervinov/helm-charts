@@ -177,11 +177,14 @@ applications:
     # `mountPath` - the path in the container where all configs will be mapped
     # `files[0].name` - the name of the file in the container
     # `files[0].data` - the config body is set via the --set-file parameter
-    configmap:
+    configMap:
       mountPath: "/configs"
       files:
         - name: "config.json"
-          data: {}
+          data: |
+            {
+              "key": "value"
+            }
 
     # Description of the Secret
     secret:
@@ -226,6 +229,9 @@ applications:
               path: /metrics
               interval: 15s
               scheme: http
+
+
+
   - name: app2
     # Description of the application instance
     app:
@@ -351,6 +357,23 @@ applications:
         concurrencyPolicy: "Forbid"
         parallelism: 1
         completions: 1
+    configMap:
+      mountPath: "/configs"
+      files:
+        - name: "config.json"
+          data: |
+            {
+              "key": "value"
+            }
+
+    # Description of the Secret
+    secret:
+      data: |
+        id: 123
+        secret-id: qwerty123
+
+
+
   - name: app3
     # Description of the application instance
     app:
@@ -476,6 +499,23 @@ applications:
         concurrencyPolicy: "Forbid"
         parallelism: 1
         completions: 1
+    configMap:
+      mountPath: "/configs"
+      files:
+        - name: "config.json"
+          data: |
+            {
+              "key": "value"
+            }
+
+    # Description of the Secret
+    secret:
+      data: |
+        id: 123
+        secret-id: qwerty123
+
+
+
   - name: app4
     # Description of the application instance
     app:
@@ -601,3 +641,17 @@ applications:
         concurrencyPolicy: "Forbid"
         parallelism: 1
         completions: 1
+    configMap:
+      mountPath: "/configs"
+      files:
+        - name: "config.json"
+          data: |
+            {
+              "key": "value"
+            }
+
+    # Description of the Secret
+    secret:
+      data: |
+        id: 123
+        secret-id: qwerty123
