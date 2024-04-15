@@ -14,7 +14,8 @@
 {{-         $ports             := .app.ports }}
 {{-         $envs              := .app.envs }}
 {{-         $resources         := .app.resources }}
-{{-         $persistentVolumes := .app.persistentVolumes }}
+{{-         $emptyDirVolume    := .app.emptyDirVolume }}
+{{-         $persistentVolume  := .app.persistentVolume }}
 {{-         $tolerations       := .app.tolerations }}
 {{-         $affinity          := .app.affinity }}
 {{          $nodeSelector      := .app.nodeSelector }}
@@ -113,36 +114,43 @@ spec:
         {{- if $probes }}
         {{- toYaml $probes | nindent 8 }}
         {{- end }}
-        {{- if or $configMap $persistentVolumes }}
+      {{- if or $configMap $persistentVolume $emptyDirVolume }}
         volumeMounts:
-        {{- if $configMap }}
-        - name: volume-configs
-          mountPath: {{ .configMap.mountPath | lower }}
-          readOnly: true
-        {{- end }}
-        {{- if $persistentVolumes }}
-        {{-   range $persistentVolumes }}
-        - name: {{ .name }}
-          mountPath: {{ .mountPath }}
-        {{-   end }}
-        {{- end }}
+      {{-   if $configMap }}
+          - name: volume-configs
+            mountPath: {{ $configMap.mountPath | lower }}
+            readOnly: true
+      {{-   end }}
+      {{-   if $persistentVolume }}
+          - name: {{ $persistentVolume.name }}
+            mountPath: {{ $persistentVolume.mountPath }}
+      {{-   end }}
+      {{-   if $emptyDirVolume }}
+          - name: {{ $emptyDirVolume.name }}
+            mountPath: {{ $emptyDirVolume.mountPath }}
+      {{-   end }}
+      {{- end }}
+      {{- if or $configMap $persistentVolume $emptyDirVolume }}
       volumes:
       {{-   if $configMap }}
-      - name: volume-configs
-        configMap:
-          name: {{ $fullName }}
-          items:
-          {{- range $configMap.files }}
-          - key: {{ .name | lower }}
-            path: {{ .name | lower }}
-          {{- end }}
-      {{-   end }}
-      {{-   if $persistentVolumes }}
-      {{-     range $persistentVolumes }}
-      - name: {{ .name }}
-        persistentVolumeClaim:
-          claimName: {{ $fullName }}
+        - name: volume-configs
+          configMap:
+            name: {{ $fullName }}
+            items:
+      {{-     range $configMap.files }}
+              - key: {{ .name | lower }}
+                path: {{ .name | lower }}
       {{-     end }}
+      {{-   end }}
+      {{-   if $persistentVolume }}
+        - name: {{ $persistentVolume.name }}
+          persistentVolumeClaim:
+            claimName: {{ $fullName }}
+      {{-   end }}
+      {{-   if $emptyDirVolume }}
+        - name: {{ $emptyDirVolume.name }}
+          emptyDir:
+            sizeLimit: {{ $emptyDirVolume.sizeLimit }}
       {{-   end }}
       {{- end }}
       {{- if $image.pullSecrets }}

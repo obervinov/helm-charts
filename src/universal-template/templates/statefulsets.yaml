@@ -14,6 +14,7 @@
 {{-         $envs              := .app.envs }}
 {{-         $resources         := .app.resources }}
 {{-         $persistentVolume  := .app.persistentVolume }}
+{{-         $emptyDirVolume    := .app.emptyDirVolume }}
 {{-         $tolerations       := .app.tolerations }}
 {{-         $affinity          := .app.affinity }}
 {{          $nodeSelector      := .app.nodeSelector }}
@@ -97,16 +98,20 @@ spec:
           resources:
           {{-   toYaml $resources | nindent 12 }}
           {{- end }}
-          {{- if or $configMap $persistentVolume }}
-            volumeMounts:
+          {{- if or $configMap $persistentVolume $emptyDirVolume }}
+          volumeMounts:
           {{-   if $configMap }}
-              - name: volume-configs
-                mountPath: {{ $configMap.mountPath | lower }}
-                readOnly: true
+            - name: volume-configs
+              mountPath: {{ $configMap.mountPath | lower }}
+              readOnly: true
           {{-   end }}
           {{-   if $persistentVolume }}
-              - name: {{ $persistentVolume.name }}
-                mountPath: {{ $persistentVolume.mountPath }}
+            - name: {{ $persistentVolume.name }}
+              mountPath: {{ $persistentVolume.mountPath }}
+          {{-   end }}
+          {{-   if $emptyDirVolume }}
+            - name: {{ $emptyDirVolume.name }}
+              mountPath: {{ $emptyDirVolume.mountPath }}
           {{-   end }}
           {{- end }}
           {{- if $probes }}
@@ -117,21 +122,22 @@ spec:
           startupProbe:
           {{-   toYaml $probes.startupProbe | nindent 12 }}
           {{- end }}
-      {{- if or $configMap $persistentVolume }}
+      {{- if or $configMap $persistentVolume $emptyDirVolume }}
       volumes:
       {{-   if $configMap }}
         - name: volume-configs
           configMap:
-          name: {{ $fullName }}
-          items:
+            name: {{ $fullName }}
+            items:
       {{-     range $configMap.files }}
-          - key: {{ .name | lower }}
-              path: {{ .name | lower }}
+              - key: {{ .name | lower }}
+                path: {{ .name | lower }}
       {{-     end }}
       {{-   end }}
-      {{-   if $persistentVolume }}
-        - name: {{ $persistentVolume.name }}
-          mountPath: {{ $persistentVolume.mountPath }}
+      {{-   if $emptyDirVolume }}
+        - name: {{ $emptyDirVolume.name }}
+          emptyDir:
+            sizeLimit: {{ $emptyDirVolume.sizeLimit }}
       {{-   end }}
       {{- end }}
       {{- if $tolerations }}
@@ -148,14 +154,18 @@ spec:
       {{- end }}
   {{- if $persistentVolume }}
   volumeClaimTemplates:
-    - metadata:
-        name: {{ $persistentVolume.name }}
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: {{ $persistentVolume.name }}-{{ $fullName }}
       spec:
-        accessModes: {{ $persistentVolume.accessModes }}
-        storageClassName: {{ $persistentVolume.storageClassName }}
+        accessModes:
+        - {{ $persistentVolume.accessModes }}
         resources:
           requests:
             storage: {{ $persistentVolume.size }}
+        storageClassName: {{ $persistentVolume.storageClassName }}
+        volumeMode: {{ default "Filesystem" $persistentVolume.volumeMode }}
   {{- end }}
 ...
 {{-       end }}

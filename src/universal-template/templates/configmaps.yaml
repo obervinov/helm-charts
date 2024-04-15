@@ -15,11 +15,9 @@ metadata:
   name: {{ $fullName }}
   namespace: {{ $namespace }}
 data:
-{{-       with index . 1 }}
-{{-         range $files }}
-{{-           if .data }}
+{{-       range $files }}
+{{-         if .data }}
 {{-             printf "%s: |-" .name | nindent 2 }} {{- printf "%s" .data | nindent 4 -}}
-{{-           end }}
 {{-         end }}
 {{-       end }}
 ...

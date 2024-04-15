@@ -13,6 +13,7 @@
 {{-         $ports            := .app.ports }}
 {{-         $envs             := .app.envs }}
 {{-         $resources        := .app.resources }}
+{{-         $emptyDirVolume   := .app.emptyDirVolume }}
 {{-         $persistentVolume := .app.persistentVolume }}
 {{-         $tolerations      := .app.tolerations }}
 {{-         $affinity         := .app.affinity }}
@@ -31,7 +32,7 @@ metadata:
     {{- include "universal-template.labels" $ | nindent 4 }}
     {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
 spec:
-  schedule: {{ $cronJob.schedule }}
+  schedule: {{ $cronJob.schedule | quote }}
   failedJobsHistoryLimit: {{ default 0 $cronJob.failedJobsHistoryLimit }}
   successfulJobsHistoryLimit: {{ default 0 $cronJob.successfulJobsHistoryLimit }}
   concurrencyPolicy: {{ default "Forbid" $cronJob.concurrencyPolicy }} 
@@ -46,15 +47,15 @@ spec:
         spec:
           {{- if $affinity }}
           affinity:
-          {{-   toYaml $affinity | nindent 10 }}
+          {{-   toYaml $affinity | nindent 12 }}
           {{- end }}
-          {{- if $podAnnotations }}
+          {{- if $nodeSelector }}
           nodeSelector:
-          {{-   toYaml $nodeSelector | nindent 10 }}
+          {{-   toYaml $nodeSelector | nindent 12 }}
           {{- end }}
           {{- if $tolerations }}
           tolerations:
-          {{-   toYaml $tolerations | nindent 10 }}
+          {{-   toYaml $tolerations | nindent 12 }}
           {{- end }}
           containers:
           - name: {{ $fullName }}
@@ -89,20 +90,44 @@ spec:
             {{-     end }}
             {{-   end }}
             {{- end }}
-          {{- if $configMap }}
+          {{- if or $configMap $persistentVolume $emptyDirVolume }}
             volumeMounts:
-            - name: volume-configs
-              mountPath: {{ $configMap.mountPath }}
-              readOnly: true
+          {{-   if $configMap }}
+              - name: volume-configs
+                mountPath: {{ $configMap.mountPath | lower }}
+                readOnly: true
+          {{-   end }}
+          {{-   if $persistentVolume }}
+              - name: {{ $persistentVolume.name }}
+                mountPath: {{ $persistentVolume.mountPath }}
+          {{-   end }}
+          {{-   if $emptyDirVolume }}
+              - name: {{ $emptyDirVolume.name }}
+                mountPath: {{ $emptyDirVolume.mountPath }}
+          {{-   end }}
+          {{- end }}
+          {{- if or $configMap $persistentVolume $emptyDirVolume }}
           volumes:
-          - name: volume-configs
-            configMap:
-              name: {{ $fullName }}
-              items:
-              {{-   range $configMap.items }}
-              - key: {{ .name | lower }}
-                path: {{ .name | lower }}
-              {{-   end }}
+          {{-   if $configMap }}
+            - name: volume-configs
+              configMap:
+                name: {{ $fullName }}
+                items:
+          {{-     range $configMap.files }}
+                  - key: {{ .name | lower }}
+                    path: {{ .name | lower }}
+          {{-     end }}
+          {{-   end }}
+          {{-   if $persistentVolume }}
+            - name: {{ $persistentVolume.name }}
+              persistentVolumeClaim:
+                claimName: {{ $fullName }}
+          {{-   end }}
+          {{-   if $emptyDirVolume }}
+            - name: {{ $emptyDirVolume.name }}
+              emptyDir:
+                sizeLimit: {{ $emptyDirVolume.sizeLimit }}
+          {{-   end }}
           {{- end }}
           {{- if $image.pullSecrets }}
           imagePullSecrets:
