@@ -5,9 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## v1.0.4 - 2024-04-15
 ### What's Changed
-**Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.0.3...v1.0.4 by @obervinov in https://github.com/obervinov/helm-charts/pull/
+**Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.0.3...v1.0.4 by @obervinov in https://github.com/obervinov/helm-charts/pull/37
 #### 🐛 Bug Fixes
 * [Universal-template: add emptyDir support for volumes](https://github.com/obervinov/helm-charts/issues/33)
+* [Universal-template: quotation mark escaping schedule](https://github.com/obervinov/helm-charts/issues/34)
 
 
 ## v1.0.3 - 2024-04-08

@@ -32,7 +32,7 @@ metadata:
     {{- include "universal-template.labels" $ | nindent 4 }}
     {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
 spec:
-  schedule: {{ $cronJob.schedule }}
+  schedule: {{ $cronJob.schedule | quote }}
   failedJobsHistoryLimit: {{ default 0 $cronJob.failedJobsHistoryLimit }}
   successfulJobsHistoryLimit: {{ default 0 $cronJob.successfulJobsHistoryLimit }}
   concurrencyPolicy: {{ default "Forbid" $cronJob.concurrencyPolicy }} 
