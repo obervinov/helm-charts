@@ -16,6 +16,3 @@ jobs:
 
   changelog:
     uses: obervinov/_templates/.github/workflows/changelog.yaml@v1.1.0
-  
-  readme:
-    uses: obervinov/_templates/.github/workflows/readme.yaml@v1.1.0
