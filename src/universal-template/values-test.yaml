@@ -58,6 +58,12 @@ applications:
         limits:
           memory: "512Mi"
           cpu: "500m"
+      # EmptyDir volume
+      emptyDirVolume:
+        name: "data"
+        medium: ""
+        sizeLimit: "1Gi"
+        mountPath: "/data"
       # Persistent volume
       persistentVolume:
         name: "data"
@@ -263,6 +269,12 @@ applications:
         limits:
           memory: "512Mi"
           cpu: "500m"
+      # EmptyDir volume
+      emptyDirVolume:
+        name: "data"
+        medium: ""
+        sizeLimit: "1Gi"
+        mountPath: "/data"
       # Persistent volume
       persistentVolume:
         name: "data"
@@ -382,6 +394,12 @@ applications:
         limits:
           memory: "512Mi"
           cpu: "500m"
+      # EmptyDir volume
+      emptyDirVolume:
+        name: "data"
+        medium: ""
+        sizeLimit: "1Gi"
+        mountPath: "/data"
       # Persistent volume
       persistentVolume:
         name: "data"
@@ -501,6 +519,12 @@ applications:
         limits:
           memory: "512Mi"
           cpu: "500m"
+      # EmptyDir volume
+      emptyDirVolume:
+        name: "data"
+        medium: ""
+        sizeLimit: "1Gi"
+        mountPath: "/data"
       # Persistent volume
       persistentVolume:
         name: "data"

@@ -13,6 +13,7 @@
 {{-         $ports            := .app.ports }}
 {{-         $envs             := .app.envs }}
 {{-         $resources        := .app.resources }}
+{{-         $emptyDirVolume   := .app.emptyDirVolume }}
 {{-         $persistentVolume := .app.persistentVolume }}
 {{-         $tolerations      := .app.tolerations }}
 {{-         $affinity         := .app.affinity }}
@@ -89,20 +90,44 @@ spec:
             {{-     end }}
             {{-   end }}
             {{- end }}
-          {{- if $configMap }}
+          {{- if or $configMap $persistentVolume $emptyDirVolume }}
             volumeMounts:
-            - name: volume-configs
-              mountPath: {{ $configMap.mountPath }}
-              readOnly: true
+          {{-   if $configMap }}
+              - name: volume-configs
+                mountPath: {{ $configMap.mountPath | lower }}
+                readOnly: true
+          {{-   end }}
+          {{-   if $persistentVolume }}
+              - name: {{ $persistentVolume.name }}
+                mountPath: {{ $persistentVolume.mountPath }}
+          {{-   end }}
+          {{-   if $emptyDirVolume }}
+              - name: {{ $emptyDirVolume.name }}
+                mountPath: {{ $emptyDirVolume.mountPath }}
+          {{-   end }}
+          {{- end }}
+          {{- if or $configMap $persistentVolume $emptyDirVolume }}
           volumes:
-          - name: volume-configs
-            configMap:
+          {{-   if $configMap }}
+            - name: volume-configs
+              configMap:
               name: {{ $fullName }}
               items:
-              {{-   range $configMap.items }}
+          {{-     range $configMap.files }}
               - key: {{ .name | lower }}
-                path: {{ .name | lower }}
-              {{-   end }}
+                  path: {{ .name | lower }}
+          {{-     end }}
+          {{-   end }}
+          {{-   if $persistentVolume }}
+            - name: {{ $persistentVolume.name }}
+              persistentVolumeClaim:
+                claimName: {{ $fullName }}
+          {{-   end }}
+          {{-   if $emptyDirVolume }}
+            - name: {{ $emptyDirVolume.name }}
+              emptyDir:
+                sizeLimit: {{ $emptyDirVolume.sizeLimit }}
+          {{-   end }}
           {{- end }}
           {{- if $image.pullSecrets }}
           imagePullSecrets:

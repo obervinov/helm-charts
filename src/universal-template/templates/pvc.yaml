@@ -1,16 +1,11 @@
 {{- if .Values.applications }}
 {{-   range .Values.applications }}
 {{-     if .app.persistentVolume }}
-{{-       if eq .app.type "deployment" }}
+{{-       if or (eq .app.type "deployment") (eq .app.type "cronjob") (eq .app.type "job") }}
 {{-         $name := .name }}
 {{-         $fullName := include "universal-template.fullName" (list $ . $name) }}
 {{-         $namespace := $.Release.Namespace }}
-{{-         $persistentVolumes := .app.persistentVolumes }}
-{{-         range $persistentVolumes }}
-{{-           $size := .size }}
-{{-           $accessModes := .accessModes }}
-{{-           $storageClassName := .storageClassName }}
-{{-           $fullName := printf "%s-%s" $fullName .name }}
+{{-         $persistentVolume := .app.persistentVolume }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -22,21 +17,20 @@ metadata:
   namespace: {{ $namespace }}
 spec:
   accessModes:
-  {{- if $accessModes }}
-  {{-  range $accessModes }}
+  {{-         if $persistentVolume.accessModes }}
+  {{-           range $persistentVolume.accessModes }}
     - {{ . }}
-  {{-   end }}
-  {{- else }}
+  {{-           end }}
+  {{-         else }}
     - ReadWriteOnce
-  {{- end }}
+  {{-         end }}
   resources:
     requests:
-      storage: {{ $size }}
-  {{- if $storageClassName }}
-  storageClassName: {{ $storageClassName }}
-  {{- end }}
+      storage: {{ $persistentVolume.size }}
+  {{-         if $persistentVolume.storageClassName }}
+  storageClassName: {{ $persistentVolume.storageClassName }}
+  {{-         end }}
 ...
-{{-         end }}
 {{-       end }}
 {{-     end }}
 {{-   end }}

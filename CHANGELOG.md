@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## v1.0.4 - 2024-04-15
+### What's Changed
+**Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.0.3...v1.0.4 by @obervinov in https://github.com/obervinov/helm-charts/pull/
+#### 🐛 Bug Fixes
+* [Universal-template: add emptyDir support for volumes](https://github.com/obervinov/helm-charts/issues/33)
+
+
 ## v1.0.3 - 2024-04-08
 ### What's Changed
 **Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.0.2...v1.0.3 by @obervinov in https://github.com/obervinov/helm-charts/pull/32
