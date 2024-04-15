@@ -47,15 +47,15 @@ spec:
         spec:
           {{- if $affinity }}
           affinity:
-          {{-   toYaml $affinity | nindent 10 }}
+          {{-   toYaml $affinity | nindent 12 }}
           {{- end }}
-          {{- if $podAnnotations }}
+          {{- if $nodeSelector }}
           nodeSelector:
-          {{-   toYaml $nodeSelector | nindent 10 }}
+          {{-   toYaml $nodeSelector | nindent 12 }}
           {{- end }}
           {{- if $tolerations }}
           tolerations:
-          {{-   toYaml $tolerations | nindent 10 }}
+          {{-   toYaml $tolerations | nindent 12 }}
           {{- end }}
           containers:
           - name: {{ $fullName }}
