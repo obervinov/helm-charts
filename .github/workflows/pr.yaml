@@ -14,5 +14,8 @@ jobs:
   helm-repository-build:
     uses: obervinov/_templates/.github/workflows/helm.yaml@v1.0.12
 
+  # readme:
+  #   uses: obervinov/_templates/.github/workflows/readme.yaml@v1.1.0
+
   changelog:
     uses: obervinov/_templates/.github/workflows/changelog.yaml@v1.1.0
