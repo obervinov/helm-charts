@@ -3,11 +3,17 @@
 {{-   $organization := .Values.global.organization }}
 {{-   $terraformApiTokenSecret := .Values.global.terraformApiTokenSecret }}
 {{-   range .Values.modules }}
+{{-     $name := .name }}
+{{-     $source := .source }}
+{{-     $version := .version }}
+{{-     $variables := .variables }}
+{{-     $outputs := .outputs }}
+{{-     $workspace := .workspace }}
 ---
 apiVersion: app.terraform.io/v1alpha2
 kind: Module
 metadata:
-  name: {{ .name }}-module
+  name: {{ $name }}
   namespace: {{ $namespace }}
 spec:
   organization: {{ $organization }}
@@ -17,23 +23,23 @@ spec:
       name: {{ $terraformApiTokenSecret }}
   destroyOnDeletion: true
   module:
-    source: {{ .source }}
-    version: {{ .version }}
-    {{- if .variables }}
+    source: {{ $source }}
+    version: {{ $version }}
+    {{- if $variables }}
     variables:
-    {{-   range .variables }}
-    - name: {{ .name }}
+    {{-   range $variables }}
+    - name: {{ . }}
     {{-   end }}
     {{- end }}
-  {{- if .outputs }}
+  {{- if $outputs }}
   outputs:
-  {{-   range .outputs }}
-    - name: {{ .name }}
+  {{-   range $outputs }}
+    - name: {{ . }}
   {{-   end }}
   {{- end }}
-  {{- if .workspace }}
+  {{- if $workspace }}
   workspace:
-    name: {{ .workspace }}
+    name: {{ $workspace }}
   {{- end }}
 ...
 {{-   end }}

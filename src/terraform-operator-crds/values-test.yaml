@@ -107,7 +107,7 @@ rbac:
 # Modules for managing in Terraform Cloud.
 # https://github.com/hashicorp/terraform-cloud-operator/blob/main/docs/module.md
 modules:
-  - name: module1
+  - name: module-1
     source: "https://github.com/obervinov/terraform-setup-environment"
     version: "1.0.0"
     variables:
