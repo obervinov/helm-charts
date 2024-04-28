@@ -19,9 +19,6 @@ jobs:
   
   pr:
     uses: obervinov/_templates/.github/workflows/pr.yaml@release/v1.2.0
-  
-  milestone:
-    uses: obervinov/_templates/.github/workflows/milestone.yaml@release/v1.2.0
 
   changelog:
     uses: obervinov/_templates/.github/workflows/changelog.yaml@release/v1.2.0

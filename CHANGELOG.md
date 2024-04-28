@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 
 ## v1.0.5 - 2024-04-28
 ### What's Changed
-**Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.0.4...v1.0.5 by @obervinov in https://github.com/obervinov/helm-charts/pull/
+**Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.0.4...v1.0.5 by @obervinov in https://github.com/obervinov/helm-charts/pull/40
 #### 🚀 Features
 * Add additional tasks to the GitHub actions workflow
 * Bump workflow version to v1.2.0
