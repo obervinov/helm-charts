@@ -23,8 +23,5 @@ jobs:
   milestone:
     uses: obervinov/_templates/.github/workflows/milestone.yaml@release/v1.2.0
 
-  # readme:
-  #   uses: obervinov/_templates/.github/workflows/readme.yaml@v1.1.0
-
   changelog:
     uses: obervinov/_templates/.github/workflows/changelog.yaml@release/v1.2.0
