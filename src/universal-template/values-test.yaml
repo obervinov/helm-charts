@@ -60,7 +60,7 @@ applications:
           cpu: "500m"
       # EmptyDir volume
       emptyDirVolume:
-        name: "data"
+        name: "temp"
         medium: ""
         sizeLimit: "1Gi"
         mountPath: "/data"
@@ -277,7 +277,7 @@ applications:
           cpu: "500m"
       # EmptyDir volume
       emptyDirVolume:
-        name: "data"
+        name: "temp"
         medium: ""
         sizeLimit: "1Gi"
         mountPath: "/data"
@@ -419,7 +419,7 @@ applications:
           cpu: "500m"
       # EmptyDir volume
       emptyDirVolume:
-        name: "data"
+        name: "temp"
         medium: ""
         sizeLimit: "1Gi"
         mountPath: "/data"
@@ -561,7 +561,7 @@ applications:
           cpu: "500m"
       # EmptyDir volume
       emptyDirVolume:
-        name: "data"
+        name: "temp"
         medium: ""
         sizeLimit: "1Gi"
         mountPath: "/data"
