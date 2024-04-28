@@ -11,14 +11,14 @@ on:
       - '!main'
 
 jobs:
-  helm-repository-build:
-    uses: obervinov/_templates/.github/workflows/helm.yaml@release/v1.2.0
-
   readme:
-    uses: obervinov/_templates/.github/workflows/readme.yaml@release/v1.2.0
+    uses: obervinov/_templates/.github/workflows/readme.yaml@v1.2.0
   
   pr:
-    uses: obervinov/_templates/.github/workflows/pr.yaml@release/v1.2.0
+    uses: obervinov/_templates/.github/workflows/pr.yaml@v1.2.0
 
   changelog:
-    uses: obervinov/_templates/.github/workflows/changelog.yaml@release/v1.2.0
+    uses: obervinov/_templates/.github/workflows/changelog.yaml@v1.2.0
+
+  helm-repository-build:
+    uses: obervinov/_templates/.github/workflows/helm.yaml@v1.2.0
