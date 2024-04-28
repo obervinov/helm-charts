@@ -1,38 +1,26 @@
 ---
 name: Bug report
-about: Create a report to help us improve
-title: ''
-labels: ''
-assignees: ''
+about: Create a bug report to help us improve
+title: 'Helm chart bug: <name>: <describe>'
+labels: 'bug' 
+assignees: 'obervinov'
 
 ---
-
 **Describe the bug**
-A clear and concise description of what the bug is.
+Not working <describe> in <name> helm chart.
+Error message: <error message>
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+**Additional context**
+Information about where the bug is happening:
+1. Helm chart name: <name>
+2. Helm chart version: <version>
+3. Template name: <template name>
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+**Possible correction**
+If you have a possible solution to the bug, please describe it.
 
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
-
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
-
-**Additional context**
-Add any other context about the problem here.
+**Check list after fixing the bug**
+- [ ] Fix 1 in workflow 1 tested and working
