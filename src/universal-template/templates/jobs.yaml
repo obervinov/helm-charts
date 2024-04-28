@@ -14,10 +14,6 @@
 {{-         $envs             := .app.envs }}
 {{-         $resources        := .app.resources }}
 {{-         $persistentVolume := .app.persistentVolume }}
-{{-       if $persistentVolume }}
-{{-         $persistentVolumeName     := .name }}
-{{-         $fullPersistentVolumeName := include "universal-template.fullName" (list $ . $persistentVolumeName) }}
-{{-       end }}
 {{-         $namespace        := $.Release.Namespace }}
 {{-         $emptyDirVolume   := .app.emptyDirVolume }}
 {{-         $tolerations      := .app.tolerations }}
@@ -97,7 +93,7 @@ spec:
             readOnly: true
       {{-   end }}
       {{-   if $persistentVolume }}
-          - name: {{ $persistentVolumeName }}
+          - name: {{ $persistentVolume.name }}
             mountPath: {{ $persistentVolume.mountPath }}
       {{-   end }}
       {{-   if $emptyDirVolume }}
@@ -118,9 +114,9 @@ spec:
       {{-     end }}
       {{-   end }}
       {{-   if $persistentVolume }}
-        - name: {{ $persistentVolumeName }}
+        - name: {{ $persistentVolume.name }}
           persistentVolumeClaim:
-            claimName: {{ $fullPersistentVolumeName }}
+            claimName: {{ include "universal-template.fullName" (list $ . $persistentVolume.name) }}
       {{-   end }}
       {{-   if $emptyDirVolume }}
         - name: {{ $emptyDirVolume.name }}
