@@ -14,6 +14,7 @@
 {{-         $envs             := .app.envs }}
 {{-         $resources        := .app.resources }}
 {{-         $persistentVolume := .app.persistentVolume }}
+{{-         $namespace        := $.Release.Namespace }}
 {{-         $emptyDirVolume   := .app.emptyDirVolume }}
 {{-         $tolerations      := .app.tolerations }}
 {{-         $affinity         := .app.affinity }}
@@ -115,7 +116,7 @@ spec:
       {{-   if $persistentVolume }}
         - name: {{ $persistentVolume.name }}
           persistentVolumeClaim:
-            claimName: {{ $persistentVolume.name }}
+            claimName: {{ include "universal-template.fullName" (list $ . $persistentVolume.name) }}
       {{-   end }}
       {{-   if $emptyDirVolume }}
         - name: {{ $emptyDirVolume.name }}

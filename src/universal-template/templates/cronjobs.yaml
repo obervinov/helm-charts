@@ -99,7 +99,7 @@ spec:
           {{-   end }}
           {{-   if $persistentVolume }}
               - name: {{ $persistentVolume.name }}
-                mountPath: {{ $persistentVolume.mountPath }}
+                mountPath: {{ include "universal-template.fullName" (list $ . $persistentVolume.name) }}
           {{-   end }}
           {{-   if $emptyDirVolume }}
               - name: {{ $emptyDirVolume.name }}
@@ -121,7 +121,7 @@ spec:
           {{-   if $persistentVolume }}
             - name: {{ $persistentVolume.name }}
               persistentVolumeClaim:
-                claimName: {{ $fullName }}
+                claimName: {{- include "universal-template.fullName" (list $ . $persistentVolume.name) }}
           {{-   end }}
           {{-   if $emptyDirVolume }}
             - name: {{ $emptyDirVolume.name }}

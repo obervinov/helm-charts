@@ -106,7 +106,7 @@ spec:
               readOnly: true
           {{-   end }}
           {{-   if $persistentVolume }}
-            - name: {{ $persistentVolume.name }}
+            - name: {{ $name }}-{{ $persistentVolume.name }}
               mountPath: {{ $persistentVolume.mountPath }}
           {{-   end }}
           {{-   if $emptyDirVolume }}
@@ -157,7 +157,7 @@ spec:
     - apiVersion: v1
       kind: PersistentVolumeClaim
       metadata:
-        name: {{ $persistentVolume.name }}-{{ $fullName }}
+        name: {{ $name }}-{{ $persistentVolume.name }}
       spec:
         accessModes:
         - {{ $persistentVolume.accessModes }}
