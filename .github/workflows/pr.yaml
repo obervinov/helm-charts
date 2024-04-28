@@ -11,9 +11,9 @@ on:
       - '!main'
 
 jobs:
-  readme:
-    uses: obervinov/_templates/.github/workflows/readme.yaml@v1.2.0
-  
+    # readme:
+    #   uses: obervinov/_templates/.github/workflows/readme.yaml@v1.2.0
+
   pr:
     uses: obervinov/_templates/.github/workflows/pr.yaml@v1.2.0
 
