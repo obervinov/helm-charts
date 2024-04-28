@@ -17,5 +17,10 @@ jobs:
     uses: obervinov/_templates/.github/workflows/readme.yaml@v1.2.0
 
   create-release:
+<<<<<<< HEAD
     uses: obervinov/_templates/.github/workflows/release.yaml@v1.2.0
     needs: [changelog, readme]
+=======
+    uses: obervinov/_templates/.github/workflows/release.yaml@v1.1.0
+    needs: [changelog]
+>>>>>>> 0ad4fe135d5c575f8c74ae21d0701ff540299d20

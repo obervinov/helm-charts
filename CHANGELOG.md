@@ -3,6 +3,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+<<<<<<< HEAD
 ## v1.0.5 - 2024-04-28
 ### What's Changed
 **Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.0.4...v1.0.5 by @obervinov in https://github.com/obervinov/helm-charts/pull/
@@ -14,6 +15,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 *[Universal-template: miss configuration between `volumeMounts` name and `persistentVolume` name](https://github.com/obervinov/helm-charts/issues/39)
 
 
+=======
+>>>>>>> 0ad4fe135d5c575f8c74ae21d0701ff540299d20
 ## v1.0.4 - 2024-04-16
 ### What's Changed
 **Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.0.3...v1.0.4 by @obervinov in https://github.com/obervinov/helm-charts/pull/37
