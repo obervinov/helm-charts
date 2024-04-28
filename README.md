@@ -51,10 +51,21 @@ This is a helm-registry for storing my helm-packages.
 </table>
 
 ## <img src="https://github.com/obervinov/content/blob/main/ico/helm.svg" width="30"> How to add a repository to yourself and set a chart
+# Simple registry
 ```sh
 helm repo add obervinov https://obervinov.github.io/helm-charts/
 # or
 helm repo add obervinov https://helm-charts.charafee.cfd/helm-charts/
+```
+
+# OCI registry
+```sh
+helm repo add obervinov oci://ghcr.io/obervinov/helm-charts
+```
+
+# Install a chart
+```sh
 helm repo update
 helm search repo obervinov
+helm install my-release obervinov/<chart-name>
 ```
