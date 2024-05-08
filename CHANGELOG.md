@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+# v1.0.6 - 2024-05-08
+### What's Changed
+**Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.0.4...v1.0.5 by @obervinov in https://github.com/obervinov/helm-charts/pull/40
+#### 🚀 Features
+* [Feature request: Universal-template chart: add support init containers for `statefulsets` and `deployments`](https://github.com/obervinov/helm-charts/issues/41)
+* Split monolithic templates in universal-template chart into separate `_containers.tpl` and `_volumes.tpl` files for modularity and readability
+
+
 ## v1.0.5 - 2024-04-28
 ### What's Changed
 **Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.0.4...v1.0.5 by @obervinov in https://github.com/obervinov/helm-charts/pull/40

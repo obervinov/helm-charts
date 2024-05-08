@@ -140,7 +140,74 @@ applications:
         concurrencyPolicy: "Forbid"
         parallelism: 1
         completions: 1
-
+      # Init container
+      initContainer:
+        name: "init-container"
+        image:
+          repository: "my-registry/init-container"
+          tag: "1.0.0"
+          pullPolicy: IfNotPresent
+          pullSecrets:
+            - my-secret
+          commands:
+            - bash
+          args:
+            - -c
+            - env
+        envs:
+          - name: LOG_LEVEL
+            value: INFO
+          - name: SECRET_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: my-secret
+                key: username
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        emptyDirVolume:
+          name: "temp"
+          medium: ""
+          sizeLimit: "1Gi"
+          mountPath: "/data"
+        persistentVolume:
+          name: "data"
+          size: 1Gi
+          accessModes: [ "ReadWriteOnce" ]
+          storageClassName: "standard"
+          mountPath: "/data"
+        probes:
+          livenessProbe:
+            httpGet:
+              path: /health/liveness
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health/readiness
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: /health/startup
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
     # Description of the Service
     service:
       externalTrafficPolicy: Cluster
@@ -357,6 +424,76 @@ applications:
         concurrencyPolicy: "Forbid"
         parallelism: 1
         completions: 1
+      # Init container
+      initContainer:
+        name: "init-container"
+        image:
+          repository: "my-registry/init-container"
+          tag: "1.0.0"
+          pullPolicy: IfNotPresent
+          pullSecrets:
+            - my-secret
+          commands:
+            - bash
+          args:
+            - -c
+            - env
+        envs:
+          - name: LOG_LEVEL
+            value: INFO
+          - name: SECRET_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: my-secret
+                key: username
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        emptyDirVolume:
+          name: "temp"
+          medium: ""
+          sizeLimit: "1Gi"
+          mountPath: "/data"
+        persistentVolume:
+          name: "data"
+          size: 1Gi
+          accessModes: [ "ReadWriteOnce" ]
+          storageClassName: "standard"
+          mountPath: "/data"
+        probes:
+          livenessProbe:
+            httpGet:
+              path: /health/liveness
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health/readiness
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: /health/startup
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+
+    # Description of the ConfigMap
     configMap:
       mountPath: "/configs"
       files:
@@ -479,18 +616,6 @@ applications:
           successThreshold: 1
           failureThreshold: 3
       # Only for batch applications
-      cronjob:
-        schedule: "*/1 * * * *"
-        failedJobsHistoryLimit: 1
-        successfulJobsHistoryLimit: 0
-        restartPolicy: "OnFailure"
-        ttlSecondsAfterFinished: 360
-        activeDeadlineSeconds: 650
-        backoffLimit: 1
-        concurrencyPolicy: "Forbid"
-        parallelism: 1
-        completions: 1
-      # Only for batch applications
       job:
         restartPolicy: "OnFailure"
         ttlSecondsAfterFinished: 360
@@ -499,6 +624,75 @@ applications:
         concurrencyPolicy: "Forbid"
         parallelism: 1
         completions: 1
+      # Init container
+      initContainer:
+        name: "init-container"
+        image:
+          repository: "my-registry/init-container"
+          tag: "1.0.0"
+          pullPolicy: IfNotPresent
+          pullSecrets:
+            - my-secret
+          commands:
+            - bash
+          args:
+            - -c
+            - env
+        envs:
+          - name: LOG_LEVEL
+            value: INFO
+          - name: SECRET_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: my-secret
+                key: username
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        emptyDirVolume:
+          name: "temp"
+          medium: ""
+          sizeLimit: "1Gi"
+          mountPath: "/data"
+        persistentVolume:
+          name: "data"
+          size: 1Gi
+          accessModes: [ "ReadWriteOnce" ]
+          storageClassName: "standard"
+          mountPath: "/data"
+        probes:
+          livenessProbe:
+            httpGet:
+              path: /health/liveness
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health/readiness
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: /health/startup
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+
     configMap:
       mountPath: "/configs"
       files:
@@ -632,15 +826,76 @@ applications:
         concurrencyPolicy: "Forbid"
         parallelism: 1
         completions: 1
-      # Only for batch applications
-      job:
-        restartPolicy: "OnFailure"
-        ttlSecondsAfterFinished: 360
-        activeDeadlineSeconds: 650
-        backoffLimit: 1
-        concurrencyPolicy: "Forbid"
-        parallelism: 1
-        completions: 1
+      # Init container
+      initContainer:
+        name: "init-container"
+        image:
+          repository: "my-registry/init-container"
+          tag: "1.0.0"
+          pullPolicy: IfNotPresent
+          pullSecrets:
+            - my-secret
+          commands:
+            - bash
+          args:
+            - -c
+            - env
+        envs:
+          - name: LOG_LEVEL
+            value: INFO
+          - name: SECRET_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: my-secret
+                key: username
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        emptyDirVolume:
+          name: "temp"
+          medium: ""
+          sizeLimit: "1Gi"
+          mountPath: "/data"
+        persistentVolume:
+          name: "data"
+          size: 1Gi
+          accessModes: [ "ReadWriteOnce" ]
+          storageClassName: "standard"
+          mountPath: "/data"
+        probes:
+          livenessProbe:
+            httpGet:
+              path: /health/liveness
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health/readiness
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: /health/startup
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
+
+    # Description of the ConfigMap
     configMap:
       mountPath: "/configs"
       files:

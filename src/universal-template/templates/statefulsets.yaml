@@ -1,24 +1,23 @@
-{{- if .Values.applications }}
-{{-   range .Values.applications }}
-{{-     if .app }}
-{{-       if eq .app.type "statefulset"}}
-{{-         $configMap         := .configMap }}
-{{-         $service           := .service }}
-{{-         $name              := .name }}
-{{-         $namespace         := $.Release.Namespace }}
+{{- if .Values.applications                                                              }}
+{{-   range .Values.applications                                                         }}
+{{-     if .app                                                                          }}
+{{-       if eq .app.type "statefulset"                                                  }}
+{{-         $configMap         := .configMap                                             }}
+{{-         $service           := .service                                               }}
+{{-         $name              := .name                                                  }}
+{{-         $app               := .app                                                   }}
+{{-         $namespace         := $.Release.Namespace                                    }}
 {{-         $fullName          := include "universal-template.fullName" (list $ . $name) }}
-{{-         $extraLabels       := .app.extraLabels }}
-{{-         $replicas          := .app.replicas }}
-{{-         $extraAnnotations  := .app.extraAnnotations }}
-{{-         $image             := .app.image }}
-{{-         $envs              := .app.envs }}
-{{-         $resources         := .app.resources }}
-{{-         $persistentVolume  := .app.persistentVolume }}
-{{-         $emptyDirVolume    := .app.emptyDirVolume }}
-{{-         $tolerations       := .app.tolerations }}
-{{-         $affinity          := .app.affinity }}
-{{          $nodeSelector      := .app.nodeSelector }}
-{{-         $probes            := .app.probes }}
+{{-         $extraLabels       := $app.extraLabels                                       }}
+{{-         $replicas          := $app.replicas                                          }}
+{{-         $extraAnnotations  := $app.extraAnnotations                                  }}
+{{-         $initContainer     := $app.initContainer                                     }}
+{{-         $image             := $app.image                                             }}
+{{-         $persistentVolume  := $app.persistentVolume                                  }}
+{{-         $emptyDirVolume    := $app.emptyDirVolume                                    }}
+{{-         $tolerations       := $app.tolerations                                       }}
+{{-         $affinity          := $app.affinity                                          }}
+{{          $nodeSelector      := $app.nodeSelector                                      }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -35,8 +34,7 @@ spec:
   serviceName: {{ $fullName }}
   replicas: {{ default 1 $replicas }}
   selector:
-    matchLabels:
-      {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 6 }}
+    matchLabels: {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 6 }}
   template:
     metadata:
       labels:
@@ -46,8 +44,7 @@ spec:
         {{-   toYaml $extraLabels | nindent 8 }}
         {{- end }}
       {{- if $extraAnnotations }}
-      annotations:
-      {{-   toYaml $extraAnnotations | nindent 8 }}
+      annotations: {{- toYaml $extraAnnotations | nindent 8 }}
       {{- end }}
     spec:
       {{- if $image.pullSecrets }}
@@ -56,101 +53,24 @@ spec:
         - name: {{ . }}
       {{-   end }}
       {{- end }}
-      containers:
-        - name: {{ $name }}
-          image: {{ $image.repository }}:{{ $image.tag }}
-          imagePullPolicy: {{ default "IfNotPresent" $image.pullPolicy }}
-          {{- if $image.commands }}
-          command:
-          {{-   range $image.commands }}
-            - {{ . }}
-          {{-   end }}
-          {{- end }}
-          {{- if $image.args }}
-          args:
-          {{-   range $image.args }}
-            - {{ . }}
-          {{-   end }}
-          {{- end }}
-          {{- if $service }}
-          ports:
-          {{-   range $service.ports }}
-            - containerPort: {{ .targetPort }}
-              name: {{ .name }}
-              protocol: {{ .protocol }}
-          {{-   end }}
-          {{- end }}
-          {{- if $envs }}
-          env:
-          {{-   range $envs }}
-            - name: {{ .name }}
-          {{-     if .valueFrom }}
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .valueFrom.secretKeyRef.name }}
-                  key: {{ .valueFrom.secretKeyRef.key }}
-          {{-     else }}
-              value: {{ .value }}
-          {{-     end }}
-          {{-   end }}
-          {{- end }}
-          {{- if $resources }}
-          resources:
-          {{-   toYaml $resources | nindent 12 }}
-          {{- end }}
-          {{- if or $configMap $persistentVolume $emptyDirVolume }}
-          volumeMounts:
-          {{-   if $configMap }}
-            - name: volume-configs
-              mountPath: {{ $configMap.mountPath | lower }}
-              readOnly: true
-          {{-   end }}
-          {{-   if $persistentVolume }}
-            - name: {{ $name }}-{{ $persistentVolume.name }}
-              mountPath: {{ $persistentVolume.mountPath }}
-          {{-   end }}
-          {{-   if $emptyDirVolume }}
-            - name: {{ $emptyDirVolume.name }}
-              mountPath: {{ $emptyDirVolume.mountPath }}
-          {{-   end }}
-          {{- end }}
-          {{- if $probes }}
-          livenessProbe:
-          {{-   toYaml $probes.livenessProbe | nindent 12 }}
-          readinessProbe:
-          {{-   toYaml $probes.readinessProbe | nindent 12 }}
-          startupProbe:
-          {{-   toYaml $probes.startupProbe | nindent 12 }}
-          {{- end }}
+      {{- if $initContainer }}
+      {{-   $initContainerData := dict "app" $initContainer "name" $name "configMap" $configMap }}
+      initContainers: {{- include "universal-template.container.template" $initContainerData | nindent 8 }}
+      {{- end }}
+      {{- $containerData := dict "app" $app "name" $name "configMap" $configMap "service" $service }}
+      containers: {{- include "universal-template.container.template" $containerData | nindent 8 }}
       {{- if or $configMap $persistentVolume $emptyDirVolume }}
-      volumes:
-      {{-   if $configMap }}
-        - name: volume-configs
-          configMap:
-            name: {{ $fullName }}
-            items:
-      {{-     range $configMap.files }}
-              - key: {{ .name | lower }}
-                path: {{ .name | lower }}
-      {{-     end }}
-      {{-   end }}
-      {{-   if $emptyDirVolume }}
-        - name: {{ $emptyDirVolume.name }}
-          emptyDir:
-            sizeLimit: {{ $emptyDirVolume.sizeLimit }}
-      {{-   end }}
+      {{-   $volumesData := dict "targetType" "statefulset" "fullName" $fullName "configMap" $configMap "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
+      volumes: {{-   include "universal-template.volumes.template" $volumesData | nindent 8 }}
       {{- end }}
       {{- if $tolerations }}
-      tolerations:
-      {{-   toYaml $tolerations | nindent 8 }}
+      tolerations: {{- toYaml $tolerations | nindent 8 }}
       {{- end }}
       {{- if $affinity }}
-      affinity:
-      {{-   toYaml $affinity | nindent 8 }}
+      affinity: {{- toYaml $affinity | nindent 8 }}
       {{- end }}
       {{- if $nodeSelector }}
-      nodeSelector:
-      {{-   toYaml $nodeSelector | nindent 8 }}
+      nodeSelector: {{- toYaml $nodeSelector | nindent 8 }}
       {{- end }}
   {{- if $persistentVolume }}
   volumeClaimTemplates:
