@@ -3,10 +3,10 @@ Containers template
 */}}
 {{- define "universal-template.container.template"    -}}
 {{-     $containerData     := .                        }}
+{{-     $name              := $containerData.name      }}
 {{-     $app               := $containerData.app       }}
 {{-     $configMap         := $containerData.configMap }}
 {{-     $service           := $containerData.service   }}
-{{-     $name              := $app.name                }}
 {{-     $image             := $app.image               }}
 {{-     $envs              := $app.envs                }}
 {{-     $resources         := $app.resources           }}

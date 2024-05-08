@@ -58,7 +58,7 @@ spec:
           tolerations: {{- toYaml $tolerations | nindent 12 }}
           {{- end }}
           {{- if $initContainer }}
-          {{-   $initContainerData := dict "app" $initContainer "name" $name "configMap" $configMap }}
+          {{-   $initContainerData := dict "app" $initContainer "name" $initContainer.name "configMap" $configMap }}
           initContainers: {{- include "universal-template.container.template" $initContainerData | nindent 12 }}
           {{- end }}
           {{- $containerData := dict "app" $app "name" $name "configMap" $configMap }}
