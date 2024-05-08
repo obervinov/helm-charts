@@ -1,18 +1,18 @@
 {{/*
 Containers template
 */}}
-{{- define "universal-template.container.template"    -}}
-{{-     $containerData     := .                        }}
-{{-     $name              := $containerData.name      }}
-{{-     $app               := $containerData.app       }}
-{{-     $configMap         := $containerData.configMap }}
-{{-     $service           := $containerData.service   }}
-{{-     $image             := $app.image               }}
-{{-     $envs              := $app.envs                }}
-{{-     $resources         := $app.resources           }}
-{{-     $persistentVolume  := $app.persistentVolume    }}
-{{-     $emptyDirVolume    := $app.emptyDirVolume      }}
-{{-     $probes            := $app.probes              }}
+{{- define "universal-template.container.template"           -}}
+{{-     $containerData     := .                               }}
+{{-     $name              := $containerData.name             }}
+{{-     $app               := $containerData.app              }}
+{{-     $configMap         := $containerData.configMap        }}
+{{-     $service           := $containerData.service          }}
+{{-     $persistentVolume  := $containerData.persistentVolume }}
+{{-     $emptyDirVolume    := $app.emptyDirVolume             }}
+{{-     $image             := $app.image                      }}
+{{-     $envs              := $app.envs                       }}
+{{-     $resources         := $app.resources                  }}
+{{-     $probes            := $app.probes                     }}
 - name: {{ $name }}
   image: {{ $image.repository }}:{{ $image.tag }}
   imagePullPolicy: {{ default "IfNotPresent" $image.pullPolicy }}
