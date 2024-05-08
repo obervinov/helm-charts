@@ -61,7 +61,7 @@ Containers template
       readOnly: true
   {{-   end }}
   {{-   if $persistentVolume }}
-    - name: {{ $name }}-{{ $persistentVolume.name }}
+    - name: {{ $persistentVolume.name }}
       mountPath: {{ $persistentVolume.mountPath }}
   {{-   end }}
   {{-   if $emptyDirVolume }}
