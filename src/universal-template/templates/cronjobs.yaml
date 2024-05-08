@@ -61,7 +61,7 @@ spec:
           {{-   $initContainerData := dict "app" $initContainer "name" $initContainer.name "configMap" $configMap "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
           initContainers: {{- include "universal-template.container.template" $initContainerData | nindent 12 }}
           {{- end }}
-          {{- $containerData := dict "app" $app "name" $name "configMap" $configMap "service" $service "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
+          {{- $containerData := dict "app" $app "name" $name "configMap" $configMap "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
           containers: {{- include "universal-template.container.template" $containerData | nindent 12 }}
           {{- if or $configMap $persistentVolume $emptyDirVolume }}
           {{-   $volumesData := dict "targetType" "job" "fullName" $fullName "configMap" $configMap "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
