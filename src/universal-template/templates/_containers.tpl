@@ -19,13 +19,13 @@ Containers template
   {{- if $image.commands }}
   command:
   {{-   range $image.commands }}
-    - {{ . }}
+    - {{ . | quote }}
   {{-   end }}
   {{- end }}
   {{- if $image.args }}
   args:
   {{-   range $image.args }}
-    - {{ . }}
+    - {{ . | quote }}
   {{-   end }}
   {{- end }}
   {{- if $service }}
