@@ -7,7 +7,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### What's Changed
 **Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.0.6...v1.1.0 by @obervinov in https://github.com/obervinov/helm-charts/pull/50
 #### 🚀 Features
-*
+* Bump workflow versions to `v1.2.6`
+* [Feature request: Universal-template: Add support for `secret` with token from `service account`](https://github.com/obervinov/helm-charts/issues/45)
 #### 🐛 Bug Fixes
 * [Helm chart bug: Universal-template: wrong rbac examples](https://github.com/obervinov/helm-charts/issues/44)
 

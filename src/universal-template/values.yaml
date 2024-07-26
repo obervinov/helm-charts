@@ -189,14 +189,16 @@ applications: []
 
 #     # Description of the RBAC
 #     rbac:
-#       - apiGroups:
-#           - ""
-#         resources:
-#           - pods
-#         verbs:
-#           - get
-#           - watch
-#           - list
+#       legacyToken: false
+#       rules:
+#         - apiGroups:
+#             - ""
+#           resources:
+#             - pods
+#           verbs:
+#             - get
+#             - watch
+#             - list
 
 #     # Description of the Monitoring
 #     # The monitoring section is used to create a ServiceMonitor for Prometheus

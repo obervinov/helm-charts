@@ -1,10 +1,11 @@
-{{- if .Values.applications }}
-{{-   range .Values.applications }}
-{{-     if .rbac }}
-{{-       $name      := .name }}
-{{-       $fullName  := include "universal-template.fullName" (list $ . $name) }}
-{{-       $namespace := $.Release.Namespace }}
-{{-       $rbac     := .rbac }} 
+{{- if .Values.applications                                                      }}
+{{-   range .Values.applications                                                 }}
+{{-     if .rbac                                                                 }}
+{{-       $name        := .name                                                  }}
+{{-       $fullName    := include "universal-template.fullName" (list $ . $name) }}
+{{-       $namespace   := $.Release.Namespace                                    }}
+{{-       $rules       := .rules                                                 }}
+{{-       $legacyToken := .legacyToken                                           }}
 ---
 kind: ServiceAccount
 apiVersion: v1
@@ -56,6 +57,22 @@ roleRef:
   name: {{ $fullName }}
   apiGroup: rbac.authorization.k8s.io
 ...
+{{-       if $legacyToken }}
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: {{ $fullName }}-token
+  namespace: {{ $namespace }}
+  labels:
+    {{- include "universal-template.labels" $ | nindent 4 }}
+    {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
+  annotations:
+    kubernetes.io/service-account.name: {{ $fullName }}
+type: kubernetes.io/service-account-token
+...
+{{-       end }}
+
 {{-     end }}
 {{-   end }}
 {{- end }}
