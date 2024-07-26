@@ -4,7 +4,7 @@
 # - app - the section describes the applications that will be deployed (deployment, statefulset, job, cronjob)
 # - service - the section describes the service that will be deployed
 # - ingress - the section describes the ingress that will be deployed
-# - configmap - the section describes the configmap that will be deployed
+# - configMap - the section describes the configmap that will be deployed
 # - secret - the section describes the secret that will be deployed
 # - rbac - the section describes the rbac that will be deployed
 ---
@@ -174,11 +174,11 @@ applications: []
 
 #     # Description of the ConfigMap
 #     # The contents of the config can be set via
-#     # `--set-file "applications[0].configmap[0].data"="config.json"`
+#     # `--set-file "applications[0].configMap[0].data"="config.json"`
 #     # `mountPath` - the path in the container where all configs will be mapped
 #     # `files[0].name` - the name of the file in the container
 #     # `files[0].data` - the config body is set via the --set-file parameter
-#     configmap:
+#     configMap:
 #       mountPath: "/configs"
 #       files:
 #         - name: "config.json"
@@ -189,15 +189,14 @@ applications: []
 
 #     # Description of the RBAC
 #     rbac:
-#       - rules:
-#           - apiGroups:
-#               - ""
-#             resources:
-#               - pods
-#             verbs:
-#               - get
-#               - watch
-#               - list
+#       - apiGroups:
+#           - ""
+#         resources:
+#           - pods
+#         verbs:
+#           - get
+#           - watch
+#           - list
 
 #     # Description of the Monitoring
 #     # The monitoring section is used to create a ServiceMonitor for Prometheus
