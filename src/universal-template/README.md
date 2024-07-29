@@ -126,6 +126,7 @@ The following table lists the configurable parameters of the chart and their def
 | Parameter                           | Description                                                                 | Default    |
 |-------------------------------------|-----------------------------------------------------------------------------|------------|
 | `applications.rbac.create` | Create RBAC resources                                                         | `false`    |
+| `applications.rbac.legacyToken` | Use legacy token for the RBAC resources                                    | `false`    |
 | `applications.rbac.rules` | List of RBAC rules                                                             | `[]`       |
 | `applications.rbac.rules.apiGroups` | API groups for the RBAC rules                                              | `[""]`     |
 | `applications.rbac.rules.resources` | Resources for the RBAC rules                                               | `["pods"]` |
