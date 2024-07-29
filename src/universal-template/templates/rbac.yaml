@@ -3,9 +3,10 @@
 {{-     if .rbac                                                                 }}
 {{-       $name        := .name                                                  }}
 {{-       $fullName    := include "universal-template.fullName" (list $ . $name) }}
+{{-       $rbac        := .rbac                                                  }}
 {{-       $namespace   := $.Release.Namespace                                    }}
-{{-       $rules       := .rules                                                 }}
-{{-       $legacyToken := .legacyToken                                           }}
+{{-       $rules       := $rbac.rules                                            }}
+{{-       $legacyToken := $rbac.legacyToken                                      }}
 ---
 kind: ServiceAccount
 apiVersion: v1

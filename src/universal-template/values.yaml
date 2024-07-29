@@ -208,7 +208,7 @@ applications: []
 
 #     # Description of the RBAC
 #     rbac:
-#       legacyToken: false
+#       ≈: false
 #       rules:
 #         - apiGroups:
 #             - ""

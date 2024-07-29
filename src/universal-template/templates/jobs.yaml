@@ -66,7 +66,8 @@ spec:
       {{- range $containers }}
       {{- $containerData := dict "app" . "name" .name "configMap" $configMap "secret" $secret "externalSecrets" $externalSecrets "externalConfigMaps" $externalConfigMaps "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
       {{- include "universal-template.container.template" $containerData | nindent 8 }}
-      {{- end }}      {{- if or $configMap $persistentVolume $emptyDirVolume }}
+      {{- end }}
+      {{- if or $configMap $secret $persistentVolume $emptyDirVolume $externalSecrets $externalConfigMaps }}
       {{-   $volumesData := dict "targetType" "job" "fullName" $fullName "configMap" $configMap "secret" $secret "externalSecrets" $externalSecrets "externalConfigMaps" $externalConfigMaps "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
       volumes: {{- include "universal-template.volumes.template" $volumesData | nindent 8 }}
       {{- end }}

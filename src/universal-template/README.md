@@ -35,136 +35,116 @@ helm install <release-name> <chart-name>
 
 The following table lists the configurable parameters of the chart and their default values:
 
-| Parameter                   | Description                               | Default                            |
-|-----------------------------|-------------------------------------------|------------------------------------|
-| `applications`              | List of application configurations       | See values.yaml                    |
-| `service`                   | Service configuration                      | See values.yaml                    |
-| `ingress`                   | Ingress configuration                      | See values.yaml                    |
-| `configmap`                 | ConfigMap configuration                    | See values.yaml                    |
-| `secret`                    | Secret configuration                       | See values.yaml                    |
-| `rbac`                      | RBAC configuration                         | See values.yaml                    |
-| `monitoring`                | Monitoring configuration                   | See values.yaml                    |
-
-## Extended Configuration
-
-The following table lists the configurable parameters of the chart and their default values:
-
-### Global Parameters
-
-| Parameter             | Description                                   | Default                  |
-|-----------------------|-----------------------------------------------|--------------------------|
-| `global.namespace`    | Namespace for resources                      | `default`                |
-| `global.imagePullSecrets` | List of image pull secrets                | `[]`                     |
-| `global.extraVolumeMounts` | Additional volume mounts for all applications | `[]`                   |
-| `global.extraVolumes` | Additional volumes for all applications      | `[]`                     |
-
 ### Applications
 
-| Parameter                   | Description                               | Default                            |
-|-----------------------------|-------------------------------------------|------------------------------------|
-| `applications`              | List of application configurations       | `[]`                               |
-
-#### Application Parameters
-
-| Parameter                   | Description                               | Default                            |
-|-----------------------------|-------------------------------------------|------------------------------------|
-| `name`                      | Name of the application                   | `""`                               |
-| `app.type`                  | Type of application (deployment, statefulset, job, cronjob) | `deployment`        |
-| `app.extraLabels`           | Additional labels for the application     | `{}`                               |
-| `app.replicas`              | Number of replicas for the application    | `1`                                |
-| `app.extraAnnotations`      | Additional annotations for the application| `{}`                               |
-| `app.image.repository`      | Image repository                          | `""`                               |
-| `app.image.tag`             | Image tag                                 | `""`                               |
-| `app.image.pullPolicy`      | Image pull policy                         | `IfNotPresent`                     |
-| `app.image.pullSecrets`     | List of image pull secrets                | `[]`                               |
-| `app.image.commands`        | Commands to run in the container          | `[]`                               |
-| `app.image.args`            | Arguments for the commands                | `[]`                               |
-| `app.envs`                  | Environment variables                     | `[]`                               |
-| `app.resources`             | Resource requests and limits              | `{}`                               |
-| `app.persistentVolume `     | Persistent volumes                        | `{}`                               |
-| `app.affinity`              | Pod affinity                              | `{}`                               |
-| `app.nodeSelector`          | Node selector                             | `{}`                               |
-| `app.tolerations`           | Tolerations                               | `[]`                               |
-| `app.probes`                | Probes configuration                      | `{}`                               |
-| `app.job`                   | Job configuration                         | `{}`                               |
-| `app.cronjob`               | CronJob configuration                     | `{}`                               |
+| Parameter             | Description                                                                 | Default                |
+|-----------------------|-----------------------------------------------------------------------------|------------------------|
+| `applications`        | List of application configurations                                          | `[]`                   |
+| `applications.name`   | Name of the application                                                     | `""`                   |
+| `applications.app.type` | Type of application (Deployment, StatefulSet, Job, CronJob)              | `deployment`           |
+| `applications.app.replicas` | Number of replicas                                                   | `1`                    |
+| `applications.app.extraLabels` | Additional labels for the application                              | `{}`                   |
+| `applications.app.extraAnnotations` | Additional annotations for the application                   | `{}`                   |
+| `applications.app.containers` | List of container configurations                                    | `[]`                   |
+| `applications.app.containers.name` | Name of the container                                         | `""`                   |
+| `applications.app.containers.image.repository` | Image repository                                  | `""`                   |
+| `applications.app.containers.image.tag` | Image tag                                                 | `""`                   |
+| `applications.app.containers.image.pullPolicy` | Image pull policy                                 | `IfNotPresent`         |
+| `applications.app.containers.image.pullSecrets` | List of image pull secrets                        | `[]`                   |
+| `applications.app.containers.commands` | List of commands to run in the container                   | `[]`                   |
+| `applications.app.containers.args` | List of arguments for the container commands                  | `[]`                   |
+| `applications.app.containers.envs` | List of environment variables for the container               | `[]`                   |
+| `applications.app.containers.envs.name` | Environment variable name                                 | `""`                   |
+| `applications.app.containers.envs.value` | Environment variable value                               | `""`                   |
+| `applications.app.containers.envs.valueFrom` | Source of the environment variable value (e.g., secretKeyRef, fieldRef) | `{}` |
+| `applications.app.containers.resources.requests.memory` | Requested memory                         | `256Mi`                |
+| `applications.app.containers.resources.requests.cpu` | Requested CPU                                 | `250m`                 |
+| `applications.app.containers.resources.limits.memory` | Memory limit                               | `512Mi`                |
+| `applications.app.containers.resources.limits.cpu` | CPU limit                                    | `500m`                 |
+| `applications.app.initContainers` | List of init container configurations                         | `[]`                   |
+| `applications.app.emptyDirVolume` | Configuration for emptyDir volume                             | `{}`                   |
+| `applications.app.persistentVolume` | Configuration for persistent volume                         | `{}`                   |
+| `applications.app.externalSecrets` | Mounting external secrets                                    | `[]`                   |
+| `applications.app.externalConfigMaps` | Mounting external configmaps                              | `[]`                   |
+| `applications.app.affinity` | Affinity rules for the application                                 | `{}`                   |
+| `applications.app.nodeSelector` | Node selector for the application                              | `{}`                   |
+| `applications.app.tolerations` | Tolerations for the application                                  | `[]`                   |
+| `applications.app.probes.livenessProbe` | Liveness probe configuration                            | `{}`                   |
+| `applications.app.probes.readinessProbe` | Readiness probe configuration                        | `{}`                   |
+| `applications.app.probes.startupProbe` | Startup probe configuration                                | `{}`                   |
+| `applications.app.cronjob` | CronJob specific configuration (only for batch applications and cronjobs) | `{}` |
+| `applications.app.job` | Job specific configuration (only for batch applications and jobs)        | `{}`                   |
 
 ### Service
 
-| Parameter                   | Description                               | Default                            |
-|-----------------------------|-------------------------------------------|------------------------------------|
-| `service`                   | Service configuration                      | `{}`                               |
-
-#### Service Parameters
-
-| Parameter                   | Description                               | Default                            |
-|-----------------------------|-------------------------------------------|------------------------------------|
-| `service.type`              | Type of service (ClusterIP, NodePort, LoadBalancer) | `ClusterIP`            |
-| `service.ports`             | Ports exposed by the service              | `[]`                               |
-| `service.externalTrafficPolicy` | External traffic policy                 | `Cluster`                          |
-| `service.externalIPs`       | External IPs for the service              | `[]`                               |
-| `service.extraAnnotations`  | Additional annotations for the service    | `{}`                               |
+| Parameter                           | Description                                                                 | Default    |
+|-------------------------------------|-----------------------------------------------------------------------------|------------|
+| `applications.service.externalTrafficPolicy` | External traffic policy for the service                                    | `Cluster`  |
+| `applications.service.externalIPs` | External IPs for the service                                                | `[]`       |
+| `applications.service.extraAnnotations` | Additional annotations for the service                                     | `{}`       |
+| `applications.service.type` | Type of service (ClusterIP, NodePort, LoadBalancer)                           | `ClusterIP` |
+| `applications.service.ports` | List of service ports                                                       | `[]`       |
+| `applications.service.ports.name` | Name of the service port                                                   | `""`       |
+| `applications.service.ports.port` | Port number for the service                                                | `80`       |
+| `applications.service.ports.protocol` | Protocol for the service port                                             | `TCP`      |
+| `applications.service.ports.targetPort` | Target port for the service                                               | `80`       |
 
 ### Ingress
 
-| Parameter                   | Description                               | Default                            |
-|-----------------------------|-------------------------------------------|------------------------------------|
-| `ingress`                   | Ingress configuration                     | `{}`                               |
-
-#### Ingress Parameters
-
-| Parameter                   | Description                               | Default                            |
-|-----------------------------|-------------------------------------------|------------------------------------|
-| `ingress.apiVersion`        | API version for the ingress resource      | `networking.k8s.io/v1`            |
-| `ingress.kind`              | Kind of the ingress resource              | `Ingress`                          |
-| `ingress.extraAnnotations`  | Additional annotations for the ingress    | `{}`                               |
-| `ingress.useTLS`            | Enable TLS for the ingress                | `false`                            |
-| `ingress.fqdn`              | Fully qualified domain name (FQDN)        | `""`                               |
-| `ingress.paths`             | Paths for routing traffic                 | `[]`                               |
-| `ingress.ingressClassName`  | Ingress class name                        | `""`                               |
+| Parameter                           | Description                                                                 | Default    |
+|-------------------------------------|-----------------------------------------------------------------------------|------------|
+| `applications.ingress.apiVersion` | API version for the ingress                                                 | `networking.k8s.io/v1` |
+| `applications.ingress.kind` | Kind of the ingress                                                         | `Ingress`  |
+| `applications.ingress.extraAnnotations` | Additional annotations for the ingress                                     | `{}`       |
+| `applications.ingress.useTLS` | Use TLS for the ingress                                                     | `true`     |
+| `applications.ingress.fqdn` | Fully qualified domain name for the ingress                                   | `""`       |
+| `applications.ingress.paths` | List of ingress paths                                                       | `[]`       |
+| `applications.ingress.paths.path` | Path for the ingress                                                       | `/`        |
+| `applications.ingress.paths.pathType` | Path type for the ingress                                                 | `Prefix`   |
+| `applications.ingress.paths.servicePort` | Service port for the ingress                                              | `80`       |
+| `applications.ingress.paths.serviceName` | Service name for the ingress                                              | `""`       |
+| `applications.ingress.ingressClassName` | Ingress class name                                                        | `nginx`    |
 
 ### ConfigMap
 
-| Parameter                   | Description                               | Default                            |
-|-----------------------------|-------------------------------------------|------------------------------------|
-| `configmap`                 | ConfigMap configuration                   | `{}`                               |
-
-#### ConfigMap Parameters
-
-| Parameter                   | Description                               | Default                            |
-|-----------------------------|-------------------------------------------|------------------------------------|
-| `configmap.mountPath`       | Mount path for the config files           | `""`                               |
-| `configmap.files`           | List of files in the ConfigMap            | `[]`                               |
+| Parameter                           | Description                                                                 | Default    |
+|-------------------------------------|-----------------------------------------------------------------------------|------------|
+| `applications.configMap.mountPath` | Path in the container where the config maps will be mounted                | `""`       |
+| `applications.configMap.files` | List of config files                                                       | `[]`       |
+| `applications.configMap.files.name` | Name of the config file                                                    | `""`       |
+| `applications.configMap.files.data` | Data for the config file                                                   | `{}`       |
 
 ### Secret
 
-| Parameter                   | Description                               | Default                            |
-|-----------------------------|-------------------------------------------|------------------------------------|
-| `secret`                    | Secret configuration                      | `{}`                               |
+| Parameter                           | Description                                                                 | Default    |
+|-------------------------------------|-----------------------------------------------------------------------------|------------|
+| `applications.secret.mountPath` | Path in the container where the secrets will be mounted                    | `""`       |
+| `applications.secret.data` | Data for the secrets                                                       | `{}`       |
 
 ### RBAC
 
-| Parameter                   | Description                               | Default                            |
-|-----------------------------|-------------------------------------------|------------------------------------|
-| `rbac`                      | RBAC configuration                        | `[]`                               |
-
-#### RBAC Parameters
-
-| Parameter                   | Description                               | Default                            |
-|-----------------------------|-------------------------------------------|------------------------------------|
-| `rbac`                      | RBAC rules                                | `[]`                               |
+| Parameter                           | Description                                                                 | Default    |
+|-------------------------------------|-----------------------------------------------------------------------------|------------|
+| `applications.rbac.create` | Create RBAC resources                                                         | `false`    |
+| `applications.rbac.rules` | List of RBAC rules                                                             | `[]`       |
+| `applications.rbac.rules.apiGroups` | API groups for the RBAC rules                                              | `[""]`     |
+| `applications.rbac.rules.resources` | Resources for the RBAC rules                                               | `["pods"]` |
+| `applications.rbac.rules.verbs` | Verbs for the RBAC rules                                                   | `["get", "watch", "list"]` |
 
 ### Monitoring
 
-| Parameter                   | Description                               | Default                            |
-|-----------------------------|-------------------------------------------|------------------------------------|
-| `monitoring`                | Monitoring configuration                  | `[]`                               |
-
-#### Monitoring Parameters
-
-| Parameter                   | Description                               | Default                            |
-|-----------------------------|-------------------------------------------|------------------------------------|
-| `monitoring.prometheus`     | Prometheus configuration                  | `[]`                               |
+| Parameter                           | Description                                                                 | Default    |
+|-------------------------------------|-----------------------------------------------------------------------------|------------|
+| `applications.monitoring.prometheus` | List of Prometheus monitoring configurations                               | `[]`       |
+| `applications.monitoring.prometheus.name` | Name of the Prometheus configuration                                    | `""`       |
+| `applications.monitoring.prometheus.apiVersion` | API version for the Prometheus configuration                             | `monitoring.coreos.com/v1` |
+| `applications.monitoring.prometheus.kind` | Kind of the Prometheus configuration                                     | `ServiceMonitor` |
+| `applications.monitoring.prometheus.namespacesSelector` | Namespace selector for the Prometheus configuration                       | `[]`       |
+| `applications.monitoring.prometheus.endpoints` | List of endpoints for the Prometheus configuration                       | `[]`       |
+| `applications.monitoring.prometheus.endpoints.port` | Port for the Prometheus endpoint                                         | `http`     |
+| `applications.monitoring.prometheus.endpoints.path` | Path for the Prometheus endpoint                                         | `/metrics` |
+| `applications.monitoring.prometheus.endpoints.interval` | Interval for the Prometheus endpoint                                     | `15s`      |
+| `applications.monitoring.prometheus.endpoints.scheme` | Scheme for the Prometheus endpoint                                       | `http`     |
 
 ## Usage
 
@@ -179,28 +159,133 @@ To use this Helm chart, follow these steps:
 Here's an example of how to deploy a simple application using this Helm chart:
 
 ```yaml
+---
 applications:
-  - name: app1
+  - name: statefulset-app
     app:
-      type: deployment
+      type: statefulset
       replicas: 1
-      image:
-        repository: "my-registry/app1"
-        tag: "1.0.0"
-        pullPolicy: IfNotPresent
-        pullSecrets:
-          - my-secret
-      envs:
-        - name: LOG_LEVEL
-          value: INFO
-      resources:
-        requests:
-          memory: "256Mi"
-          cpu: "250m"
-        limits:
-          memory: "512Mi"
-          cpu: "500m"
+      extraLabels:
+        app.kubernetes.io/instance: "statefulset-app"
+      extraAnnotations:
+        checksum/values.yaml: "helm/values.yaml"
+      containers:
+        - name: container1
+          image:
+            repository: "my-registry/app1"
+            tag: "1.0.0"
+            pullPolicy: IfNotPresent
+            pullSecrets:
+              - my-secret
+            commands:
+              - bash
+            args:
+              - -c
+              - env
+          envs:
+            - name: LOG_LEVEL
+              value: INFO
+            - name: SECRET_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: my-secret
+                  key: username
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+      initContainers:
+        - name: init-container1
+          image:
+            repository: "my-registry/init-container1"
+            tag: "1.0.0"
+            pullPolicy: IfNotPresent
+            pullSecrets:
+              - my-secret
+          envs:
+            - name: LOG_LEVEL
+              value: INFO
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "250m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+      emptyDirVolume:
+        name: "data"
+        medium: ""
+        sizeLimit: "1Gi"
+        mountPath: "/data"
+      persistentVolume:
+        name: "data"
+        size: 1Gi
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: "standard"
+        mountPath: "/data"
+      externalSecrets:
+        - name: my-external-secret
+          mountPath: "/external-secrets"
+      externalConfigMaps:
+        - name: my-external-config
+          mountPath: "/external-configs"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/e2e-az-name
+                    operator: In
+                    values:
+                      - e2e-az1
+      nodeSelector:
+        disktype: ssd
+      tolerations:
+        - key: "key"
+          operator: "Equal"
+          value: "value"
+          effect: "NoSchedule"
+      probes:
+        livenessProbe:
+          httpGet:
+            path: /health/liveness
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health/readiness
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 5
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /health/startup
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 10
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 3
     service:
+      externalTrafficPolicy: Cluster
+      externalIPs:
+        - 1.1.1.1
+      extraAnnotations:
+        checksum/values.yaml: "helm/values.yaml"
       type: ClusterIP
       ports:
         - name: http
@@ -208,6 +293,10 @@ applications:
           protocol: TCP
           targetPort: 80
     ingress:
+      apiVersion: networking.k8s.io/v1
+      kind: Ingress
+      extraAnnotations:
+        checksum/values.yaml: "helm/values.yaml"
       useTLS: true
       fqdn: my-service.example.com
       paths:
@@ -216,6 +305,52 @@ applications:
           servicePort: 80
           serviceName: app1
       ingressClassName: nginx
+    configMap:
+      mountPath: "/configs"
+      files:
+        - name: "config.json"
+          data: |
+            {
+              "key": "value"
+            }
+    secret:
+      mountPath: "/secrets"
+      data: |
+        key1: "value1"
+        key2: "value2"
+    rbac:
+      legacyToken: true
+      rules:
+        - apiGroups:
+            - ""
+          resources:
+            - pods
+          verbs:
+            - get
+            - watch
+            - list
+    monitoring:
+      prometheus:
+        - name: ServiceMonitor1
+          apiVersion: monitoring.coreos.com/v1
+          kind: ServiceMonitor
+          namespacesSelector:
+            - monitoring
+          endpoints:
+            - port: http
+              path: /metrics
+              interval: 15s
+              scheme: http
+        - name: PodMonitor1
+          apiVersion: monitoring.coreos.com/v1
+          kind: PodMonitor
+          namespacesSelector:
+            - monitoring
+          endpoints:
+            - port: http
+              path: /metrics
+              interval: 15s
+              scheme: http
 ```
 
 ## Contributing
@@ -250,7 +385,7 @@ deploy-helm:
     # -f .helm/values.yaml - устанавливаем путь к values.yaml файлу в вашем реппозитории
     - |
       helm upgrade --install ${HELM_RELEASE_NAME} obervinov/universal-template \
-        --set-file "applications[0].configmap[0].data"="config/config.json" \
+        --set-file "applications[0].configMap.files[0].data"="config/config.json" \
         --set-file "applications[0].secret.data"=".helm/vault.secret.yaml" \
         --namespace=${HELM_RELEASE_NAMESPACE} -f .helm/values.yaml
   after_script:
@@ -283,5 +418,5 @@ helm repo update
 # --set-file "applications[0].secret.data"=".helm/vault.secret..yaml" - we forward the data received from the volt to the chart
 # --namespace=${HELM_RELEASE_NAMESPACE} - namespace in the kube to install the chart
 # -f .helm/values.yaml - a link to the values file created in the previous step
-helm upgrade --install ${HELM_RELEASE_NAME} obervinov/universal-template --set-file "applications[0].configmap[0].data"="config/config.json" --set-file "applications[0].secret.data"=".helm/vault.secret.yaml" --namespace=${HELM_RELEASE_NAMESPACE} -f .helm/values.yaml
+helm upgrade --install ${HELM_RELEASE_NAME} obervinov/universal-template --set-file "applications[0].configMap.files[0].data"="config/config.json" --set-file "applications[0].secret.data"=".helm/vault.secret.yaml" --namespace=${HELM_RELEASE_NAMESPACE} -f .helm/values.yaml
 ```

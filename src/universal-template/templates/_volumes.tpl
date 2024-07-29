@@ -33,14 +33,14 @@ Volumes for pods template
 {{-     range $externalSecrets }}
 - name: {{ .name }}
   secret:
-    secretName: {{ .secretName }}
+    secretName: {{ .name }}
 {{-     end }}
 {{-   end }}
 {{-   if $externalConfigMaps }}
 {{-     range $externalConfigMaps }}
 - name: {{ .name }}
   configMap:
-    name: {{ .configMapName }}
+    name: {{ .name }}
 {{-     end }}
 {{-   end }}
 {{-   if $emptyDirVolume }}

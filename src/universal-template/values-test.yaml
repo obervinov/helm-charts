@@ -103,6 +103,12 @@ applications:
         accessModes: [ "ReadWriteOnce" ]
         storageClassName: "standard"
         mountPath: "/data"
+      externalSecrets:
+        - name: my-external-secret
+          mountPath: "/external-secrets"
+      externalConfigMaps:
+        - name: my-external-config
+          mountPath: "/external-configs"
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -321,6 +327,12 @@ applications:
         accessModes: [ "ReadWriteOnce" ]
         storageClassName: "standard"
         mountPath: "/data"
+      externalSecrets:
+        - name: my-external-secret
+          mountPath: "/external-secrets"
+      externalConfigMaps:
+        - name: my-external-config
+          mountPath: "/external-configs"
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -550,6 +562,12 @@ applications:
         accessModes: [ "ReadWriteOnce" ]
         storageClassName: "standard"
         mountPath: "/data"
+      externalSecrets:
+        - name: my-external-secret
+          mountPath: "/external-secrets"
+      externalConfigMaps:
+        - name: my-external-config
+          mountPath: "/external-configs"
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -751,6 +769,12 @@ applications:
         accessModes: [ "ReadWriteOnce" ]
         storageClassName: "standard"
         mountPath: "/data"
+      externalSecrets:
+        - name: my-external-secret
+          mountPath: "/external-secrets"
+      externalConfigMaps:
+        - name: my-external-config
+          mountPath: "/external-configs"
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
