@@ -122,6 +122,7 @@ The following table lists the configurable parameters of the chart and their def
 | `applications.secret.data` | Data for the secrets                                                       | `{}`       |
 
 ### RBAC
+For create ServiceAccount without Role, just not set `applications.rbac.rules` parameter.
 
 | Parameter                           | Description                                                                 | Default    |
 |-------------------------------------|-----------------------------------------------------------------------------|------------|
