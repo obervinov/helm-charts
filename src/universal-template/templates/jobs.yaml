@@ -10,7 +10,8 @@
 {{-         $extraLabels      := $app.extraLabels                                       }}
 {{-         $podAnnotations   := $app.podAnnotations                                    }}
 {{-         $image            := $app.image                                             }}
-{{-         $initContainer    := $app.initContainer                                     }}
+{{-         $initContainers   := $app.initContainers                                    }}
+{{-         $containers       := $app.containers                                        }}
 {{-         $envs             := $app.envs                                              }}
 {{-         $resources        := $app.resources                                         }}
 {{-         $persistentVolume := $app.persistentVolume                                  }}
@@ -51,13 +52,18 @@ spec:
       {{- if $tolerations }}
       tolerations: {{- toYaml $tolerations | nindent 8 }}
       {{- end }}
-      {{- if $initContainer }}
-      {{-   $initContainerData := dict "app" $initContainer "name" $initContainer.name "configMap" $configMap "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
-      initContainers: {{- include "universal-template.container.template" $initContainerData | nindent 8 }}
+      {{- if $initContainers }}
+      initContainers:
+      {{-   range $initContainers }}
+      {{-     $initContainerData := dict "app" . "name" .name "configMap" $configMap "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
+      {{- include "universal-template.container.template" $initContainerData | nindent 8 }}
+      {{-   end }}
       {{- end }}
-      {{- $containerData := dict "app" $app "name" $name "configMap" $configMap "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
-      containers: {{- include "universal-template.container.template" $containerData | nindent 8 }}
-      {{- if or $configMap $persistentVolume $emptyDirVolume }}
+      containers:
+      {{- range $containers }}
+      {{- $containerData := dict "app" . "name" .name "configMap" $configMap "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
+      {{- include "universal-template.container.template" $containerData | nindent 8 }}
+      {{- end }}      {{- if or $configMap $persistentVolume $emptyDirVolume }}
       {{-   $volumesData := dict "targetType" "job" "fullName" $fullName "configMap" $configMap "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
       volumes: {{- include "universal-template.volumes.template" $volumesData | nindent 8 }}
       {{- end }}

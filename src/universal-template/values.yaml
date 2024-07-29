@@ -1,7 +1,7 @@
 # An example of a fully described value file for describing the simplest release
 # The file is divided into sections:
 # - tests - the section describes the tests that will be run after the release
-# - app - the section describes the applications that will be deployed (deployment, statefulset, job, cronjob)
+# - app - the section describes the applications that will be deployed (Deployment, StatefulSet, Job, CronJob)
 # - service - the section describes the service that will be deployed
 # - ingress - the section describes the ingress that will be deployed
 # - configMap - the section describes the configmap that will be deployed
@@ -13,66 +13,80 @@
 # service_metrics_port: &service_metrics_port 9090
 
 # Applications - are a logical group for a microservice that includes
-# app (deployment, statefulset, job, cronjob), service, ingress, configmap, secret
+# App (Deployment, StatefulSet, Job, CronJob), Service, Ingress, ConfigMap, Secret
 applications: []
 # applications:
 #   - name: app1
-#     # Description of the application instance
 #     app:
-#       # Type of application (can be deployment, statefulset, job, cronjob)
+#       # Type of application (can be Deployment, StatefulSet, Job, CronJob)
 #       type: deployment
-#       # Additional labels
+#       replicas: 1
 #       extraLabels:
 #         app.kubernetes.io/instance: "app1"
-#       # Number of replicas for the application
-#       replicas: 1
-#       # Custom pod annotations
 #       extraAnnotations:
 #         checksum/values.yaml: "helm/values.yaml"
-#       # Image settings
-#       image:
-#         repository: "my-registry/app1"
-#         tag: "1.0.0"
-#         pullPolicy: IfNotPresent
-#         pullSecrets:
-#           - my-secret
-#         commands:
-#           - bash
-#         args:
-#           - -c
-#           - env
-#       # Environment variables
-#       envs:
-#         - name: LOG_LEVEL
-#           value: INFO
-#         # Environment variables to extract from the secret
-#         - name: SECRET_USERNAME
-#           valueFrom:
-#             secretKeyRef:
-#               name: my-secret
-#               key: username
-#       # Resources
-#       resources:
-#         requests:
-#           memory: "256Mi"
-#           cpu: "250m"
-#         limits:
-#           memory: "512Mi"
-#           cpu: "500m"
-#      # EmptyDir volume
-#      emptyDirVolume:
-#        name: "data"
-#        medium: ""
-#        sizeLimit: "1Gi"
-#        mountPath: "/data"
-#       # Persistent volume
+#       # Containers in the pod
+#       containers:
+#         - name: container1
+#           image:
+#             repository: "my-registry/app1"
+#             tag: "1.0.0"
+#             pullPolicy: IfNotPresent
+#             pullSecrets:
+#               - my-secret
+#             commands:
+#               - bash
+#             args:
+#               - -c
+#               - env
+#           envs:
+#             - name: LOG_LEVEL
+#               value: INFO
+#             - name: SECRET_USERNAME
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: my-secret
+#                   key: username
+#             - name: NAMESPACE
+#               valueFrom:
+#                 fieldRef:
+#                   fieldPath: metadata.namespace
+#           resources:
+#             requests:
+#               memory: "256Mi"
+#               cpu: "250m"
+#             limits:
+#               memory: "512Mi"
+#               cpu: "500m"
+#       initContainers:
+#         - name: init-container1
+#           image:
+#             repository: "my-registry/init-container1"
+#             tag: "1.0.0"
+#             pullPolicy: IfNotPresent
+#             pullSecrets:
+#               - my-secret
+#           envs:
+#             - name: LOG_LEVEL
+#               value: INFO
+#           resources:
+#             requests:
+#               memory: "256Mi"
+#               cpu: "250m"
+#             limits:
+#               memory: "512Mi"
+#               cpu: "500m"
+#       emptyDirVolume:
+#         name: "data"
+#         medium: ""
+#         sizeLimit: "1Gi"
+#         mountPath: "/data"
 #       persistentVolume:
 #         name: "data"
 #         size: 1Gi
 #         accessModes: [ "ReadWriteOnce" ]
 #         storageClassName: "standard"
 #         mountPath: "/data"
-#       # Affinity
 #       affinity:
 #         nodeAffinity:
 #           requiredDuringSchedulingIgnoredDuringExecution:
@@ -82,16 +96,13 @@ applications: []
 #                     operator: In
 #                     values:
 #                       - e2e-az1
-#       # NodeSelector
 #       nodeSelector:
 #         disktype: ssd
-#       # Tolerations
 #       tolerations:
 #         - key: "key"
 #           operator: "Equal"
 #           value: "value"
 #           effect: "NoSchedule"
-#       # Probes
 #       probes:
 #         livenessProbe:
 #           httpGet:
@@ -120,7 +131,7 @@ applications: []
 #           timeoutSeconds: 1
 #           successThreshold: 1
 #           failureThreshold: 3
-#       # Only for batch applications
+#       # Only for batch applications and cronjobs
 #       cronjob:
 #         schedule: "*/1 * * * *"
 #         failedJobsHistoryLimit: 1
@@ -132,7 +143,6 @@ applications: []
 #         concurrencyPolicy: "Forbid"
 #         parallelism: 1
 #         completions: 1
-#       # Only for batch applications
 #       job:
 #         restartPolicy: "OnFailure"
 #         ttlSecondsAfterFinished: 360
@@ -141,8 +151,7 @@ applications: []
 #         concurrencyPolicy: "Forbid"
 #         parallelism: 1
 #         completions: 1
-
-#     # Description of the Service
+#
 #     service:
 #       externalTrafficPolicy: Cluster
 #       externalIPs:
@@ -156,8 +165,7 @@ applications: []
 #           port: 80
 #           protocol: TCP
 #           targetPort: 80
-
-#     # Description of the Ingress
+#
 #     ingress:
 #       apiVersion: networking.k8s.io/v1
 #       kind: Ingress

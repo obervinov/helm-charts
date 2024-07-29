@@ -38,17 +38,7 @@ Containers template
   {{- end }}
   {{- if $envs }}
   env:
-  {{-   range $envs }}
-    - name: {{ .name }}
-  {{-     if .valueFrom }}
-      valueFrom:
-        secretKeyRef:
-          name: {{ .valueFrom.secretKeyRef.name }}
-          key: {{ .valueFrom.secretKeyRef.key }}
-  {{-     else }}
-      value: {{ .value }}
-  {{-     end }}
-  {{-   end }}
+  {{-   toYaml $envs | nindent 4 }}
   {{- end }}
   {{- if $resources }}
   resources: {{-   toYaml $resources | nindent 4 }}
@@ -77,4 +67,5 @@ Containers template
   startupProbe:
   {{-   toYaml $probes.startupProbe | nindent 4 }}
   {{- end }}
+
 {{- end }}
