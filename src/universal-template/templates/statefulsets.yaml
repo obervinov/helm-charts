@@ -1,24 +1,27 @@
-{{- if .Values.applications                                                              }}
-{{-   range .Values.applications                                                         }}
-{{-     if .app                                                                          }}
-{{-       if eq .app.type "statefulset"                                                  }}
-{{-         $configMap         := .configMap                                             }}
-{{-         $service           := .service                                               }}
-{{-         $name              := .name                                                  }}
-{{-         $app               := .app                                                   }}
-{{-         $namespace         := $.Release.Namespace                                    }}
-{{-         $fullName          := include "universal-template.fullName" (list $ . $name) }}
-{{-         $extraLabels       := $app.extraLabels                                       }}
-{{-         $replicas          := $app.replicas                                          }}
-{{-         $extraAnnotations  := $app.extraAnnotations                                  }}
-{{-         $initContainers    := $app.initContainers                                    }}
-{{-         $containers        := $app.containers                                        }}
-{{-         $image             := $app.image                                             }}
-{{-         $persistentVolume  := $app.persistentVolume                                  }}
-{{-         $emptyDirVolume    := $app.emptyDirVolume                                    }}
-{{-         $tolerations       := $app.tolerations                                       }}
-{{-         $affinity          := $app.affinity                                          }}
-{{          $nodeSelector      := $app.nodeSelector                                      }}
+{{- if .Values.applications                                                               }}
+{{-   range .Values.applications                                                          }}
+{{-     if .app                                                                           }}
+{{-       if eq .app.type "statefulset"                                                   }}
+{{-         $configMap          := .configMap                                             }}
+{{-         $secret             := .secret                                                }}
+{{-         $service            := .service                                               }}
+{{-         $name               := .name                                                  }}
+{{-         $app                := .app                                                   }}
+{{-         $namespace          := $.Release.Namespace                                    }}
+{{-         $fullName           := include "universal-template.fullName" (list $ . $name) }}
+{{-         $extraLabels        := $app.extraLabels                                       }}
+{{-         $replicas           := $app.replicas                                          }}
+{{-         $extraAnnotations   := $app.extraAnnotations                                  }}
+{{-         $initContainers     := $app.initContainers                                    }}
+{{-         $containers         := $app.containers                                        }}
+{{-         $image              := $app.image                                             }}
+{{-         $persistentVolume   := $app.persistentVolume                                  }}
+{{-         $emptyDirVolume     := $app.emptyDirVolume                                    }}
+{{-         $tolerations        := $app.tolerations                                       }}
+{{-         $affinity           := $app.affinity                                          }}
+{{          $nodeSelector       := $app.nodeSelector                                      }}
+{{          $externalSecrets    := $app.externalSecrets                                   }}
+{{          $externalConfigMaps := $app.externalConfigMaps                                }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -57,17 +60,17 @@ spec:
       {{- if $initContainers }}
       initContainers:
       {{-   range $initContainers }}
-      {{-     $initContainerData := dict "app" . "name" .name "configMap" $configMap "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
+      {{-     $initContainerData := dict "app" . "name" .name "configMap" $configMap "secret" $secret "externalSecrets" $externalSecrets "externalConfigMaps" $externalConfigMaps "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
       {{- include "universal-template.container.template" $initContainerData | nindent 8 }}
       {{-   end }}
       {{- end }}
       containers:
       {{- range $containers }}
-      {{- $containerData := dict "app" . "name" .name "configMap" $configMap "service" $service "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
+      {{- $containerData := dict "app" . "name" .name "configMap" $configMap "secret" $secret "externalSecrets" $externalSecrets "externalConfigMaps" $externalConfigMaps "service" $service "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
       {{- include "universal-template.container.template" $containerData | nindent 8 }}
       {{- end }}
       {{- if or $configMap $persistentVolume $emptyDirVolume }}
-      {{-   $volumesData := dict "targetType" "statefulset" "fullName" $fullName "configMap" $configMap "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
+      {{-   $volumesData := dict "targetType" "statefulset" "fullName" $fullName "configMap" $configMap "secret" $secret "externalSecrets" $externalSecrets "externalConfigMaps" $externalConfigMaps "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
       volumes: {{-   include "universal-template.volumes.template" $volumesData | nindent 8 }}
       {{- end }}
       {{- if $tolerations }}

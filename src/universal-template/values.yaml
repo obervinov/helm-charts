@@ -87,6 +87,13 @@ applications: []
 #         accessModes: [ "ReadWriteOnce" ]
 #         storageClassName: "standard"
 #         mountPath: "/data"
+#       # Mounting external secrets and configmaps (Secrets and ConfigMaps deployed in namespace not by this helm-chart)
+#       externalSecrets:
+#         - name: my-secret
+#           mountPath: "/external-secrets"
+#       externalConfigMaps:
+#         - name: my-config
+#           mountPath: "/external-configs"
 #       affinity:
 #         nodeAffinity:
 #           requiredDuringSchedulingIgnoredDuringExecution:
@@ -193,7 +200,11 @@ applications: []
 #           data: {}
 
 #     # Description of the Secret
-#     secret: {}
+#     secret:
+#       mountPath: "/secrets"
+#       data: |
+#         username: admin
+#         password: admin
 
 #     # Description of the RBAC
 #     rbac:

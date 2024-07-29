@@ -1,18 +1,21 @@
 {{/*
 Containers template
 */}}
-{{- define "universal-template.container.template"           -}}
-{{-     $containerData     := .                               }}
-{{-     $name              := $containerData.name             }}
-{{-     $app               := $containerData.app              }}
-{{-     $configMap         := $containerData.configMap        }}
-{{-     $service           := $containerData.service          }}
-{{-     $persistentVolume  := $containerData.persistentVolume }}
-{{-     $emptyDirVolume    := $app.emptyDirVolume             }}
-{{-     $image             := $app.image                      }}
-{{-     $envs              := $app.envs                       }}
-{{-     $resources         := $app.resources                  }}
-{{-     $probes            := $app.probes                     }}
+{{- define "universal-template.container.template"              -}}
+{{-     $containerData      := .                                 }}
+{{-     $name               := $containerData.name               }}
+{{-     $app                := $containerData.app                }}
+{{-     $configMap          := $containerData.configMap          }}
+{{-     $secret             := $containerData.secret             }}
+{{-     $service            := $containerData.service            }}
+{{-     $persistentVolume   := $containerData.persistentVolume   }}
+{{-     $emptyDirVolume     := $app.emptyDirVolume               }}
+{{-     $image              := $app.image                        }}
+{{-     $envs               := $app.envs                         }}
+{{-     $resources          := $app.resources                    }}
+{{-     $probes             := $app.probes                       }}
+{{-     $externalSecrets    := $containerData.externalSecrets    }}
+{{-     $externalConfigMaps := $containerData.externalConfigMaps }}
 - name: {{ $name }}
   image: {{ $image.repository }}:{{ $image.tag }}
   imagePullPolicy: {{ default "IfNotPresent" $image.pullPolicy }}
@@ -49,6 +52,27 @@ Containers template
     - name: volume-configs
       mountPath: {{ $configMap.mountPath | lower }}
       readOnly: true
+  {{-   end }}
+  {{-   if $secret }}
+  {{-     if $secret.mountPath }}
+    - name: volume-secrets
+      mountPath: {{ $secret.mountPath | lower }}
+      readOnly: true
+  {{-     end }}
+  {{-   end }}
+  {{-   if $externalSecrets }}
+  {{-     range $externalSecrets }}
+    - name: {{ .name }}
+      mountPath: {{ .mountPath }}
+      readOnly: true
+  {{-     end }}
+  {{-   end }}
+  {{-   if $externalConfigMaps }}
+  {{-     range $externalConfigMaps }}
+    - name: {{ .name }}
+      mountPath: {{ .mountPath }}
+      readOnly: true
+  {{-     end }}
   {{-   end }}
   {{-   if $persistentVolume }}
     - name: {{ $persistentVolume.name }}

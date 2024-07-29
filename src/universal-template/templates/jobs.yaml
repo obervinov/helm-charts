@@ -1,28 +1,31 @@
-{{- if .Values.applications                                                             }}
-{{-   range .Values.applications                                                        }}
-{{-     if .app                                                                         }}
-{{-       if eq .app.type "job"                                                         }}
-{{-         $configMap        := .configMap                                             }}
-{{-         $name             := .name                                                  }}
-{{-         $namespace        := $.Release.Namespace                                    }}
-{{-         $fullName         := include "universal-template.fullName" (list $ . $name) }}
-{{-         $app              := .app                                                   }}
-{{-         $extraLabels      := $app.extraLabels                                       }}
-{{-         $podAnnotations   := $app.podAnnotations                                    }}
-{{-         $image            := $app.image                                             }}
-{{-         $initContainers   := $app.initContainers                                    }}
-{{-         $containers       := $app.containers                                        }}
-{{-         $envs             := $app.envs                                              }}
-{{-         $resources        := $app.resources                                         }}
-{{-         $persistentVolume := $app.persistentVolume                                  }}
-{{-         $emptyDirVolume   := $app.emptyDirVolume                                    }}
-{{-         $tolerations      := $app.tolerations                                       }}
-{{-         $affinity         := $app.affinity                                          }}
-{{          $nodeSelector     := $app.nodeSelector                                      }}
-{{-         $probes           := $app.probes                                            }}
-{{-         $commands         := $app.commands                                          }}
-{{-         $args             := $app.args                                              }}
-{{-         $job              := $app.job                                               }}
+{{- if .Values.applications                                                               }}
+{{-   range .Values.applications                                                          }}
+{{-     if .app                                                                           }}
+{{-       if eq .app.type "job"                                                           }}
+{{-         $configMap          := .configMap                                             }}
+{{-         $secret             := .secret                                                }}
+{{-         $name               := .name                                                  }}
+{{-         $namespace          := $.Release.Namespace                                    }}
+{{-         $fullName           := include "universal-template.fullName" (list $ . $name) }}
+{{-         $app                := .app                                                   }}
+{{-         $extraLabels        := $app.extraLabels                                       }}
+{{-         $podAnnotations     := $app.podAnnotations                                    }}
+{{-         $image              := $app.image                                             }}
+{{-         $initContainers     := $app.initContainers                                    }}
+{{-         $containers         := $app.containers                                        }}
+{{-         $envs               := $app.envs                                              }}
+{{-         $resources          := $app.resources                                         }}
+{{-         $persistentVolume   := $app.persistentVolume                                  }}
+{{-         $emptyDirVolume     := $app.emptyDirVolume                                    }}
+{{-         $tolerations        := $app.tolerations                                       }}
+{{-         $affinity           := $app.affinity                                          }}
+{{          $nodeSelector       := $app.nodeSelector                                      }}
+{{-         $probes             := $app.probes                                            }}
+{{-         $commands           := $app.commands                                          }}
+{{-         $args               := $app.args                                              }}
+{{-         $job                := $app.job                                               }}
+{{          $externalSecrets    := $app.externalSecrets                                   }}
+{{          $externalConfigMaps := $app.externalConfigMaps                                }}
 ---
 apiVersion: batch/v1
 kind: Job
@@ -55,16 +58,16 @@ spec:
       {{- if $initContainers }}
       initContainers:
       {{-   range $initContainers }}
-      {{-     $initContainerData := dict "app" . "name" .name "configMap" $configMap "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
+      {{-     $initContainerData := dict "app" . "name" .name "configMap" $configMap "secret" $secret "externalSecrets" $externalSecrets "externalConfigMaps" $externalConfigMaps "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
       {{- include "universal-template.container.template" $initContainerData | nindent 8 }}
       {{-   end }}
       {{- end }}
       containers:
       {{- range $containers }}
-      {{- $containerData := dict "app" . "name" .name "configMap" $configMap "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
+      {{- $containerData := dict "app" . "name" .name "configMap" $configMap "secret" $secret "externalSecrets" $externalSecrets "externalConfigMaps" $externalConfigMaps "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
       {{- include "universal-template.container.template" $containerData | nindent 8 }}
       {{- end }}      {{- if or $configMap $persistentVolume $emptyDirVolume }}
-      {{-   $volumesData := dict "targetType" "job" "fullName" $fullName "configMap" $configMap "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
+      {{-   $volumesData := dict "targetType" "job" "fullName" $fullName "configMap" $configMap "secret" $secret "externalSecrets" $externalSecrets "externalConfigMaps" $externalConfigMaps "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
       volumes: {{- include "universal-template.volumes.template" $volumesData | nindent 8 }}
       {{- end }}
       {{- if $image.pullSecrets }}

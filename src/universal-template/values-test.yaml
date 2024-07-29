@@ -181,6 +181,7 @@ applications:
               "key": "value"
             }
     secret:
+      mountPath: "/secrets"
       data: |
         key1: "value1"
         key2: "value2"
@@ -398,6 +399,7 @@ applications:
               "key": "value"
             }
     secret:
+      mountPath: "/secrets"
       data: |
         key1: "value1"
         key2: "value2"
@@ -601,6 +603,7 @@ applications:
               "key": "value"
             }
     secret:
+      mountPath: "/secrets"
       data: |
         key1: "value1"
         key2: "value2"
@@ -801,6 +804,7 @@ applications:
               "key": "value"
             }
     secret:
+      mountPath: "/secrets"
       data: |
         key1: "value1"
         key2: "value2"
