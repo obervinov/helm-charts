@@ -208,7 +208,9 @@ applications: []
 
 #     # Description of the RBAC
 #     rbac:
-#       ≈: false
+#       create: true
+#       legacyToken: true
+#       useExistingServiceAccount: my-existing-service-account
 #       rules:
 #         - apiGroups:
 #             - ""

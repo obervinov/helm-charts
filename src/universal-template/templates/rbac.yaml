@@ -3,8 +3,8 @@
 {{-     if .rbac                                                                 }}
 {{-       $name        := .name                                                  }}
 {{-       $fullName    := include "universal-template.fullName" (list $ . $name) }}
-{{-       $rbac        := .rbac                                                  }}
 {{-       $namespace   := $.Release.Namespace                                    }}
+{{-       $rbac        := .rbac                                                  }}
 {{-       $rules       := $rbac.rules                                            }}
 {{-       $legacyToken := $rbac.legacyToken                                      }}
 ---

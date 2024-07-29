@@ -192,16 +192,9 @@ applications:
         key1: "value1"
         key2: "value2"
     rbac:
+      create: false
+      useExistingServiceAccount: "my-existing-service-account"
       legacyToken: true
-      rules:
-        - apiGroups:
-            - ""
-          resources:
-            - pods
-          verbs:
-            - get
-            - watch
-            - list
     monitoring:
       prometheus:
         - name: ServiceMonitor1
@@ -416,7 +409,7 @@ applications:
         key1: "value1"
         key2: "value2"
     rbac:
-      legacyToken: false
+      create: true
       rules:
         - apiGroups:
             - ""

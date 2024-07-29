@@ -26,6 +26,7 @@
 {{-         $cronJob            := $app.cronJob                                           }}
 {{          $externalSecrets    := $app.externalSecrets                                   }}
 {{          $externalConfigMaps := $app.externalConfigMaps                                }}
+{{          $rbac               := .rbac                                                  }}
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -52,6 +53,9 @@ spec:
       ttlSecondsAfterFinished: {{ default 300 $cronJob.ttlSecondsAfterFinished }}
       template:
         spec:
+          {{- if $rbac }}
+          {{-   include "universal-template.serviceAccount" (list $fullName $rbac) | nindent 10 }}
+          {{- end }}
           {{- if $affinity }}
           affinity: {{- toYaml $affinity | nindent 12 }}
           {{- end }}

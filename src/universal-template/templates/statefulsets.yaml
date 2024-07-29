@@ -22,6 +22,7 @@
 {{          $nodeSelector       := $app.nodeSelector                                      }}
 {{          $externalSecrets    := $app.externalSecrets                                   }}
 {{          $externalConfigMaps := $app.externalConfigMaps                                }}
+{{          $rbac               := .rbac                                                  }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -51,6 +52,9 @@ spec:
       annotations: {{- toYaml $extraAnnotations | nindent 8 }}
       {{- end }}
     spec:
+      {{- if $rbac }}
+      {{-   include "universal-template.serviceAccount" (list $fullName $rbac) | nindent 6 }}
+      {{- end }}
       {{- if $image.pullSecrets }}
       imagePullSecrets:
       {{-   range $image.pullSecrets }}

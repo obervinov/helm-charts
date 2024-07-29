@@ -25,6 +25,7 @@
 {{-         $probes             := $app.probes                                            }}
 {{          $externalSecrets    := $app.externalSecrets                                   }}
 {{          $externalConfigMaps := $app.externalConfigMaps                                }}
+{{          $rbac               := .rbac                                                  }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -58,6 +59,9 @@ spec:
       {{-   toYaml $extraLabels | nindent 8 }}
       {{- end }}
     spec:
+      {{- if $rbac }}
+      {{-   include "universal-template.serviceAccount" (list $fullName $rbac) | nindent 6 }}
+      {{- end }}
       {{- if $affinity }}
       affinity: {{- toYaml $affinity | nindent 8 }}
       {{- end }}

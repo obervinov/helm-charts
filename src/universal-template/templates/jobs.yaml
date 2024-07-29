@@ -26,6 +26,7 @@
 {{-         $job                := $app.job                                               }}
 {{          $externalSecrets    := $app.externalSecrets                                   }}
 {{          $externalConfigMaps := $app.externalConfigMaps                                }}
+{{          $rbac               := .rbac                                                  }}
 ---
 apiVersion: batch/v1
 kind: Job
@@ -46,6 +47,9 @@ spec:
   ttlSecondsAfterFinished: {{ default 300 $job.ttlSecondsAfterFinished }}
   template:
     spec:
+      {{- if $rbac }}
+      {{-   include "universal-template.serviceAccount" (list $fullName $rbac) | nindent 6 }}
+      {{- end }}
       {{- if $affinity }}
       affinity: {{- toYaml $affinity | nindent 8 }}
       {{- end }}
