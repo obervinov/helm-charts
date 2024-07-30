@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## v1.1.1 - 2024-07-30
+### What's Changed
+**Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.1.0...v1.1.1 by @obervinov in https://github.com/obervinov/helm-charts/pull/52
+#### 🐛 Bug Fixes
+* [Helm chart bug: Universal-template: duplicate port definition](https://github.com/obervinov/helm-charts/issues/51)
+
+
 ## v1.1.0 - 2024-07-30
 ### What's Changed
 **Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.0.6...v1.1.0 by @obervinov in https://github.com/obervinov/helm-charts/pull/50

@@ -58,6 +58,10 @@ applications: []
 #             limits:
 #               memory: "512Mi"
 #               cpu: "500m"
+#           ports:
+#             - name: http
+#               containerPort: 80
+#               protocol: TCP
 #       initContainers:
 #         - name: init-container1
 #           image:
