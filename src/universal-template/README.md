@@ -61,6 +61,10 @@ The following table lists the configurable parameters of the chart and their def
 | `applications.app.containers.resources.requests.cpu` | Requested CPU                                 | `250m`                 |
 | `applications.app.containers.resources.limits.memory` | Memory limit                               | `512Mi`                |
 | `applications.app.containers.resources.limits.cpu` | CPU limit                                    | `500m`                 |
+| `applications.app.containers.ports` | List of container ports                                         | `[]`                   |
+| `applications.app.containers.ports.name` | Name of the container port                                   | `""`                   |
+| `applications.app.containers.ports.containerPort` | Port number for the container port                         | `80`                   |
+| `applications.app.containers.ports.protocol` | Protocol for the container port                             | `TCP`                  |
 | `applications.app.initContainers` | List of init container configurations                         | `[]`                   |
 | `applications.app.emptyDirVolume` | Configuration for emptyDir volume                             | `{}`                   |
 | `applications.app.persistentVolume` | Configuration for persistent volume                         | `{}`                   |

@@ -7,13 +7,13 @@ Containers template
 {{-     $app                := $containerData.app                }}
 {{-     $configMap          := $containerData.configMap          }}
 {{-     $secret             := $containerData.secret             }}
-{{-     $service            := $containerData.service            }}
 {{-     $persistentVolume   := $containerData.persistentVolume   }}
 {{-     $emptyDirVolume     := $app.emptyDirVolume               }}
 {{-     $image              := $app.image                        }}
 {{-     $envs               := $app.envs                         }}
 {{-     $resources          := $app.resources                    }}
 {{-     $probes             := $app.probes                       }}
+{{-     $ports              := $app.ports                        }}
 {{-     $externalSecrets    := $containerData.externalSecrets    }}
 {{-     $externalConfigMaps := $containerData.externalConfigMaps }}
 - name: {{ $name }}
@@ -31,10 +31,10 @@ Containers template
     - {{ . | quote }}
   {{-   end }}
   {{- end }}
-  {{- if $service }}
+  {{- if $ports }}
   ports:
-  {{-   range $service.ports }}
-    - containerPort: {{ .targetPort }}
+  {{-   range $ports }}
+    - containerPort: {{ .containerPort }}
       name: {{ .name }}
       protocol: {{ .protocol }}
   {{-   end }}

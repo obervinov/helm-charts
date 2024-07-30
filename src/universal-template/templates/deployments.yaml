@@ -80,7 +80,7 @@ spec:
       {{- end }}
       containers:
       {{- range $containers }}
-      {{- $containerData := dict "app" . "name" .name "configMap" $configMap "secret" $secret "externalSecrets" $externalSecrets "externalConfigMaps" $externalConfigMaps "service" $service "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
+      {{- $containerData := dict "app" . "name" .name "configMap" $configMap "secret" $secret "externalSecrets" $externalSecrets "externalConfigMaps" $externalConfigMaps "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
       {{- include "universal-template.container.template" $containerData | nindent 8 }}
       {{- end }}
       {{- if or $configMap $secret $persistentVolume $emptyDirVolume $externalSecrets $externalConfigMaps }}
