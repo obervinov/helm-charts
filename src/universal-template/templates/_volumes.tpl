@@ -13,13 +13,24 @@ Volumes for pods template
 {{-     $externalConfigMaps := $volumesData.externalConfigMaps }}
 
 {{-   if $configMap }}
+{{-     if $configMap.files }}
 - name: volume-configs
   configMap:
     name: {{ $fullName }}
     items:
-{{-     range $configMap.files }}
+{{-       range $configMap.files }}
       - key: {{ .name | lower }}
         path: {{ .name | lower }}
+{{-       end }}
+{{-     end }}
+{{-   end }}
+{{-   if $externalConfigMaps }}
+{{-     range $externalConfigMaps }}
+{{-       if .mountPath }}
+- name: {{ .name }}
+  configMap:
+    name: {{ .name }}
+{{-       end }}
 {{-     end }}
 {{-   end }}
 {{-   if $secret }}
@@ -31,16 +42,11 @@ Volumes for pods template
 {{-   end }}
 {{-   if $externalSecrets }}
 {{-     range $externalSecrets }}
+{{-       if .mountPath }}
 - name: {{ .name }}
   secret:
     secretName: {{ .name }}
-{{-     end }}
-{{-   end }}
-{{-   if $externalConfigMaps }}
-{{-     range $externalConfigMaps }}
-- name: {{ .name }}
-  configMap:
-    name: {{ .name }}
+{{-       end }}
 {{-     end }}
 {{-   end }}
 {{-   if $emptyDirVolume }}
