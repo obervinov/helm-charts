@@ -12,13 +12,13 @@ on:
 
 jobs:
     # readme:
-    #   uses: obervinov/_templates/.github/workflows/readme.yaml@v1.2.0
+    #   uses: obervinov/_templates/.github/workflows/readme.yaml@v1.2.6
 
   pr:
-    uses: obervinov/_templates/.github/workflows/pr.yaml@v1.2.0
+    uses: obervinov/_templates/.github/workflows/pr.yaml@v1.2.6
 
   changelog:
-    uses: obervinov/_templates/.github/workflows/changelog.yaml@v1.2.0
+    uses: obervinov/_templates/.github/workflows/changelog.yaml@v1.2.6
 
   helm-repository-build:
-    uses: obervinov/_templates/.github/workflows/helm.yaml@v1.2.0
+    uses: obervinov/_templates/.github/workflows/helm.yaml@v1.2.6

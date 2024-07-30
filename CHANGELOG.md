@@ -3,6 +3,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## v1.1.0 - 2024-07-30
+### What's Changed
+**Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.0.6...v1.1.0 by @obervinov in https://github.com/obervinov/helm-charts/pull/50
+#### 💥 Breaking Changes
+* Change the structure of the `values.yaml` file in the `universal-template` chart. The old version of the file is not compatible with the new release!
+#### 🚀 Features
+* Bump workflow versions to `v1.2.6`
+* [Feature request: Universal-template: Add support for `secret` with token from `service account`](https://github.com/obervinov/helm-charts/issues/45)
+* [Feature request: Add support for multiple containers and init containers to the Universal-template helm chart](https://github.com/obervinov/helm-charts/issues/48)
+* [Feature request: Expand the possibilities of working with the secret in the universal-template chart](https://github.com/obervinov/helm-charts/issues/47)
+* [Feature request: Expand the possibility of RBAC in helm chart Universal-template](https://github.com/obervinov/helm-charts/issues/44)
+#### 🐛 Bug Fixes
+* [Helm chart bug: Universal-template: Error if environment variable contains `fieldRef` in `valueForm`](https://github.com/obervinov/helm-charts/issues/46)
+
+
 ## v1.0.6 - 2024-05-09
 ### What's Changed
 **Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.0.5...v1.0.6 by @obervinov in https://github.com/obervinov/helm-charts/pull/42

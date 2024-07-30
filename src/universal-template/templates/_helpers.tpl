@@ -59,3 +59,19 @@ Selector labels for prometheus operator
 release: "kube-prometheus-stack"
 jobLabel: {{ .Release.Name | quote }}
 {{- end }}
+
+
+{{/*
+Service Account
+*/}}
+{{- define "universal-template.serviceAccount" -}}
+{{-   $fullName := index . 0 -}}
+{{-   $serviceAccount := index . 1 -}}
+{{-   if $serviceAccount.create -}}
+serviceAccountName: {{ $fullName }}
+{{-   else if $serviceAccount.useExistingServiceAccount -}}
+serviceAccountName: {{ $serviceAccount.useExistingServiceAccount }}
+{{-   else -}}
+serviceAccountName: default
+{{-   end -}}
+{{- end }}

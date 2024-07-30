@@ -1,10 +1,16 @@
-{{- if .Values.applications }}
-{{-   range .Values.applications }}
-{{-     if .rbac }}
-{{-       $name      := .name }}
-{{-       $fullName  := include "universal-template.fullName" (list $ . $name) }}
-{{-       $namespace := $.Release.Namespace }}
-{{-       $rbac     := .rbac }} 
+{{- if .Values.applications                                                                 }}
+{{-   range .Values.applications                                                            }}
+{{-     if .rbac                                                                            }}
+{{-       $name                   := .name                                                  }}
+{{-       $fullName               := include "universal-template.fullName" (list $ . $name) }}
+{{-       $namespace              := $.Release.Namespace                                    }}
+{{-       $rbac                   := .rbac                                                  }}
+{{-       $rules                  := $rbac.rules                                            }}
+{{-       $createServiceAccount   := $rbac.create                                           }}
+{{-       $createLegacyToken      := $rbac.legacyToken                                      }}
+{{-       $existingServiceAccount := $rbac.useExistingServiceAccount                        }}
+
+{{-       if $createServiceAccount }}
 ---
 kind: ServiceAccount
 apiVersion: v1
@@ -14,6 +20,24 @@ metadata:
   labels:
     {{- include "universal-template.labels" $ | nindent 4 }}
     {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
+...
+
+{{-         if $createLegacyToken }}
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: {{ $fullName }}-token
+  namespace: {{ $namespace }}
+  labels:
+    {{- include "universal-template.labels" $ | nindent 4 }}
+    {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
+  annotations:
+    kubernetes.io/service-account.name: {{ $fullName }}
+type: kubernetes.io/service-account-token
+...
+{{-         end }}
+{{-         if $rules }} 
 ---
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
@@ -24,20 +48,20 @@ metadata:
     {{- include "universal-template.labels" $ | nindent 4 }}
     {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
 rules:
-{{- range $rbac }}
+{{-           range $rules }}
   - apiGroups:
-    {{-   range .apiGroups }}
+    {{-         range .apiGroups }}
       - {{ . | quote }}
-    {{-   end }}   
+    {{-         end }}   
     resources:
-    {{-   range .resources }}
+    {{-         range .resources }}
       - {{ . | quote }}
-    {{-   end }}   
+    {{-         end }}   
     verbs:
-    {{-   range .verbs }}
+    {{-         range .verbs }}
       - {{ . | quote }}
-    {{-   end }}  
-{{- end }}
+    {{-         end }}
+{{-           end }}
 ---
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
@@ -56,6 +80,8 @@ roleRef:
   name: {{ $fullName }}
   apiGroup: rbac.authorization.k8s.io
 ...
+{{-         end }}
+{{-       end }}
 {{-     end }}
 {{-   end }}
 {{- end }}

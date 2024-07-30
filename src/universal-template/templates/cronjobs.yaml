@@ -1,27 +1,32 @@
-{{- if .Values.applications                                                             }}
-{{-   range .Values.applications                                                        }}
-{{-     if .app                                                                         }}
-{{-       if eq .app.type "cronjob"                                                     }}
-{{-         $configMap        := .configMap                                             }}
-{{-         $name             := .name                                                  }}
-{{-         $namespace        := $.Release.Namespace                                    }}
-{{-         $fullName         := include "universal-template.fullName" (list $ . $name) }}
-{{-         $app              := .app                                                   }}
-{{-         $extraLabels      := $app.extraLabels                                       }}
-{{-         $podAnnotations   := $app.podAnnotations                                    }}
-{{-         $image            := $app.image                                             }}
-{{-         $initContainer    := $app.initContainer                                     }}
-{{-         $envs             := $app.envs                                              }}
-{{-         $resources        := $app.resources                                         }}
-{{-         $persistentVolume := $app.persistentVolume                                  }}
-{{-         $emptyDirVolume   := $app.emptyDirVolume                                    }}
-{{-         $tolerations      := $app.tolerations                                       }}
-{{-         $affinity         := $app.affinity                                          }}
-{{          $nodeSelector     := $app.nodeSelector                                      }}
-{{-         $probes           := $app.probes                                            }}
-{{-         $commands         := $app.commands                                          }}
-{{-         $args             := $app.args                                              }}
-{{-         $cronJob          := $app.cronJob                                           }}
+{{- if .Values.applications                                                               }}
+{{-   range .Values.applications                                                          }}
+{{-     if .app                                                                           }}
+{{-       if eq .app.type "cronjob"                                                       }}
+{{-         $configMap          := .configMap                                             }}
+{{-         $secret             := .secret                                                }}
+{{-         $name               := .name                                                  }}
+{{-         $namespace          := $.Release.Namespace                                    }}
+{{-         $fullName           := include "universal-template.fullName" (list $ . $name) }}
+{{-         $app                := .app                                                   }}
+{{-         $extraLabels        := $app.extraLabels                                       }}
+{{-         $podAnnotations     := $app.podAnnotations                                    }}
+{{-         $image              := $app.image                                             }}
+{{-         $initContainers     := $app.initContainers                                    }}
+{{-         $containers         := $app.containers                                        }}
+{{-         $envs               := $app.envs                                              }}
+{{-         $resources          := $app.resources                                         }}
+{{-         $persistentVolume   := $app.persistentVolume                                  }}
+{{-         $emptyDirVolume     := $app.emptyDirVolume                                    }}
+{{-         $tolerations        := $app.tolerations                                       }}
+{{-         $affinity           := $app.affinity                                          }}
+{{          $nodeSelector       := $app.nodeSelector                                      }}
+{{-         $probes             := $app.probes                                            }}
+{{-         $commands           := $app.commands                                          }}
+{{-         $args               := $app.args                                              }}
+{{-         $cronJob            := $app.cronJob                                           }}
+{{          $externalSecrets    := $app.externalSecrets                                   }}
+{{          $externalConfigMaps := $app.externalConfigMaps                                }}
+{{          $rbac               := .rbac                                                  }}
 ---
 apiVersion: batch/v1
 kind: CronJob
@@ -48,6 +53,9 @@ spec:
       ttlSecondsAfterFinished: {{ default 300 $cronJob.ttlSecondsAfterFinished }}
       template:
         spec:
+          {{- if $rbac }}
+          {{-   include "universal-template.serviceAccount" (list $fullName $rbac) | nindent 10 }}
+          {{- end }}
           {{- if $affinity }}
           affinity: {{- toYaml $affinity | nindent 12 }}
           {{- end }}
@@ -57,14 +65,20 @@ spec:
           {{- if $tolerations }}
           tolerations: {{- toYaml $tolerations | nindent 12 }}
           {{- end }}
-          {{- if $initContainer }}
-          {{-   $initContainerData := dict "app" $initContainer "name" $initContainer.name "configMap" $configMap "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
-          initContainers: {{- include "universal-template.container.template" $initContainerData | nindent 12 }}
+          {{- if $initContainers }}
+          initContainers:
+          {{-   range $initContainers }}
+          {{-     $initContainerData := dict "app" . "name" .name "configMap" $configMap "secret" $secret "externalSecrets" $externalSecrets "externalConfigMaps" $externalConfigMaps "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
+          {{- include "universal-template.container.template" $initContainerData | nindent 12 }}
+          {{-   end }}
           {{- end }}
-          {{- $containerData := dict "app" $app "name" $name "configMap" $configMap "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
-          containers: {{- include "universal-template.container.template" $containerData | nindent 12 }}
-          {{- if or $configMap $persistentVolume $emptyDirVolume }}
-          {{-   $volumesData := dict "targetType" "job" "fullName" $fullName "configMap" $configMap "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
+          containers:
+          {{- range $containers }}
+          {{- $containerData := dict "app" . "name" .name "configMap" $configMap "secret" $secret "externalSecrets" $externalSecrets "externalConfigMaps" $externalConfigMaps "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
+          {{- include "universal-template.container.template" $containerData | nindent 12 }}
+          {{- end }}
+          {{- if or $configMap $secret $persistentVolume $emptyDirVolume $externalSecrets $externalConfigMaps }}
+          {{-   $volumesData := dict "targetType" "job" "fullName" $fullName "configMap" $configMap "secret" $secret "externalSecrets" $externalSecrets "externalConfigMaps" $externalConfigMaps "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
           volumes: {{- include "universal-template.volumes.template" $volumesData | nindent 12 }}
           {{- end }}
           {{- if $image.pullSecrets }}
