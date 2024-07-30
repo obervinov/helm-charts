@@ -49,9 +49,20 @@ Containers template
   {{- if or $configMap $persistentVolume $emptyDirVolume }}
   volumeMounts:
   {{-   if $configMap }}
+  {{-     if $configMap.mountPath }}
     - name: volume-configs
       mountPath: {{ $configMap.mountPath | lower }}
       readOnly: true
+  {{-     end }}
+  {{-   end }}
+  {{-   if $externalConfigMaps }}
+  {{-     range $externalConfigMaps }}
+  {{-       if .mountPath }}
+    - name: {{ .name }}
+      mountPath: {{ .mountPath }}
+      readOnly: true
+  {{-       end }}
+  {{-     end }}
   {{-   end }}
   {{-   if $secret }}
   {{-     if $secret.mountPath }}
@@ -62,16 +73,11 @@ Containers template
   {{-   end }}
   {{-   if $externalSecrets }}
   {{-     range $externalSecrets }}
+  {{-       if .mountPath }}
     - name: {{ .name }}
       mountPath: {{ .mountPath }}
       readOnly: true
-  {{-     end }}
-  {{-   end }}
-  {{-   if $externalConfigMaps }}
-  {{-     range $externalConfigMaps }}
-    - name: {{ .name }}
-      mountPath: {{ .mountPath }}
-      readOnly: true
+  {{-       end }}
   {{-     end }}
   {{-   end }}
   {{-   if $persistentVolume }}

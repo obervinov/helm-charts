@@ -3,9 +3,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
-## v1.1.0 - 2024-07-29
+## v1.1.0 - 2024-07-30
 ### What's Changed
 **Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.0.6...v1.1.0 by @obervinov in https://github.com/obervinov/helm-charts/pull/50
+#### 💥 Breaking Changes
+* Change the structure of the `values.yaml` file in the `universal-template` chart. The old version of the file is not compatible with the new release!
 #### 🚀 Features
 * Bump workflow versions to `v1.2.6`
 * [Feature request: Universal-template: Add support for `secret` with token from `service account`](https://github.com/obervinov/helm-charts/issues/45)

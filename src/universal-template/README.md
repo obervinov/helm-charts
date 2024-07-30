@@ -127,7 +127,7 @@ For create ServiceAccount without Role, just not set `applications.rbac.rules` p
 | Parameter                           | Description                                                                 | Default    |
 |-------------------------------------|-----------------------------------------------------------------------------|------------|
 | `applications.rbac.create` | Create RBAC resources                                                         | `false`    |
-| `applications.rbac.existingServiceAccount` | Use existing ServiceAccount for the RBAC resources. Cannot be used with `create` | `""`       |
+| `applications.rbac.useExistingServiceAccount` | Use existing ServiceAccount for the RBAC resources. Cannot be used with `create` | `""`       |
 | `applications.rbac.legacyToken` | Use legacy token for the RBAC resources. Cannot be used with `create`        | `false`    |
 | `applications.rbac.rules` | List of RBAC rules                                                             | `[]`       |
 | `applications.rbac.rules.apiGroups` | API groups for the RBAC rules                                              | `[""]`     |
