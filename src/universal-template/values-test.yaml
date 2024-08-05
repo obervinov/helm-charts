@@ -109,7 +109,7 @@ applications:
               containerPort: 80
               protocol: TCP
       emptyDirVolume:
-        name: "data"
+        name: "emptyData"
         medium: ""
         sizeLimit: "1Gi"
         mountPath: "/data"
@@ -338,7 +338,7 @@ applications:
               memory: "512Mi"
               cpu: "500m"
       emptyDirVolume:
-        name: "data"
+        name: "emptyData"
         medium: ""
         sizeLimit: "1Gi"
         mountPath: "/data"
@@ -573,7 +573,7 @@ applications:
               memory: "512Mi"
               cpu: "500m"
       emptyDirVolume:
-        name: "data"
+        name: "emptyData"
         medium: ""
         sizeLimit: "1Gi"
         mountPath: "/data"
@@ -780,7 +780,7 @@ applications:
               memory: "512Mi"
               cpu: "500m"
       emptyDirVolume:
-        name: "data"
+        name: "emptyData"
         medium: ""
         sizeLimit: "1Gi"
         mountPath: "/data"

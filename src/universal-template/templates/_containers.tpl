@@ -8,7 +8,7 @@ Containers template
 {{-     $configMap          := $containerData.configMap          }}
 {{-     $secret             := $containerData.secret             }}
 {{-     $persistentVolume   := $containerData.persistentVolume   }}
-{{-     $emptyDirVolume     := $app.emptyDirVolume               }}
+{{-     $emptyDirVolume     := $containerData.emptyDirVolume     }}
 {{-     $image              := $app.image                        }}
 {{-     $envs               := $app.envs                         }}
 {{-     $resources          := $app.resources                    }}
