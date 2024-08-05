@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## v1.1.2 - 2024-08-05
+### What's Changed
+**Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.1.1...v1.1.2 by @obervinov in https://github.com/obervinov/helm-charts/pull/54
+#### 🐛 Bug Fixes
+* Error correction in `Universal-template` chart: `emptyDir` volume is not mounted in the container
+#### 🚀 Features
+* [Feature request: Add to support `securityContext` for containers in Unisersal-template helm chart](https://github.com/obervinov/helm-charts/issues/53)
+
 
 ## v1.1.1 - 2024-07-30
 ### What's Changed

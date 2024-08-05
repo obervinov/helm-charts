@@ -8,12 +8,13 @@ Containers template
 {{-     $configMap          := $containerData.configMap          }}
 {{-     $secret             := $containerData.secret             }}
 {{-     $persistentVolume   := $containerData.persistentVolume   }}
-{{-     $emptyDirVolume     := $app.emptyDirVolume               }}
+{{-     $emptyDirVolume     := $containerData.emptyDirVolume     }}
 {{-     $image              := $app.image                        }}
 {{-     $envs               := $app.envs                         }}
 {{-     $resources          := $app.resources                    }}
 {{-     $probes             := $app.probes                       }}
 {{-     $ports              := $app.ports                        }}
+{{-     $securityContext    := $app.securityContext              }}
 {{-     $externalSecrets    := $containerData.externalSecrets    }}
 {{-     $externalConfigMaps := $containerData.externalConfigMaps }}
 - name: {{ $name }}
@@ -42,6 +43,10 @@ Containers template
   {{- if $envs }}
   env:
   {{-   toYaml $envs | nindent 4 }}
+  {{- end }}
+  {{- if $securityContext }}
+  securityContext:
+  {{-   toYaml $securityContext | nindent 4 }}
   {{- end }}
   {{- if $resources }}
   resources: {{-   toYaml $resources | nindent 4 }}
