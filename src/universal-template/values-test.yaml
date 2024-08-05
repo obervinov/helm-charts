@@ -32,7 +32,7 @@ applications:
             - name: NAMESPACE
               valueFrom:
                 fieldRef:
-                  fieldPath: metadata.
+                  fieldPath: metadata.namespace
           securityContext:
             capabilities:
               add:
