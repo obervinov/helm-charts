@@ -124,7 +124,8 @@ applications:
       persistentVolume:
         name: "data"
         size: 1Gi
-        accessModes: [ "ReadWriteOnce" ]
+        accessModes:
+          - ReadWriteOnce
         storageClassName: "standard"
         mountPath: "/data"
       externalSecrets:
@@ -362,7 +363,8 @@ applications:
       persistentVolume:
         name: "data"
         size: 1Gi
-        accessModes: [ "ReadWriteOnce" ]
+        accessModes:
+          - ReadWriteOnce
         storageClassName: "standard"
         mountPath: "/data"
       externalSecrets:
@@ -597,7 +599,8 @@ applications:
       persistentVolume:
         name: "data"
         size: 1Gi
-        accessModes: [ "ReadWriteOnce" ]
+        accessModes:
+          - ReadWriteOnce
         storageClassName: "standard"
         mountPath: "/data"
       externalSecrets:
@@ -804,7 +807,8 @@ applications:
       persistentVolume:
         name: "data"
         size: 1Gi
-        accessModes: [ "ReadWriteOnce" ]
+        accessModes:
+          - ReadWriteOnce
         storageClassName: "standard"
         mountPath: "/data"
       externalSecrets:

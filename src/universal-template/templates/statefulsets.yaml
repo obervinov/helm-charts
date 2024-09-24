@@ -94,7 +94,13 @@ spec:
         name: {{ $persistentVolume.name }}
       spec:
         accessModes:
-        - {{ $persistentVolume.accessModes }}
+        {{- if $persistentVolume.accessModes }}
+        {{-   range $persistentVolume.accessModes }}
+          - {{ . }}
+        {{-   end }}
+        {{- else }}
+          - ReadWriteOnce
+        {{- end }}
         resources:
           requests:
             storage: {{ $persistentVolume.size }}
