@@ -124,7 +124,8 @@ applications:
       persistentVolume:
         name: "data"
         size: 1Gi
-        accessModes: [ "ReadWriteOnce" ]
+        accessModes:
+          - ReadWriteOnce
         storageClassName: "standard"
         mountPath: "/data"
       externalSecrets:
@@ -183,12 +184,13 @@ applications:
         - 1.1.1.1
       extraAnnotations:
         checksum/values.yaml: "helm/values.yaml"
-      type: ClusterIP
+      type: NodePort
       ports:
         - name: http
           port: 80
           protocol: TCP
           targetPort: 80
+          nodePort: 30080
     ingress:
       apiVersion: networking.k8s.io/v1
       kind: Ingress
@@ -361,7 +363,8 @@ applications:
       persistentVolume:
         name: "data"
         size: 1Gi
-        accessModes: [ "ReadWriteOnce" ]
+        accessModes:
+          - ReadWriteOnce
         storageClassName: "standard"
         mountPath: "/data"
       externalSecrets:
@@ -596,7 +599,8 @@ applications:
       persistentVolume:
         name: "data"
         size: 1Gi
-        accessModes: [ "ReadWriteOnce" ]
+        accessModes:
+          - ReadWriteOnce
         storageClassName: "standard"
         mountPath: "/data"
       externalSecrets:
@@ -803,7 +807,8 @@ applications:
       persistentVolume:
         name: "data"
         size: 1Gi
-        accessModes: [ "ReadWriteOnce" ]
+        accessModes:
+          - ReadWriteOnce
         storageClassName: "standard"
         mountPath: "/data"
       externalSecrets:

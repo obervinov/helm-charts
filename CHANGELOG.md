@@ -2,6 +2,17 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## v1.1.3 - 2024-09-24
+### What's Changed
+**Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.1.2...v1.1.3 by @obervinov in https://github.com/obervinov/helm-charts/pull/57
+#### 🐛 Bug Fixes
+* [Helm chart bug: Universal-template: Fix invalid `accessModes` list structure for `PersistentVolumeClaim`](https://github.com/obervinov/helm-charts/issues/56)
+#### 🚀 Features
+* [Feature request: Add predefined NodePort support to template services in Universal-template chart](https://github.com/obervinov/helm-charts/issues/55)
+* Bump workflow versions to `v1.2.9`
+
+
 ## v1.1.2 - 2024-08-05
 ### What's Changed
 **Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.1.1...v1.1.2 by @obervinov in https://github.com/obervinov/helm-charts/pull/54

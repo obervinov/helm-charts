@@ -95,7 +95,8 @@ applications: []
 #       persistentVolume:
 #         name: "data"
 #         size: 1Gi
-#         accessModes: [ "ReadWriteOnce" ]
+#         accessModes:
+#           - ReadWriteOnce
 #         storageClassName: "standard"
 #         mountPath: "/data"
 #       # Mounting external secrets and configmaps (Secrets and ConfigMaps deployed in namespace not by this helm-chart)
@@ -177,12 +178,13 @@ applications: []
 #       extraAnnotations:
 #         checksum/values.yaml: "helm/values.yaml"
 #       # Type of service (can be ClusterIP, NodePort, LoadBalancer)
-#       type: ClusterIP
+#       type: NodePort
 #       ports:
 #         - name: http
 #           port: 80
 #           protocol: TCP
 #           targetPort: 80
+#           nodePort: 30080
 #
 #     ingress:
 #       apiVersion: networking.k8s.io/v1
