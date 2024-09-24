@@ -40,7 +40,7 @@ spec:
     port: {{ .port }}
     targetPort: {{ .targetPort }}
     protocol: {{ .protocol }}
-    {{- if eq $type "NodePort" && .nodePort }}
+    {{- if and (eq $type "NodePort") .nodePort }}
     nodePort: {{ .nodePort }}
     {{- end }}
   {{- end }}
