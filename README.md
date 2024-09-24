@@ -8,7 +8,7 @@ This is a helm-registry for storing my helm-packages.
 ## <img src="https://github.com/obervinov/_templates/blob/main/icons/github-actions.png" width="25" title="github-actions"> GitHub Actions
 | Name  | Version |
 | ------------------------ | ----------- |
-| GitHub Actions Templates | [v1.2.6](https://github.com/obervinov/_templates/tree/v1.2.6) |
+| GitHub Actions Templates | [v1.2.9](https://github.com/obervinov/_templates/tree/v1.2.9) |
 
 ## <img src="https://github.com/obervinov/content/blob/main/ico/helm_registry.png" width="30"> List of helm charts available for installation
 <table>

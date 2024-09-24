@@ -92,6 +92,7 @@ The following table lists the configurable parameters of the chart and their def
 | `applications.service.ports.port` | Port number for the service                                                | `80`       |
 | `applications.service.ports.protocol` | Protocol for the service port                                             | `TCP`      |
 | `applications.service.ports.targetPort` | Target port for the service                                               | `80`       |
+| `applications.service.ports.nodePort` | Node port for the service                                                  | `""`       |
 
 ### Ingress
 
