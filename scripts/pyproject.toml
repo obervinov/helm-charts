@@ -11,7 +11,7 @@ repository = "https://github.com/obervinov/helm-charts"
 documentation = "https://github.com/obervinov/helm-charts/blob/main/README.md"
 keywords = ["script", "helm", "crd", "injector"]
 include = ["CHANGELOG.md"]
-packages = [{include = "crd_injector.py"}]
+packages = [{include = "download-crds.py"}]
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/obervinov/helm-charts/issues"
