@@ -11,8 +11,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: {{ include "wireguard-operator.fullname" . }}-leader-election-role
-  labels:
-    {{- include "wireguard-operator.labels" . | nindent 4 }}
+  labels: {{- include "wireguard-operator.labels" . | nindent 4 }}
 rules:
 - apiGroups:
   - ""
@@ -51,8 +50,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: {{ include "wireguard-operator.fullname" . }}-manager-role
-  labels:
-    {{- include "wireguard-operator.labels" . | nindent 4 }}
+  labels: {{- include "wireguard-operator.labels" . | nindent 4 }}
 rules:
 - apiGroups:
   - ""
@@ -191,8 +189,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: {{ include "wireguard-operator.fullname" . }}-metrics-reader
-  labels:
-    {{- include "wireguard-operator.labels" . | nindent 4 }}
+  labels: {{- include "wireguard-operator.labels" . | nindent 4 }}
 rules:
 - nonResourceURLs:
   - /metrics
@@ -204,8 +201,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: {{ include "wireguard-operator.fullname" . }}-proxy-role
-    labels:
-        {{- include "wireguard-operator.labels" . | nindent 4 }}
+  labels: {{- include "wireguard-operator.labels" . | nindent 4 }}
 rules:
 - apiGroups:
   - authentication.k8s.io
@@ -225,8 +221,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: {{ include "wireguard-operator.fullname" . }}-leader-election-rolebinding
-  labels:
-    {{- include "wireguard-operator.labels" . | nindent 4 }}
+  labels: {{- include "wireguard-operator.labels" . | nindent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -241,8 +236,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: {{ include "wireguard-operator.fullname" . }}-manager-rolebinding
-  labels:
-    {{- include "wireguard-operator.labels" . | nindent 4 }}
+  labels: {{- include "wireguard-operator.labels" . | nindent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -257,8 +251,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: {{ include "wireguard-operator.fullname" . }}-proxy-rolebinding
-  labels:
-    {{- include "wireguard-operator.labels" . | nindent 4 }}
+  labels: {{- include "wireguard-operator.labels" . | nindent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -267,3 +260,4 @@ subjects:
 - kind: ServiceAccount
   name: {{ include "wireguard-operator.fullname" . }}-controller-manager
   namespace: {{ .Release.Namespace }}
+...

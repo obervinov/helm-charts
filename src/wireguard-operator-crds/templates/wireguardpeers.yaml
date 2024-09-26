@@ -1,15 +1,14 @@
-{{- if .Values.wireguardpeers            }}
-{{-   range .Values.wireguardpeers.peers }}
-{{-     $peer := .                       }}
+{{- if .Values.peers      }}
+{{-   range .Values.peers }}
+{{-     $peer := .        }}
 ---
 apiVersion: vpn.wireguard-operator.io/v1alpha1
 kind: WireguardPeer
 metadata:
-  name: {{ include "wireguard-operator-crds.fullname" . }}-{{ $peer.name }}
-    labels:
-      {{- include "wireguard-operator-crds.labels" . | nindent 4 }}
+  name: {{ include "wireguard-operator-crds.fullname" $ }}-{{ $peer.name }}
+  labels: {{- include "wireguard-operator-crds.labels" $ | nindent 6 }}
 spec:
   wireguardRef: {{ $peer.wireguardRef }}
 ...
 {{-   end }}
-{{- end }}
+{{- end   }}

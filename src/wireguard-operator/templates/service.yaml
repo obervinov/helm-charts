@@ -15,5 +15,5 @@ spec:
     targetPort: https
   selector:
     control-plane: controller-manager
-    {{- include "wireguard-operator.labels" . | nindent 8 }}
+    {{- include "wireguard-operator.labels" . | nindent 4 }}
 ...

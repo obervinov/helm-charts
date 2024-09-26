@@ -2,7 +2,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "wireguard.name" -}}
+{{- define "wireguard-operator-crds.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
@@ -10,7 +10,7 @@ Expand the name of the chart.
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
-{{- define "wireguard.fullname" -}}
+{{- define "wireguard-operator-crds.fullname" -}}
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
@@ -22,7 +22,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{/*
 Common labels
 */}}
-{{- define "wireguard.labels" -}}
+{{- define "wireguard-operator-crds.labels" -}}
 app: {{ .Chart.Name }}
 release: {{ .Release.Name | quote }}
 heritage: {{ .Release.Service }}
