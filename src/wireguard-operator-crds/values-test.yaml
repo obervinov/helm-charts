@@ -1,0 +1,22 @@
+---
+# Default values for wireguard-operator-crds.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+# This chart deploys the WireGuard Operator to your Kubernetes cluster from this repository: https://github.com/jodevsa/wireguard-operator
+
+fullnameOverride: wireguard-operator-crds
+
+# Dictionary with wireguard instances
+wireguards:
+  - name: instance1
+    mtu: 1380
+    nodePort: false
+  - name: instance2
+    mtu: 1380
+    nodePort: true
+
+# Dictionary with wireguard peers
+peers:
+  - name: peer1
+    wireguardRef: instance1
+

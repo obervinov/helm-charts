@@ -3,6 +3,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## v1.2.0 - 2024-09-26
+### What's Changed
+**Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.1.3...v1.2.0 by @obervinov in https://github.com/obervinov/helm-charts/pull/58
+#### 🐛 Bug Fixes
+* Fix  the contact information of the contributors in all `Chart.yaml` files.
+#### 🚀 Features
+* Add new helm chart `wireguard-operator`
+* Add new helm chart `wireguard-operator-crds`
+* Add functionality to inject CRDs into charts
+
+
 ## v1.1.3 - 2024-09-24
 ### What's Changed
 **Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.1.2...v1.1.3 by @obervinov in https://github.com/obervinov/helm-charts/pull/57

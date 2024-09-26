@@ -48,14 +48,20 @@ This is a helm-registry for storing my helm-packages.
     <td><b>Terraform Operator CRDs</b></td>
     <td>https://github.com/obervinov/helm-charts/tree/main/src/terraform-operator-crds</td>
   </tr>
+  <tr>
+    <td><b>WireGuard Operator</b></td>
+    <td>https://github.com/obervinov/helm-charts/tree/main/src/wireguard-operator</td>
+  </tr>
+  <tr>
+    <td><b>WireGuard Operator CRDs</b></td>
+    <td>https://github.com/obervinov/helm-charts/tree/main/src/wireguard-operator-crds</td>
+  </tr>
 </table>
 
 ## <img src="https://github.com/obervinov/content/blob/main/ico/helm.svg" width="30"> How to add a repository to yourself and set a chart
 # Simple registry
 ```sh
 helm repo add obervinov https://obervinov.github.io/helm-charts/
-# or
-helm repo add obervinov https://helm-charts.charafee.cfd/helm-charts/
 ```
 
 # OCI registry

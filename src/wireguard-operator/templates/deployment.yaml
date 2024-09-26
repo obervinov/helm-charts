@@ -1,0 +1,85 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    control-plane: controller-manager
+    {{- include "wireguard-operator.labels" . | nindent 4 }}
+  name: {{ include "wireguard-operator.fullname" . }}-controller-manager
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      control-plane: controller-manager
+      {{- include "wireguard-operator.labels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        kubectl.kubernetes.io/default-container: manager
+      labels:
+        control-plane: controller-manager
+        {{- include "wireguard-operator.labels" . | nindent 8 }}
+    spec:
+      containers:
+      - args:
+        - --secure-listen-address=0.0.0.0:8443
+        - --upstream=http://127.0.0.1:8080/
+        - --logtostderr=true
+        - --v=0
+        image: {{ .Values.proxy.image.repository }}:{{ .Values.proxy.image.tag }}
+        name: kube-rbac-proxy
+        ports:
+        - containerPort: 8443
+          name: https
+          protocol: TCP
+        {{- if .Values.proxy.resources }}
+        resources: {{- toYaml .Values.proxy.resources | nindent 10 }}
+        {{- end }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsGroup: 65534
+          runAsNonRoot: false
+          runAsUser: 65534
+      - args:
+        - --health-probe-bind-address=:8081
+        - --metrics-bind-address=127.0.0.1:8080
+        - --leader-elect
+        - --agent-image={{ .Values.agent.image.repository }}:{{ .Values.agent.image.tag }}
+        command:
+        - /manager
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        name: manager
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        {{- if .Values.resources }}
+        resources: {{- toYaml .Values.resources | nindent 10 }}
+        {{- end }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsGroup: 65534
+          runAsNonRoot: false
+          runAsUser: 65534
+      securityContext:
+        fsGroup: 65534
+        runAsNonRoot: true
+      serviceAccountName: {{ include "wireguard-operator.fullname" . }}-controller-manager
+      terminationGracePeriodSeconds: 10
+...

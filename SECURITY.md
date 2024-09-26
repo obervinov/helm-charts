@@ -10,4 +10,4 @@ Versions supported to fix vulnerabilities
 
 ## Reporting a Vulnerability
 
-In order to inform me about the vulnerability, write the details to the mail `github.obervinov@proton.me`
+In order to inform me about the vulnerability, just create an issue: https://github.com/obervinov/helm-charts/security/advisories/new

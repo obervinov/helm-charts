@@ -21,7 +21,7 @@ icon: https://helm.sh/img/helm.svg
 
 maintainers:
   - name: obervinov
-    email: obervinov@pm.me
+    email: bervinov.ob@gmail.com
     url: https://github.com/obervinov
 
 appVersion: "alpine-v12.6.0"

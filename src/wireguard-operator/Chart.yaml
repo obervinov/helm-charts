@@ -1,0 +1,21 @@
+---
+apiVersion: v2
+name: wireguard-operator
+version: 1.0.0
+description: This chart deploys the WireGuard Operator to your Kubernetes cluster.
+type: application
+home: https://github.com/jodevsa/wireguard-operator
+sources:
+  - https://github.com/jodevsa/wireguard-operator
+  - https://github.com/obervinov/helm-charts/blob/main/src/wireguard-operator
+
+deprecated: false
+
+icon: https://helm.sh/img/helm.svg
+
+maintainers:
+  - name: obervinov
+    email: bervinov.ob@gmail.com
+    url: https://github.com/obervinov
+
+appVersion: "2.7.0"

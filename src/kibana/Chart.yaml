@@ -7,7 +7,7 @@ sources:
   - https://github.com/obervinov/helm-charts/blob/main/src/kibana
 maintainers:
   - name: obervinov
-    email: obervinov@pm.me
+    email: bervinov.ob@gmail.com
     url: https://github.com/obervinov
 name: kibana
 version: 8.5.1
