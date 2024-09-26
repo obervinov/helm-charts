@@ -41,13 +41,13 @@ jobs:
         run: cd scripts && poetry install
       
       - name: Download CRDs
-        run: cd scripts && poetry run python scripts/download-crds.py
+        run: poetry run python scripts/download-crds.py
 
       - name: Commit & Push changes
         uses: actions-js/push@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          message: "Build Poetry lock by GitHub Actions: ${{ github.sha }}"
+          message: "Include CRDs for Helm-Charts Bundle from ${{ github.ref }}"
           branch: ${{ github.ref }}
 
   helm-repository-build:
