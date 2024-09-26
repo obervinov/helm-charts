@@ -36,7 +36,10 @@ def download_source_crds(urls: list = None, chart: str = None, version: str = No
         chart (str): Name of the chart for which the CRDs are being downloaded
     """
     target_directory = os.path.join('..', 'src', chart, 'crds')
-    os.mkdir(target_directory)
+    try:
+        os.mkdir(target_directory)
+    except FileExistsError:
+        log.info(f"CRD directory already exists at {target_directory}")
     for url in urls:
         url = url.replace('VERSION', version)
         file = url.split('/')[-1]
