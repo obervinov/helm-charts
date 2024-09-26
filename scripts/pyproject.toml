@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "helm-charts-scripts"
+version = "1.0.0"
+description = "Bundle with scripts for helm-charts repository"
+authors = ["Bervinov Oleg <bervinov.ob@gmail.com>"]
+maintainers = ["Bervinov Oleg <bervinov.ob@gmail.com>"]
+license = "MIT"
+readme = "../README.md"
+homepage = "https://github.com/obervinov/helm-charts"
+repository = "https://github.com/obervinov/helm-charts"
+documentation = "https://github.com/obervinov/helm-charts/blob/main/README.md"
+keywords = ["script", "helm", "crd", "injector"]
+include = ["CHANGELOG.md"]
+packages = [{include = "crd_injector.py"}]
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/obervinov/helm-charts/issues"
+
+[tool.poetry.dependencies]
+python = "^3.12.4"
+PyYAML = "^6"
+requests = "^2"
+logger = { git = "https://github.com/obervinov/logger-package.git", tag = "v1.0.6" }
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
