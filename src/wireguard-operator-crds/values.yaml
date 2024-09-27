@@ -7,14 +7,14 @@
 fullnameOverride: ""
 
 # Dictionary with wireguard instances
-wireguards: {}
+wireguards: []
 # wireguards:
 #   - name: instance1
 #     mtu: 1380
 #     nodePort: false
 
 # Dictionary with wireguard peers
-peers: {}
+peers: []
 # peers:
 #   - name: peer1
 #     wireguardRef: instance1
