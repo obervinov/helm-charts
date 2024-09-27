@@ -6,10 +6,10 @@
             "type": "string"
         },
         "peers": {
-            "type": "object"
+            "type": "array"
         },
         "wireguards": {
-            "type": "object"
+            "type": "array"
         }
     }
 }

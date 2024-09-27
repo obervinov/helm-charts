@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## v1.2.1 - 2024-09-27
+### What's Changed
+**Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.2.0...v1.2.1 by @obervinov in https://github.com/obervinov/helm-charts/pull/60
+#### 🐛 Bug Fixes
+* [Helm chart bug: Wireguard-operator: bugs list](https://github.com/obervinov/helm-charts/issues/59)
+
+
 ## v1.2.0 - 2024-09-26
 ### What's Changed
 **Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.1.3...v1.2.0 by @obervinov in https://github.com/obervinov/helm-charts/pull/58
