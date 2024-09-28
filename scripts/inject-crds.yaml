@@ -11,5 +11,5 @@
     - https://github.com/jodevsa/wireguard-operator/tree/main/bundle/manifests
   version: v2.7.0
   urls:
-    - https://raw.githubusercontent.com/jodevsa/wireguard-operator/refs/tags/VERSION/bundle/manifests/vpn.wireguard-operator.io_wireguardpeers.yaml
-    - https://raw.githubusercontent.com/jodevsa/wireguard-operator/refs/tags/VERSION/bundle/manifests/vpn.wireguard-operator.io_wireguards.yaml
+    - https://raw.githubusercontent.com/jodevsa/wireguard-operator/refs/tags/VERSION/config/crd/bases/vpn.wireguard-operator.io_wireguardpeers.yaml
+    - https://raw.githubusercontent.com/jodevsa/wireguard-operator/refs/tags/VERSION/config/crd/bases/vpn.wireguard-operator.io_wireguards.yaml

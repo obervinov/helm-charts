@@ -1,9 +1,9 @@
+---
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.7.0
-  creationTimestamp: null
+    controller-gen.kubebuilder.io/version: v0.14.0
   name: wireguards.vpn.wireguard-operator.io
 spec:
   group: vpn.wireguard-operator.io
@@ -20,40 +20,211 @@ spec:
         description: Wireguard is the Schema for the wireguards API
         properties:
           apiVersion:
-            description: 'APIVersion defines the versioned schema of this representation
-              of an object. Servers should convert recognized schemas to the latest
-              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
             type: string
           kind:
-            description: 'Kind is a string value representing the REST resource this
-              object represents. Servers may infer this from the endpoint the client
-              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
             type: string
           metadata:
             type: object
           spec:
             description: WireguardSpec defines the desired state of Wireguard
             properties:
-              hostname:
+              address:
+                description: A string field that specifies the address for the Wireguard
+                  VPN server. This is the public IP address or hostname that peers
+                  will use to connect to the VPN.
                 type: string
+              agent:
+                description: WireguardPodSpec defines spec for respective containers
+                  created for Wireguard
+                properties:
+                  resources:
+                    description: ResourceRequirements describes the compute resource
+                      requirements.
+                    properties:
+                      claims:
+                        description: |-
+                          Claims lists the names of resources, defined in spec.resourceClaims,
+                          that are used by this container.
+
+
+                          This is an alpha field and requires enabling the
+                          DynamicResourceAllocation feature gate.
+
+
+                          This field is immutable. It can only be set for containers.
+                        items:
+                          description: ResourceClaim references one entry in PodSpec.ResourceClaims.
+                          properties:
+                            name:
+                              description: |-
+                                Name must match the name of one entry in pod.spec.resourceClaims of
+                                the Pod where this field is used. It makes that resource available
+                                inside a container.
+                              type: string
+                          required:
+                          - name
+                          type: object
+                        type: array
+                        x-kubernetes-list-map-keys:
+                        - name
+                        x-kubernetes-list-type: map
+                      limits:
+                        additionalProperties:
+                          anyOf:
+                          - type: integer
+                          - type: string
+                          pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                          x-kubernetes-int-or-string: true
+                        description: |-
+                          Limits describes the maximum amount of compute resources allowed.
+                          More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+                        type: object
+                      requests:
+                        additionalProperties:
+                          anyOf:
+                          - type: integer
+                          - type: string
+                          pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                          x-kubernetes-int-or-string: true
+                        description: |-
+                          Requests describes the minimum amount of compute resources required.
+                          If Requests is omitted for a container, it defaults to Limits if that is explicitly specified,
+                          otherwise to an implementation-defined value. Requests cannot exceed Limits.
+                          More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+                        type: object
+                    type: object
+                type: object
+              dns:
+                description: A string field that specifies the DNS server(s) to be
+                  used by the peers.
+                type: string
+              enableIpForwardOnPodInit:
+                description: A boolean field that specifies whether IP forwarding
+                  should be enabled on the Wireguard VPN pod at startup. This can
+                  be useful to enable if the peers are having problems with sending
+                  traffic to the internet.
+                type: boolean
+              metric:
+                description: WireguardPodSpec defines spec for respective containers
+                  created for Wireguard
+                properties:
+                  resources:
+                    description: ResourceRequirements describes the compute resource
+                      requirements.
+                    properties:
+                      claims:
+                        description: |-
+                          Claims lists the names of resources, defined in spec.resourceClaims,
+                          that are used by this container.
+
+
+                          This is an alpha field and requires enabling the
+                          DynamicResourceAllocation feature gate.
+
+
+                          This field is immutable. It can only be set for containers.
+                        items:
+                          description: ResourceClaim references one entry in PodSpec.ResourceClaims.
+                          properties:
+                            name:
+                              description: |-
+                                Name must match the name of one entry in pod.spec.resourceClaims of
+                                the Pod where this field is used. It makes that resource available
+                                inside a container.
+                              type: string
+                          required:
+                          - name
+                          type: object
+                        type: array
+                        x-kubernetes-list-map-keys:
+                        - name
+                        x-kubernetes-list-type: map
+                      limits:
+                        additionalProperties:
+                          anyOf:
+                          - type: integer
+                          - type: string
+                          pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                          x-kubernetes-int-or-string: true
+                        description: |-
+                          Limits describes the maximum amount of compute resources allowed.
+                          More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+                        type: object
+                      requests:
+                        additionalProperties:
+                          anyOf:
+                          - type: integer
+                          - type: string
+                          pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                          x-kubernetes-int-or-string: true
+                        description: |-
+                          Requests describes the minimum amount of compute resources required.
+                          If Requests is omitted for a container, it defaults to Limits if that is explicitly specified,
+                          otherwise to an implementation-defined value. Requests cannot exceed Limits.
+                          More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
+                        type: object
+                    type: object
+                type: object
               mtu:
+                description: A string field that specifies the maximum transmission
+                  unit (MTU) size for Wireguard packets for all peers.
                 type: string
-            required:
-            - mtu
+              nodeSelector:
+                additionalProperties:
+                  type: string
+                type: object
+              port:
+                description: A field that specifies the value to use for a nodePort
+                  ServiceType
+                format: int32
+                type: integer
+              serviceAnnotations:
+                additionalProperties:
+                  type: string
+                description: A map of key value strings for service annotations
+                type: object
+              serviceType:
+                description: A field that specifies the type of Kubernetes service
+                  that should be used for the Wireguard VPN. This could be ClusterIP,
+                  NodePort or LoadBalancer, depending on the needs of the deployment.
+                type: string
+              useWgUserspaceImplementation:
+                description: A boolean field that specifies whether to use the userspace
+                  implementation of Wireguard instead of the kernel one.
+                type: boolean
             type: object
           status:
             description: WireguardStatus defines the observed state of Wireguard
             properties:
-              hostname:
-                description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
-                  of cluster Important: Run "make" to regenerate code after modifying
-                  this file'
+              address:
+                description: A string field that specifies the address for the Wireguard
+                  VPN server that is currently being used.
+                type: string
+              dns:
                 type: string
               message:
+                description: A string field that provides additional information about
+                  the status of Wireguard. This could include error messages or other
+                  information that helps to diagnose issues with the wg instance.
                 type: string
               port:
+                description: A string field that specifies the port for the Wireguard
+                  VPN server that is currently being used.
                 type: string
               status:
+                description: A string field that represents the current status of
+                  Wireguard. This could include values like ready, pending, or error.
                 type: string
             type: object
         type: object
@@ -61,9 +232,3 @@ spec:
     storage: true
     subresources:
       status: {}
-status:
-  acceptedNames:
-    kind: ""
-    plural: ""
-  conditions: []
-  storedVersions: []
