@@ -5,10 +5,37 @@
 apiVersion: vpn.wireguard-operator.io/v1alpha1
 kind: WireguardPeer
 metadata:
-  name: {{ include "wireguard-operator-crds.fullname" $ }}-{{ $peer.name }}
+  name: {{ include "wireguard-operator-crds.name" $ }}-{{ $peer.name }}
   labels: {{- include "wireguard-operator-crds.labels" $ | nindent 6 }}
 spec:
   wireguardRef: {{ $peer.wireguardRef }}
+  {{- if $peer.address }}
+  address: {{ $peer.address }}
+  {{- end }}
+  {{- if $peer.allowedIPs }}
+  allowedIPs: {{ $peer.allowedIPs }}
+  {{- end }}
+  {{- if $peer.disabled }}
+  disabled: {{ $peer.disabled }}
+  {{- end }}
+  {{- if $peer.dns }}
+  dns: {{ $peer.dns }}
+  {{- end }}
+  {{- if $peer.downloadSpeed }}
+  downloadSpeed: {{ $peer.downloadSpeed }}
+  {{- end }}
+  {{- if $peer.egressNetworkPolicies }}
+  egressNetworkPolicies: {{ toYaml $peer.egressNetworkPolicies | nindent 4 }}
+  {{- end }}
+  {{- if $peer.privateKeyRef }}
+  privateKeyRef: {{ toYaml $peer.privateKeyRef | nindent 4 }}
+  {{- end }}
+  {{- if $peer.publicKey }}
+  publicKey: {{ $peer.publicKey }}
+  {{- end }}
+  {{- if $peer.uploadSpeed }}
+  uploadSpeed: {{ toYaml $peer.uploadSpeed | nindent 4 }}
+  {{- end }}
 ...
 {{-   end }}
 {{- end   }}

@@ -5,7 +5,7 @@ metadata:
   labels:
     control-plane: controller-manager
     {{- include "wireguard-operator.labels" . | nindent 4 }}
-  name: {{ include "wireguard-operator.fullname" . }}-controller-manager
+  name: {{ include "wireguard-operator.name" . }}-controller-manager
 spec:
   replicas: {{ .Values.replicas }}
   selector:
@@ -80,6 +80,6 @@ spec:
       securityContext:
         fsGroup: 65534
         runAsNonRoot: true
-      serviceAccountName: {{ include "wireguard-operator.fullname" . }}-controller-manager
+      serviceAccountName: {{ include "wireguard-operator.name" . }}-controller-manager
       terminationGracePeriodSeconds: 10
 ...

@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{ include "wireguard-operator.fullname" . }}-controller-manager
+  name: {{ include "wireguard-operator.name" . }}-controller-manager
   labels:
     {{- include "wireguard-operator.labels" . | nindent 4 }}
 ...
@@ -10,7 +10,7 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ include "wireguard-operator.fullname" . }}-leader-election-role
+  name: {{ include "wireguard-operator.name" . }}-leader-election-role
   labels: {{- include "wireguard-operator.labels" . | nindent 4 }}
 rules:
 - apiGroups:
@@ -49,7 +49,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ include "wireguard-operator.fullname" . }}-manager-role
+  name: {{ include "wireguard-operator.name" . }}-manager-role
   labels: {{- include "wireguard-operator.labels" . | nindent 4 }}
 rules:
 - apiGroups:
@@ -188,7 +188,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ include "wireguard-operator.fullname" . }}-metrics-reader
+  name: {{ include "wireguard-operator.name" . }}-metrics-reader
   labels: {{- include "wireguard-operator.labels" . | nindent 4 }}
 rules:
 - nonResourceURLs:
@@ -200,7 +200,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ include "wireguard-operator.fullname" . }}-proxy-role
+  name: {{ include "wireguard-operator.name" . }}-proxy-role
   labels: {{- include "wireguard-operator.labels" . | nindent 4 }}
 rules:
 - apiGroups:
@@ -220,44 +220,44 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: {{ include "wireguard-operator.fullname" . }}-leader-election-rolebinding
+  name: {{ include "wireguard-operator.name" . }}-leader-election-rolebinding
   labels: {{- include "wireguard-operator.labels" . | nindent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: {{ include "wireguard-operator.fullname" . }}-leader-election-role
+  name: {{ include "wireguard-operator.name" . }}-leader-election-role
 subjects:
 - kind: ServiceAccount
-  name: {{ include "wireguard-operator.fullname" . }}-controller-manager
+  name: {{ include "wireguard-operator.name" . }}-controller-manager
   namespace: {{ .Release.Namespace }}
 ...
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ include "wireguard-operator.fullname" . }}-manager-rolebinding
+  name: {{ include "wireguard-operator.name" . }}-manager-rolebinding
   labels: {{- include "wireguard-operator.labels" . | nindent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ include "wireguard-operator.fullname" . }}-manager-role
+  name: {{ include "wireguard-operator.name" . }}-manager-role
 subjects:
 - kind: ServiceAccount
-  name: {{ include "wireguard-operator.fullname" . }}-controller-manager
+  name: {{ include "wireguard-operator.name" . }}-controller-manager
   namespace: {{ .Release.Namespace }}
 ...
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ include "wireguard-operator.fullname" . }}-proxy-rolebinding
+  name: {{ include "wireguard-operator.name" . }}-proxy-rolebinding
   labels: {{- include "wireguard-operator.labels" . | nindent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ include "wireguard-operator.fullname" . }}-proxy-role
+  name: {{ include "wireguard-operator.name" . }}-proxy-role
 subjects:
 - kind: ServiceAccount
-  name: {{ include "wireguard-operator.fullname" . }}-controller-manager
+  name: {{ include "wireguard-operator.name" . }}-controller-manager
   namespace: {{ .Release.Namespace }}
 ...
