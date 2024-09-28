@@ -39,19 +39,6 @@ The following table lists the configurable parameters of the WireGuard Operator 
 | `wireguards[0].metric.resources.limits.memory` | Memory limits for metrics of the first instance                                                |
 | `wireguards[0].metric.resources.requests.cpu`  | CPU requests for metrics of the first instance                                                  |
 | `wireguards[0].metric.resources.requests.memory`| Memory requests for metrics of the first instance                                               |
-| `wireguards[1].name`                     | Name of the second WireGuard instance                                                              |
-| `wireguards[1].mtu`                      | MTU for the second instance                                                                        |
-| `wireguards[1].address`                  | Address for the second WireGuard instance                                                          |
-| `wireguards[1].agent.resources.limits.cpu`    | CPU limits for the agent of the second instance                                                 |
-| `wireguards[1].agent.resources.limits.memory` | Memory limits for the agent of the second instance                                              |
-| `wireguards[1].agent.resources.requests.cpu`  | CPU requests for the agent of the second instance                                                |
-| `wireguards[1].agent.resources.requests.memory`| Memory requests for the agent of the second instance                                             |
-| `wireguards[1].dns`                      | DNS for the second instance                                                                        |
-| `wireguards[1].metric.resources.limits.cpu`    | CPU limits for metrics of the second instance                                                   |
-| `wireguards[1].metric.resources.limits.memory` | Memory limits for metrics of the second instance                                                |
-| `wireguards[1].metric.resources.requests.cpu`  | CPU requests for metrics of the second instance                                                  |
-| `wireguards[1].metric.resources.requests.memory`| Memory requests for metrics of the second instance                                               |
-| `wireguards[1].nodeSelector`             | Node selector for the second WireGuard instance                                                    |
 | `peers`                                  | List of WireGuard peers                                                                            |
 | `peers[0].name`                          | Name of the first peer                                                                             |
 | `peers[0].wireguardRef`                  | Reference to the WireGuard instance for the first peer                                             |
