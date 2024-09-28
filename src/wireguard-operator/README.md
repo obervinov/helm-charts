@@ -26,7 +26,7 @@ The following table lists the configurable parameters of the WireGuard Operator 
 
 | **Parameter**             | **Description**                                                   | **Default Value**                              |
 |---------------------------|-------------------------------------------------------------------|------------------------------------------------|
-| `proxy.image.repository`   | Repository for the kube-rbac-proxy sidecar container image        | `ghcr.io/kubebuilder/kube-rbac-proxy`          |
+| `proxy.image.repository`   | Repository for the kube-rbac-proxy sidecar container image        | `gcr.io/kubebuilder/kube-rbac-proxy`          |
 | `proxy.image.tag`          | Tag/version for the kube-rbac-proxy sidecar container image       | `v0.8.0`                                       |
 | `proxy.resources.limits.cpu`   | CPU resource limit for the kube-rbac-proxy sidecar               | `0`                                            |
 | `proxy.resources.limits.memory`| Memory resource limit for the kube-rbac-proxy sidecar            | `128Mi`                                        |
@@ -40,6 +40,7 @@ The following table lists the configurable parameters of the WireGuard Operator 
 | `resources.limits.memory`  | Memory resource limit for the WireGuard manager container        | `128Mi`                                        |
 | `resources.requests.cpu`   | CPU resource request for the WireGuard manager container         | `0`                                            |
 | `resources.requests.memory`| Memory resource request for the WireGuard manager container      | `64Mi`                                         |
+| `replicas`                 | Number of replicas for the WireGuard manager Deployment          | `1`                                            |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
@@ -62,7 +63,6 @@ helm install wireguard-operator obervinov/wireguard-operator -f values.yaml
 - `Role`
 - `RoleBinding`
 - `ConfigMap`
-- `Namespace`
 
 # CRDs list
 - `vpn.wireguard-operator.io_wireguardpeers`

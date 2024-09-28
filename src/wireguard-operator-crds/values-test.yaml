@@ -4,19 +4,62 @@
 # Declare variables to be passed into your templates.
 # This chart deploys the WireGuard Operator to your Kubernetes cluster from this repository: https://github.com/jodevsa/wireguard-operator
 
-fullnameOverride: wireguard-operator-crds
+fullnameOverride: wg-crds
 
 # Dictionary with wireguard instances
 wireguards:
   - name: instance1
     mtu: 1380
-    nodePort: false
+    nodePort: 32000
+    address: wireguard.example.com
+    agent:
+      resources:
+        limits:
+          cpu: 0
+          memory: 128Mi
+        requests:
+          cpu: 0
+          memory: 64Mi
+    dns: 8.8.8.8
+    metric:
+      resources:
+        limits:
+          cpu: 0
+          memory: 128Mi
+        requests:
+          cpu: 0
+          memory: 64Mi
+wireguards:
   - name: instance2
     mtu: 1380
-    nodePort: true
+    address: wireguard.example.com
+    agent:
+      resources:
+        limits:
+          cpu: 0
+          memory: 128Mi
+        requests:
+          cpu: 0
+          memory: 64Mi
+    dns: 8.8.8.8
+    metric:
+      resources:
+        limits:
+          cpu: 0
+          memory: 128Mi
+        requests:
+          cpu: 0
+          memory: 64Mi
+    nodeSelector:
+      kubernetes.io/hostname: node1
 
 # Dictionary with wireguard peers
 peers:
   - name: peer1
     wireguardRef: instance1
-
+    address: wireguard.example.com
+    allowedIPs: 192.168.0.1/32
+    disabled: false
+    dns: wireguard.example.com
+    privateKeyRef: peer1-private-key
+    publicKey: ""

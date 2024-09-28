@@ -22,16 +22,32 @@ helm install wireguard-operator-crds obervinov/wireguard-operator-crds
 ## Configuration
 
 The following table lists the configurable parameters of the WireGuard Operator CRDs chart and their default values.
-
-| **Parameter**                 | **Description**                                                       | **Default Value** |
-|-------------------------------|-----------------------------------------------------------------------|-------------------|
-| `wireguards`                  | A dictionary defining WireGuard instances                             | N/A               |
-| `wireguards[0].name`          | Name of the first WireGuard instance                                  | N/A               |
-| `wireguards[0].mtu`           | Maximum Transmission Unit (MTU) size for the first WireGuard instance | N/A               |
-| `wireguards[0].nodePort`      | Whether to use a NodePort for the first WireGuard instance            | N/A               |
-| `peers`                       | A dictionary defining WireGuard peers                                 | N/A               |
-| `peers[0].name`               | Name of the first WireGuard peer                                      | N/A               |
-| `peers[0].wireguardRef`       | Reference to the WireGuard instance for the first peer                | N/A               |
+| Parameter                                | Description                                                                                       |
+|------------------------------------------|---------------------------------------------------------------------------------------------------|
+| `fullnameOverride`                       | Full name to override the generated name for deployment                                            |
+| `wireguards`                             | List of WireGuard instances                                                                        |
+| `wireguards[0].name`                     | Name of the first WireGuard instance                                                               |
+| `wireguards[0].mtu`                      | MTU for the first instance                                                                         |
+| `wireguards[0].nodePort`                 | NodePort for the first instance                                                                    |
+| `wireguards[0].address`                  | Address for the first WireGuard instance                                                           |
+| `wireguards[0].agent.resources.limits.cpu`    | CPU limits for the agent of the first instance                                                 |
+| `wireguards[0].agent.resources.limits.memory` | Memory limits for the agent of the first instance                                              |
+| `wireguards[0].agent.resources.requests.cpu`  | CPU requests for the agent of the first instance                                                |
+| `wireguards[0].agent.resources.requests.memory`| Memory requests for the agent of the first instance                                             |
+| `wireguards[0].dns`                      | DNS for the first instance                                                                         |
+| `wireguards[0].metric.resources.limits.cpu`    | CPU limits for metrics of the first instance                                                   |
+| `wireguards[0].metric.resources.limits.memory` | Memory limits for metrics of the first instance                                                |
+| `wireguards[0].metric.resources.requests.cpu`  | CPU requests for metrics of the first instance                                                  |
+| `wireguards[0].metric.resources.requests.memory`| Memory requests for metrics of the first instance                                               |
+| `peers`                                  | List of WireGuard peers                                                                            |
+| `peers[0].name`                          | Name of the first peer                                                                             |
+| `peers[0].wireguardRef`                  | Reference to the WireGuard instance for the first peer                                             |
+| `peers[0].address`                       | Address for the first peer                                                                         |
+| `peers[0].allowedIPs`                    | Allowed IPs for the first peer                                                                     |
+| `peers[0].disabled`                      | Whether the first peer is disabled                                                                 |
+| `peers[0].dns`                           | DNS for the first peer                                                                             |
+| `peers[0].privateKeyRef`                 | Reference to the private key for the first peer                                                    |
+| `peers[0].publicKey`                     | Public key for the first peer                                                                      |
 
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,

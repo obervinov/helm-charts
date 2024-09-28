@@ -5,7 +5,7 @@ metadata:
   labels:
     control-plane: controller-manager
     {{- include "wireguard-operator.labels" . | nindent 4 }}
-  name: {{ include "wireguard-operator.fullname" . }}-controller-manager-metrics-service
+  name: {{ include "wireguard-operator.name" . }}-controller-manager-metrics-service
 spec:
   type: ClusterIP
   ports:
