@@ -9,6 +9,9 @@ metadata:
   labels: {{- include "wireguard-operator-crds.labels" $ | nindent 6 }}
 spec:
   mtu: {{ default "1380" $instance.mtu }}
+  {{- if $instance.serviceAnnotations }}
+  serviceAnnotations: {{ toYaml $instance.serviceAnnotations | nindent 4 }}
+  {{- end }}
   {{- if $instance.nodePort }}
   serviceType: "NodePort"
   port: {{ $instance.nodePort }}
