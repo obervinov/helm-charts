@@ -12,6 +12,8 @@ wireguards: []
 #   - name: instance1
 #     mtu: 1380
 #     nodePort: 32000
+#     serviceAnnotations:
+#       app: wireguard
 #     address: wireguard.example.com
 #     agent:
 #       resources:

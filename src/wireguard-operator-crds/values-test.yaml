@@ -11,6 +11,8 @@ wireguards:
   - name: instance1
     mtu: 1380
     nodePort: 32000
+    serviceAnnotations:
+      app: wireguard
     address: wireguard.example.com
     agent:
       resources:
@@ -29,7 +31,6 @@ wireguards:
         requests:
           cpu: 0
           memory: 64Mi
-wireguards:
   - name: instance2
     mtu: 1380
     address: wireguard.example.com
