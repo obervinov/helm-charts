@@ -15,10 +15,10 @@ jobs:
   #   uses: obervinov/_templates/.github/workflows/readme.yaml@v1.2.9
 
   pr:
-    uses: obervinov/_templates/.github/workflows/pr.yaml@v1.2.9
+    uses: obervinov/_templates/.github/workflows/pr.yaml@v2.0.2
 
   changelog:
-    uses: obervinov/_templates/.github/workflows/changelog.yaml@v1.2.9
+    uses: obervinov/_templates/.github/workflows/changelog.yaml@v2.0.2
 
   download-crds:
     runs-on: ubuntu-latest
@@ -51,5 +51,5 @@ jobs:
           branch: ${{ github.ref }}
 
   helm-repository-build:
-    uses: obervinov/_templates/.github/workflows/helm.yaml@v1.2.9
+    uses: obervinov/_templates/.github/workflows/helm.yaml@v2.0.2
     needs: [download-crds]
