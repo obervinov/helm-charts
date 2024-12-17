@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 **Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.2.4...v1.2.5 by @obervinov in https://github.com/obervinov/helm-charts/pull/68
 #### 🚀 Features
 * replace image repository for kube-rbac-proxy in the `wireguard-operator` chart
+* bump workflow versions to `v2.0.2`
 
 
 ## v1.2.4 - 2024-09-30
