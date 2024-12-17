@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## v1.2.5 - 2024-12-17
+### What's Changed
+**Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.2.4...v1.2.5 by @obervinov in https://github.com/obervinov/helm-charts/pull/68
+#### 🚀 Features
+* replace image repository for kube-rbac-proxy in the `wireguard-operator` chart
+
+
 ## v1.2.4 - 2024-09-30
 ### What's Changed
 **Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.2.3...v1.2.4 by @obervinov in https://github.com/obervinov/helm-charts/pull/64
