@@ -7,7 +7,7 @@
 # Settings for the kube-rbac-proxy sidecar container
 proxy:
   image:
-    repository: gcr.io/kubebuilder/kube-rbac-proxy
+    repository: ghcr.io/obervinov/images/kube-rbac-proxy
     tag: v0.8.0
   resources:
     limits:
