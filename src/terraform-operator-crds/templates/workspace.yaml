@@ -17,12 +17,15 @@ metadata:
   name: {{ .name }}-workspace
   namespace: {{ $namespace }}
 spec:
+  {{ $agentExecutionMode := default $agent.executionMode .executionMode }}
+  {{- if eq $agentExecutionMode "remote" }}
   agentPool:
     name: {{ $agent.agentPool }}
+  {{- end }}
+  executionMode: {{ $agentExecutionMode }}
   allowDestroyPlan: true
   applyMethod: {{ default $agent.applyMethod .applyMethod }}
   description: {{ .description }}
-  executionMode: {{ $agent.executionMode }}
   name: {{ .name }}-workspace
   {{- if $notification }}
   notifications:
