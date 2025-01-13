@@ -21,9 +21,9 @@ entries:
     version: 1.0.1
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2024-12-17T10:01:50.484955358Z"
+    created: "2025-01-13T10:57:33.162068108Z"
     description: This chart deploys the CRDs for the Gateway API
-    digest: 34655c9c545ffcb1564ac4efa02ad13bacb5b99a24a6dc753a9490804d0585f7
+    digest: 6ec2249d21aaedcab81ccb0d0e1e4f6f2681f68b6c510cb3df2ee060f2401f80
     home: https://github.com/obervinov/helm-charts/blob/main/src/gateway-api-crds
     icon: https://helm.sh/img/helm.svg
     maintainers:
@@ -40,9 +40,9 @@ entries:
   gitlab-runners:
   - apiVersion: v2
     appVersion: alpine-v12.6.0
-    created: "2024-12-17T10:01:50.485602455Z"
+    created: "2025-01-13T10:57:33.162692695Z"
     description: This is a chart with gitlab-runners for devops k8s
-    digest: 7227497e37960f73dcbfb9b6a0cff2ea7fd02813ad358c3d47e2ede01293d632
+    digest: 0340e1ed403c35f7cd24ddf808c8c47d38cdfb6c8c1ac19c6e03bfe363956b8d
     home: https://github.com/obervinov/helm-charts/blob/main/src/gitlab-runners
     icon: https://helm.sh/img/helm.svg
     keywords:
@@ -64,14 +64,14 @@ entries:
   jaeger-stack:
   - apiVersion: v2
     appVersion: 1.32.0
-    created: "2024-12-17T10:01:50.48888472Z"
+    created: "2025-01-13T10:57:33.164986097Z"
     dependencies:
     - condition: elasticsearch.enabled
       name: elasticsearch
       repository: https://helm.elastic.co
       version: ^7.11.1
     description: Helm-chart with jaeger-stack
-    digest: 72e4d508f30bef726ca615c1027585cc9df3d7a2b0f242a6bb0a6d8ad86e0006
+    digest: 5386c9ee1787769d86586ccad7a9a5e712c006c981e2de4b6c59772d1571e1d4
     home: https://github.com/obervinov/helm-charts/blob/main/src/jaeger-stack
     icon: https://helm.sh/img/helm.svg
     keywords:
@@ -93,9 +93,9 @@ entries:
   k8s-haproxy:
   - apiVersion: v2
     appVersion: 2.1.1-alpine
-    created: "2024-12-17T10:01:50.489213984Z"
+    created: "2025-01-13T10:57:33.165278914Z"
     description: Helm-chart with daemonset-proxy by haproxy
-    digest: ff4a70a5aee1154128c2840a820b07edd5bd3c07818a51243db4320d86b7e6c2
+    digest: ac444e73272e06927877887276cafc9eba4f16d139652df3f653d760a8a48635
     home: https://github.com/obervinov/helm-charts/blob/main/src/k8s-haproxy
     icon: https://helm.sh/img/helm.svg
     keywords:
@@ -117,9 +117,9 @@ entries:
   kibana:
   - apiVersion: v1
     appVersion: 8.5.1
-    created: "2024-12-17T10:01:50.489874146Z"
+    created: "2025-01-13T10:57:33.165868625Z"
     description: Non official Elastic helm chart for Kibana
-    digest: 3e2212ffb6032a56a1cb4553d37dc960c3fd11e0dbe237ae423816bc3a3c6844
+    digest: ad900c67b904a78f8acd14a9b91bb810b1862247b5fce23e744ba695af43ed1a
     home: https://github.com/obervinov/helm-charts/blob/main/src/kibana
     icon: https://helm.elastic.co/icons/kibana.png
     maintainers:
@@ -135,10 +135,10 @@ entries:
   promoperators:
   - apiVersion: v2
     appVersion: 1.0.1
-    created: "2024-12-17T10:01:50.490159619Z"
+    created: "2025-01-13T10:57:33.166121788Z"
     description: This chart is designed for easy installation of custom ServiceMonitor's
       or PodMonitor's for Prometheus Operator
-    digest: 5496fad6bf57f075a5a889ed588a2f744e0a248124aeccd319b23d47a5381198
+    digest: 770ef7a2c46b0f5f031565b47a99f6d6ccb729c12164b6ac16ac18153ded7c6d
     home: https://github.com/obervinov/helm-charts/blob/main/src/promoperators
     icon: https://helm.sh/img/helm.svg
     maintainers:
@@ -155,7 +155,26 @@ entries:
   terraform-operator-crds:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2024-12-17T10:01:50.491097398Z"
+    created: "2025-01-13T10:57:33.168915294Z"
+    description: 'This chart generating CRDs for Terraform Cloud Operator: Workspaces
+      and AgentPools'
+    digest: 674a080456f448b49da4674dca8d97f5183fc544e8ab4b092b8838117adae3b5
+    home: https://github.com/obervinov/helm-charts/blob/main/src/terraform-operator-crds
+    icon: https://helm.sh/img/helm.svg
+    maintainers:
+    - email: bervinov.ob@gmail.com
+      name: obervinov
+      url: https://github.com/obervinov
+    name: terraform-operator-crds
+    sources:
+    - https://github.com/obervinov/helm-charts/blob/main/src/terraform-operator-crds
+    type: application
+    urls:
+    - https://helm-charts.charafee.cfd/charts/terraform-operator-crds-1.1.0.tgz
+    version: 1.1.0
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2025-01-13T10:57:33.168482716Z"
     description: 'This chart generating CRDs for Terraform Cloud Operator: Workspaces
       and AgentPools'
     digest: e013792939465d8bdda575f20703845c2288798e952b95d33edbe577ef9f6aa3
@@ -174,7 +193,7 @@ entries:
     version: 1.0.2
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2024-12-17T10:01:50.490804552Z"
+    created: "2025-01-13T10:57:33.168178117Z"
     description: 'This chart generating CRDs for Terraform Cloud Operator: Workspaces
       and AgentPools'
     digest: 9a651286f0b3daa6323f9dbfe451f010c3185e5bf278c304129e24c1b8dc6595
@@ -193,7 +212,7 @@ entries:
     version: 1.0.1
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2024-12-17T10:01:50.490494784Z"
+    created: "2025-01-13T10:57:33.166501326Z"
     description: 'This chart generating CRDs for Terraform Cloud Operator: Workspaces
       and AgentPools.'
     digest: 28ad181616a0f3f1ac65df89099236fe06440f7ff085e95f6c2a7d18a2fc81bb
@@ -213,12 +232,12 @@ entries:
   universal-template:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2024-12-17T10:01:50.498009478Z"
+    created: "2025-01-13T10:57:33.175939869Z"
     description: This universal helm chart template is designed to simplify rolling
       out simple releases and speed up the helm implementation process. There is no
       need to write new charts for each microservice, you can use one by changing
       only values.yaml
-    digest: d6ee65c4ef2ea563b3b51dbe70ef88b0d3eaf2791b676f7bb3f0efc5dc0362dd
+    digest: d4a2251f273cf116c892e400d27087fdf60ab0440a7d593414065af2c1e54373
     home: https://github.com/obervinov/helm-charts/blob/main/src/universal-template
     icon: https://helm.sh/img/helm.svg
     maintainers:
@@ -234,7 +253,7 @@ entries:
     version: 3.0.3
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2024-12-17T10:01:50.497489818Z"
+    created: "2025-01-13T10:57:33.175378241Z"
     description: This universal helm chart template is designed to simplify rolling
       out simple releases and speed up the helm implementation process. There is no
       need to write new charts for each microservice, you can use one by changing
@@ -255,7 +274,7 @@ entries:
     version: 3.0.2
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2024-12-17T10:01:50.49694378Z"
+    created: "2025-01-13T10:57:33.17483143Z"
     description: This universal helm chart template is designed to simplify rolling
       out simple releases and speed up the helm implementation process. There is no
       need to write new charts for each microservice, you can use one by changing
@@ -276,7 +295,7 @@ entries:
     version: 3.0.1
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2024-12-17T10:01:50.496417187Z"
+    created: "2025-01-13T10:57:33.174203768Z"
     description: This universal helm chart template is designed to simplify rolling
       out simple releases and speed up the helm implementation process. There is no
       need to write new charts for each microservice, you can use one by changing
@@ -297,7 +316,7 @@ entries:
     version: 3.0.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2024-12-17T10:01:50.495862332Z"
+    created: "2025-01-13T10:57:33.172960296Z"
     description: This universal helm chart template is designed to simplify rolling
       out simple releases and speed up the helm implementation process. There is no
       need to write new charts for each microservice, you can use one by changing
@@ -318,7 +337,7 @@ entries:
     version: 2.1.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2024-12-17T10:01:50.495312887Z"
+    created: "2025-01-13T10:57:33.172432601Z"
     description: This universal helm chart template is designed to simplify rolling
       out simple releases and speed up the helm implementation process. There is no
       need to write new charts for each microservice, you can use one by changing
@@ -339,7 +358,7 @@ entries:
     version: 2.0.3
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2024-12-17T10:01:50.494429836Z"
+    created: "2025-01-13T10:57:33.171950601Z"
     description: This universal helm chart template is designed to simplify rolling
       out simple releases and speed up the helm implementation process. There is no
       need to write new charts for each microservice, you can use one by changing
@@ -360,7 +379,7 @@ entries:
     version: 2.0.2
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2024-12-17T10:01:50.493641565Z"
+    created: "2025-01-13T10:57:33.171449495Z"
     description: This universal helm chart template is designed to simplify rolling
       out simple releases and speed up the helm implementation process. There is no
       need to write new charts for each microservice, you can use one by changing
@@ -381,7 +400,7 @@ entries:
     version: 2.0.1
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2024-12-17T10:01:50.493137014Z"
+    created: "2025-01-13T10:57:33.170968608Z"
     description: This universal helm chart template is designed to simplify rolling
       out simple releases and speed up the helm implementation process. There is no
       need to write new charts for each microservice, you can use one by changing
@@ -402,7 +421,7 @@ entries:
     version: 2.0.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2024-12-17T10:01:50.492639245Z"
+    created: "2025-01-13T10:57:33.170454668Z"
     description: This universal helm chart template is designed to simplify rolling
       out simple releases and speed up the helm implementation process. There is no
       need to write new charts for each microservice, you can use one by changing
@@ -423,7 +442,7 @@ entries:
     version: 1.0.1
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2024-12-17T10:01:50.492027033Z"
+    created: "2025-01-13T10:57:33.169839239Z"
     description: This universal helm chart template is designed to simplify rolling
       out simple releases and speed up the helm implementation process. There is no
       need to write new charts for each microservice, you can use one by changing
@@ -445,9 +464,9 @@ entries:
   wireguard-operator:
   - apiVersion: v2
     appVersion: 2.7.0
-    created: "2024-12-17T10:01:50.499713508Z"
+    created: "2025-01-13T10:57:33.177646266Z"
     description: This chart deploys the WireGuard Operator to your Kubernetes cluster.
-    digest: de93d3ae2110637491cd465a4e57e787b9570c108139bacab178b389fdd02fa7
+    digest: 72b8107fed353690ded257e5a9afcfd8092c2e36e22db1ab45f482361ab0c83e
     home: https://github.com/jodevsa/wireguard-operator
     icon: https://helm.sh/img/helm.svg
     maintainers:
@@ -464,7 +483,7 @@ entries:
     version: 1.0.4
   - apiVersion: v2
     appVersion: 2.7.0
-    created: "2024-12-17T10:01:50.499353065Z"
+    created: "2025-01-13T10:57:33.177293417Z"
     description: This chart deploys the WireGuard Operator to your Kubernetes cluster.
     digest: 3c829f95c43534b7ecd302f158d5a7210f85355ca3a62c205a4fb2bf5ad39c48
     home: https://github.com/jodevsa/wireguard-operator
@@ -483,7 +502,7 @@ entries:
     version: 1.0.3
   - apiVersion: v2
     appVersion: 2.7.0
-    created: "2024-12-17T10:01:50.498978316Z"
+    created: "2025-01-13T10:57:33.176928856Z"
     description: This chart deploys the WireGuard Operator to your Kubernetes cluster.
     digest: 3e8c3680d217694ee3eb346c5436fe8766120fa5204d2dc1fe0111609d03f3fb
     home: https://github.com/jodevsa/wireguard-operator
@@ -502,7 +521,7 @@ entries:
     version: 1.0.2
   - apiVersion: v2
     appVersion: 2.7.0
-    created: "2024-12-17T10:01:50.498671002Z"
+    created: "2025-01-13T10:57:33.176581978Z"
     description: This chart deploys the WireGuard Operator to your Kubernetes cluster.
     digest: 8948b6c642d80e907597dedc98fb533df9e715328f4cec7b953a7d36616ca9c2
     home: https://github.com/jodevsa/wireguard-operator
@@ -521,7 +540,7 @@ entries:
     version: 1.0.1
   - apiVersion: v2
     appVersion: 2.7.0
-    created: "2024-12-17T10:01:50.498346677Z"
+    created: "2025-01-13T10:57:33.176265798Z"
     description: This chart deploys the WireGuard Operator to your Kubernetes cluster.
     digest: 595246b49f34277f5b0656d9e80e2ebd0ed470e70d0c386b0d649073b496d60e
     home: https://github.com/jodevsa/wireguard-operator
@@ -541,10 +560,10 @@ entries:
   wireguard-operator-crds:
   - apiVersion: v2
     appVersion: 2.7.0
-    created: "2024-12-17T10:01:50.501274961Z"
+    created: "2025-01-13T10:57:33.178615215Z"
     description: This chart deploys the WireGuard Operator CRDs to your Kubernetes
       cluster.
-    digest: 56765c093243ab2c521cd97122ddc0da06096fa6cca9314f39e100865908e763
+    digest: 3d2d5ed5e333e8a7113724aa4f6bc8133f68fc8336b4816884208fdf88c2ce77
     home: https://github.com/jodevsa/wireguard-operator
     icon: https://helm.sh/img/helm.svg
     maintainers:
@@ -561,7 +580,7 @@ entries:
     version: 1.0.3
   - apiVersion: v2
     appVersion: 2.7.0
-    created: "2024-12-17T10:01:50.501035765Z"
+    created: "2025-01-13T10:57:33.178353546Z"
     description: This chart deploys the WireGuard Operator CRDs to your Kubernetes
       cluster.
     digest: 86b69439c5ad6cb248263d684a3416950868accc6a94db0ea1829a7ab2ffb4bf
@@ -581,7 +600,7 @@ entries:
     version: 1.0.2
   - apiVersion: v2
     appVersion: 2.7.0
-    created: "2024-12-17T10:01:50.500474087Z"
+    created: "2025-01-13T10:57:33.17810391Z"
     description: This chart deploys the WireGuard Operator CRDs to your Kubernetes
       cluster.
     digest: 696e928cb080cb50c3af28c5b5002c2383e3791c7606ffbab6551b2422aced56
@@ -601,7 +620,7 @@ entries:
     version: 1.0.1
   - apiVersion: v2
     appVersion: 2.7.0
-    created: "2024-12-17T10:01:50.499905676Z"
+    created: "2025-01-13T10:57:33.177876015Z"
     description: This chart deploys the WireGuard Operator CRDs to your Kubernetes
       cluster.
     digest: 89dfbc464e0dfd60282f743682fcc4f4b880d4ae03b13de14847916652bcec25
@@ -619,4 +638,4 @@ entries:
     urls:
     - https://helm-charts.charafee.cfd/charts/wireguard-operator-crds-1.0.0.tgz
     version: 1.0.0
-generated: "2024-12-17T10:01:50.484637725Z"
+generated: "2025-01-13T10:57:33.161743763Z"
