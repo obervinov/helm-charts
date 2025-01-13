@@ -18,7 +18,7 @@ metadata:
   namespace: {{ $namespace }}
 spec:
   {{ $agentExecutionMode := default $agent.executionMode .executionMode }}
-  {{- if not eq $agentExecutionMode "remote" }}
+  {{- if ne $agentExecutionMode "remote" }}
   agentPool:
     name: {{ $agent.agentPool }}
   {{- end }}
