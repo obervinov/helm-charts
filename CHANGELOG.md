@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## v1.2.7 - 2025-01-13
+### What's Changed
+**Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.2.6...v1.2.7 by @obervinov in https://github.com/obervinov/helm-charts/pull/71
+#### 🐛 Bug Fixes
+* bugfixes in `terraform-operator-crds` chart
+
+
 ## v1.2.6 - 2025-01-13
 ### What's Changed
 **Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.2.5...v1.2.6 by @obervinov in https://github.com/obervinov/helm-charts/pull/70
