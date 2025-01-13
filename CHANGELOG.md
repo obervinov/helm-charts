@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## v1.2.6 - 2025-01-13
+### What's Changed
+**Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.2.5...v1.2.6 by @obervinov in https://github.com/obervinov/helm-charts/pull/70
+#### 🚀 Features
+* bump workflow versions
+* [Feature request: Terraform-operator-crds: add the ability to set, within a specific workspace or globally, the execution mode of `remote`](https://github.com/obervinov/helm-charts/issues/43)
+
+
 ## v1.2.5 - 2024-12-17
 ### What's Changed
 **Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.2.4...v1.2.5 by @obervinov in https://github.com/obervinov/helm-charts/pull/68

@@ -33,6 +33,7 @@ workspaces:
     workingDirectory: "infrastructure/service1"
     notificationName: Notify from workspace1
     applyMethod: auto-approve
+    executionMode: remote
     additionalTags:
       - "tag2"
     environmentVariables:
