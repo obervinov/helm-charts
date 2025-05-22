@@ -5,6 +5,8 @@
 {{-       $fullName := include "universal-template.fullName" (list $ . $name) }}
 {{-       $namespace := $.Release.Namespace }}
 {{-       $files     := .configMap.files }}
+{{-       $extraLabels := .configMap.extraLabels }}
+{{-       $extraAnnotations := .configMap.extraAnnotations }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -12,6 +14,12 @@ metadata:
   labels:
     {{- include "universal-template.labels" $ | nindent 4 }}
     {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
+    {{- if $extraLabels }}
+    {{- toYaml $extraLabels | nindent 4 }}
+    {{- end }}
+  {{- if $extraAnnotations }}
+  annotations: {{- toYaml $extraAnnotations | nindent 4 }}
+  {{- end }}
   name: {{ $fullName }}
   namespace: {{ $namespace }}
 data:

@@ -9,6 +9,8 @@
 {{-       $createServiceAccount   := $rbac.create                                           }}
 {{-       $createLegacyToken      := $rbac.legacyToken                                      }}
 {{-       $existingServiceAccount := $rbac.useExistingServiceAccount                        }}
+{{-       $extraLabels            := $rbac.extraLabels                                      }}
+{{-       $extraAnnotations       := $rbac.extraAnnotations                                 }}
 
 {{-       if $createServiceAccount }}
 ---
@@ -20,6 +22,12 @@ metadata:
   labels:
     {{- include "universal-template.labels" $ | nindent 4 }}
     {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
+    {{- if $extraLabels }}
+    {{- toYaml $extraLabels | nindent 4 }}
+    {{- end }}
+  {{- if $extraAnnotations }}
+  annotations: {{- toYaml $extraAnnotations | nindent 4 }}
+  {{- end }}
 ...
 
 {{-         if $createLegacyToken }}
@@ -32,8 +40,14 @@ metadata:
   labels:
     {{- include "universal-template.labels" $ | nindent 4 }}
     {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
+  {{- if $extraLabels }}
+    {{- toYaml $extraLabels | nindent 4 }}
+    {{- end }}
   annotations:
     kubernetes.io/service-account.name: {{ $fullName }}
+    {{- if $extraAnnotations }}
+    {{- toYaml $extraAnnotations | nindent 4 }}
+    {{- end }}
 type: kubernetes.io/service-account-token
 ...
 {{-         end }}
@@ -47,6 +61,12 @@ metadata:
   labels:
     {{- include "universal-template.labels" $ | nindent 4 }}
     {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
+    {{- if $extraLabels }}
+    {{- toYaml $extraLabels | nindent 4 }}
+    {{- end }}
+  {{- if $extraAnnotations }}
+  annotations: {{- toYaml $extraAnnotations | nindent 4 }}
+  {{- end }}
 rules:
 {{-           range $rules }}
   - apiGroups:
@@ -71,6 +91,12 @@ metadata:
   labels:
     {{- include "universal-template.labels" $ | nindent 4 }}
     {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
+    {{- if $extraLabels }}
+    {{- toYaml $extraLabels | nindent 4 }}
+    {{- end }}
+  {{- if $extraAnnotations }}
+  annotations: {{- toYaml $extraAnnotations | nindent 4 }}
+  {{- end }}
 subjects:
   - kind: ServiceAccount
     name: {{ $fullName }}

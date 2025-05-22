@@ -9,7 +9,7 @@
 {{-         $fullName           := include "universal-template.fullName" (list $ . $name) }}
 {{-         $app                := .app                                                   }}
 {{-         $extraLabels        := $app.extraLabels                                       }}
-{{-         $podAnnotations     := $app.podAnnotations                                    }}
+{{-         $extraAnnotations   := $app.extraAnnotations                                  }}
 {{-         $image              := $app.image                                             }}
 {{-         $initContainers     := $app.initContainers                                    }}
 {{-         $containers         := $app.containers                                        }}
@@ -39,6 +39,9 @@ metadata:
     {{- if $extraLabels }}
     {{-   toYaml $extraLabels | nindent 4 }}
     {{- end }}
+  {{- if $extraAnnotations }}
+  annotations: {{- toYaml $extraAnnotations | nindent 4 }}
+  {{- end }}
 spec:
   schedule: {{ $cronJob.schedule | quote }}
   failedJobsHistoryLimit: {{ default 0 $cronJob.failedJobsHistoryLimit }}
