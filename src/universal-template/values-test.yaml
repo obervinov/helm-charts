@@ -439,7 +439,7 @@ applications:
       paths:
         - path: /
           pathType: Prefix
-          servicePort: 80
+          servicePortName: http
           serviceName: app1
       ingressClassName: nginx
     configMap:

@@ -41,7 +41,11 @@ spec:
           service:
             name: {{ $fullName }}
             port:
+              {{- if .servicePortName }}
+              name: {{ .servicePortName }}
+              {{- else }}
               number: {{ .servicePort }}
+              {{- end }}
       {{- end }}
   ingressClassName: {{ default "nginx" $ingressClassName }}
 ...
