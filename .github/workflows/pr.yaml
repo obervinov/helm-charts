@@ -12,7 +12,7 @@ on:
 
 jobs:
   pr:
-    uses: obervinov/_templates/.github/workflows/pr.yaml@v2.0.2
+    uses: obervinov/_templates/.github/workflows/pr.yaml@v2.1.1
 
   download-crds:
     runs-on: ubuntu-latest
@@ -45,5 +45,5 @@ jobs:
           branch: ${{ github.ref }}
 
   helm-repository-build:
-    uses: obervinov/_templates/.github/workflows/helm-charts.yaml@v2.0.2
+    uses: obervinov/_templates/.github/workflows/helm-charts.yaml@v2.1.1
     needs: [download-crds]

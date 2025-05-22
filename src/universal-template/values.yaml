@@ -25,6 +25,24 @@ applications: []
 #         app.kubernetes.io/instance: "app1"
 #       extraAnnotations:
 #         checksum/values.yaml: "helm/values.yaml"
+#       # Network policy for the application
+#       networkPolicy:
+#         ingress:
+#           - from:
+#               - podSelector:
+#                   matchLabels:
+#                     app: my-app
+#             ports:
+#               - protocol: TCP
+#                 port: 80
+#         egress:
+#           - to:
+#               - podSelector:
+#                   matchLabels:
+#                     app: my-app
+#             ports:
+#               - protocol: TCP
+#                 port: 80
 #       # Containers in the pod
 #       containers:
 #         - name: container1
