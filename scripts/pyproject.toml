@@ -17,7 +17,7 @@ packages = [{include = "download-crds.py"}]
 "Bug Tracker" = "https://github.com/obervinov/helm-charts/issues"
 
 [tool.poetry.dependencies]
-python = "^3.12.4"
+python = "^3.12"
 PyYAML = "^6"
 requests = "^2"
 logger = { git = "https://github.com/obervinov/logger-package.git", tag = "v1.0.6" }

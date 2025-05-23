@@ -44,6 +44,98 @@ jobs:
           message: "Include CRDs for Helm-Charts Bundle from ${{ github.ref }}"
           branch: ${{ github.ref }}
 
-  helm-repository-build:
-    uses: obervinov/_templates/.github/workflows/helm-charts.yaml@v2.1.1
+  build-helm-charts:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      checks: read
+      contents: write
+      packages: write
+      security-events: write
     needs: [download-crds]
+    strategy:
+      matrix:
+        charts:
+          - "src/gateway-api-crds"
+          - "src/gitlab-runners"
+          - "src/jaeger-stack"
+          - "src/k8s-haproxy"
+          - "src/kibana"
+          - "src/promoperators"
+          - "src/terraform-operator-crds"
+          - "src/universal-template"
+          - "src/wireguard-operator"
+          - "src/wireguard-operator-crds"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install helm and dependencies
+        run: |
+          # Install helm and dependencies
+          curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+          helm plugin install https://github.com/karuppiah7890/helm-schema-gen.git
+
+      - name: Check helm chart
+        run: |
+          printf "Templating helm chart: ${pwd}\n"
+          helm dependency update .
+          if [[ -f "values-test.yaml" ]]; then
+            helm template . -f values-test.yaml
+          else
+            helm template . -f values.yaml
+          fi
+          helm lint .
+        working-directory: ${{ matrix.charts }}
+
+      - name: Build helm package
+        run: |
+          # Set variables
+          chart_name=$(cat Chart.yaml | grep -E "^name:" | awk '{print $2}')
+          actual_version=$(cat Chart.yaml | grep -E "^version:" | awk '{print $2}')
+
+          # Check if chart was changed
+          printf "Checking if chart was changed: ${chart_name}\n"
+          last_builded_version=$(ls -l ../../charts/*.tgz | grep ${chart_name} | awk '{print $9}' | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | sort -V | tail -n 1)
+          if [[ "${actual_version}" == "${last_builded_version}" ]]; then
+              printf "   Chart version is the same as last builded version\n"
+              printf "   Chart version: %s\n" "${actual_version}"
+              printf "   Last builded version: %s\n" "${last_builded_version}"
+              printf "   Skipping build\n"
+              exit 0
+          fi
+
+          # Generate json-schemas
+          printf "Creating json-schemas for chart: ${chart_name}\n"
+          if [[ -f "values.yaml" ]]; then
+              helm schema-gen values.yaml > values.schema.json
+          else
+              printf "   values in %s/values.yaml doesn't exist\n   mearging *.example.yaml to values.yaml...\n" "${chart_name}"
+              yq ea '. as $item ireduce ({}; . * $item )' *.example.yaml > values.yaml
+              printf "   mearged all examples file in values.yaml successful\n"
+              helm schema-gen values.yaml > values.schema.json
+          fi
+          # Build helm package
+          printf "Creating helm package for chart: ${chart_name}\n"
+          helm package  --dependency-update --destination ../../charts
+          # Push helm packages to oci registry
+          printf "Pushing helm package to oci registry\n"
+          new_package=$(ls -l ../../charts/*.tgz | grep ${chart_name} | awk '{print $9}' | sort -V | tail -n 1)
+          printf " + %s\n" "${new_package}"
+          helm registry login -u ${{ github.actor }} -p ${{ github.token }} ghcr.io/${{ github.actor }}/${GITHUB_REPOSITORY#${{ github.repository_owner }}/}
+          helm push ${new_package} oci://ghcr.io/${{ github.actor }}/${GITHUB_REPOSITORY#${{ github.repository_owner }}/}
+
+      - name: Build helm index
+        run: |
+          # Build helm index
+          printf "Building helm index.yaml\n"
+          helm repo index charts --url https://helm-charts.charafee.cfd/charts --merge index.yaml
+          mv charts/index.yaml index.yaml
+
+      - name: Commit & Push changes
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          message: "Build schemas, packages and index for helm repository by GitHub Actions: ${{ github.sha }}"
+          branch: ${{ github.ref }}
+
