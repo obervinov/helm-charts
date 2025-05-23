@@ -123,7 +123,7 @@ jobs:
           printf "Pushing helm package to oci registry\n"
           new_package=$(ls -l ../../charts/*.tgz | grep ${chart_name} | awk '{print $9}' | sort -V | tail -n 1)
           printf " + %s\n" "${new_package}"
-          helm registry login -u ${{ github.actor }} -p ${{ github.token }} ghcr.io/${{ github.actor }}/${GITHUB_REPOSITORY#${{ github.repository_owner }}/}
+          echo ${{ github.token }} | helm registry login -u ${{ github.actor }} --password-stdin ghcr.io/${{ github.actor }}/${GITHUB_REPOSITORY#${{ github.repository_owner }}/}
           helm push ${new_package} oci://ghcr.io/${{ github.actor }}/${GITHUB_REPOSITORY#${{ github.repository_owner }}/}
         working-directory: ${{ matrix.charts }}
 
