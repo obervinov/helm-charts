@@ -128,7 +128,6 @@ jobs:
         working-directory: ${{ matrix.charts }}
 
 
-
   build-helm-index:
     runs-on: ubuntu-latest
     permissions:
