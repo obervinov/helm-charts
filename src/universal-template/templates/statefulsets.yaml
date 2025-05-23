@@ -12,7 +12,6 @@
 {{-         $extraLabels        := $app.extraLabels                                       }}
 {{-         $extraAnnotations   := $app.extraAnnotations                                  }}
 {{-         $replicas           := $app.replicas                                          }}
-{{-         $extraAnnotations   := $app.extraAnnotations                                  }}
 {{-         $initContainers     := $app.initContainers                                    }}
 {{-         $containers         := $app.containers                                        }}
 {{-         $image              := $app.image                                             }}

@@ -214,8 +214,9 @@ applications: []
 #       paths:
 #         - path: /
 #           pathType: Prefix
-#           servicePort: 80 # Conflict with servicePortName if both are set will be used servicePortName.
-#           servicePortName: http # Conflict with servicePort if both are set will be used servicePortName.
+#           # If both `servicePort` and `servicePortName` are set, `servicePortName` takes precedence. Because of this, you can set only one of them.
+#           servicePort: 80
+#           servicePortName: http
 #           serviceName: app1
 #       ingressClassName: nginx
 

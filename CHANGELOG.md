@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
-## v1.2.8 - 2025-05-22
+## v1.2.8 - 2025-05-23
 ### What's Changed
 **Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.2.7...v1.2.8 by @obervinov in https://github.com/obervinov/helm-charts/pull/72
 #### 🐛 Bug Fixes
@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 #### 🚀 Features
 * [Feature request: add support NetworkPolicy manifest (universal-template chart)](https://github.com/obervinov/helm-charts/issues/76)
 * [Feature request: add support for specifying the service port by name in Ingress (universal-template chart)](https://github.com/obervinov/helm-charts/issues/74)
+* bump workflow versions to `v2.1.1`
 
 
 ## v1.2.7 - 2025-01-13
