@@ -115,6 +115,7 @@ jobs:
               printf "   mearged all examples file in values.yaml successful\n"
               helm schema-gen values.yaml > values.schema.json
           fi
+
           # Build helm package
           printf "Creating helm package for chart: ${chart_name}\n"
           helm package  --dependency-update --destination ../../charts
@@ -124,7 +125,21 @@ jobs:
           printf " + %s\n" "${new_package}"
           helm registry login -u ${{ github.actor }} -p ${{ github.token }} ghcr.io/${{ github.actor }}/${GITHUB_REPOSITORY#${{ github.repository_owner }}/}
           helm push ${new_package} oci://ghcr.io/${{ github.actor }}/${GITHUB_REPOSITORY#${{ github.repository_owner }}/}
+        working-directory: ${{ matrix.charts }}
 
+
+
+  build-helm-index:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      checks: read
+      contents: write
+      packages: write
+      security-events: write
+    needs: [build-helm-charts]
+
+    steps:
       - name: Build helm index
         run: |
           # Build helm index
