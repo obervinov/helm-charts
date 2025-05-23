@@ -118,7 +118,7 @@ jobs:
 
           # Build helm package
           printf "Creating helm package for chart: ${chart_name}\n"
-          helm package  --dependency-update --destination ../../charts
+          helm package . --dependency-update --destination ../../charts
           # Push helm packages to oci registry
           printf "Pushing helm package to oci registry\n"
           new_package=$(ls -l ../../charts/*.tgz | grep ${chart_name} | awk '{print $9}' | sort -V | tail -n 1)
