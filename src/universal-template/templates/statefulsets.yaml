@@ -10,8 +10,8 @@
 {{-         $namespace          := $.Release.Namespace                                    }}
 {{-         $fullName           := include "universal-template.fullName" (list $ . $name) }}
 {{-         $extraLabels        := $app.extraLabels                                       }}
-{{-         $replicas           := $app.replicas                                          }}
 {{-         $extraAnnotations   := $app.extraAnnotations                                  }}
+{{-         $replicas           := $app.replicas                                          }}
 {{-         $initContainers     := $app.initContainers                                    }}
 {{-         $containers         := $app.containers                                        }}
 {{-         $image              := $app.image                                             }}
@@ -35,6 +35,9 @@ metadata:
     {{- if $extraLabels }}
     {{-   toYaml $extraLabels | nindent 4 }}
     {{- end }}
+  {{- if $extraAnnotations }}
+  annotations: {{- toYaml $extraAnnotations | nindent 4 }}
+  {{- end }}
 spec:
   serviceName: {{ $fullName }}
   replicas: {{ default 1 $replicas }}

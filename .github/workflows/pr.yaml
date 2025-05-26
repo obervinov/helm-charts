@@ -12,15 +12,12 @@ on:
 
 jobs:
   pr:
-    uses: obervinov/_templates/.github/workflows/pr.yaml@v2.0.2
+    uses: obervinov/_templates/.github/workflows/pr.yaml@v2.1.1
 
   download-crds:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@main
-        with:
-          persist-credentials: false
-          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -38,12 +35,134 @@ jobs:
         run: cd scripts && poetry run python download-crds.py
 
       - name: Commit & Push changes
-        uses: actions-js/push@master
+        uses: actions-js/push@v1.5
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           message: "Include CRDs for Helm-Charts Bundle from ${{ github.ref }}"
           branch: ${{ github.ref }}
+          rebase: true
 
-  helm-repository-build:
-    uses: obervinov/_templates/.github/workflows/helm-charts.yaml@v2.0.2
+  build-helm-charts:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      checks: read
+      contents: write
+      packages: write
+      security-events: write
     needs: [download-crds]
+    strategy:
+      matrix:
+        charts:
+          - "src/gateway-api-crds"
+          - "src/gitlab-runners"
+          - "src/jaeger-stack"
+          - "src/k8s-haproxy"
+          - "src/kibana"
+          - "src/promoperators"
+          - "src/terraform-operator-crds"
+          - "src/universal-template"
+          - "src/wireguard-operator"
+          - "src/wireguard-operator-crds"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install helm and dependencies
+        run: |
+          # Install helm and dependencies
+          curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+          helm plugin install https://github.com/karuppiah7890/helm-schema-gen.git
+
+      - name: Check helm chart
+        run: |
+          printf "Templating helm chart: $PWD\n"
+          helm dependency update .
+          if [[ -f "values-test.yaml" ]]; then
+            helm template . -f values-test.yaml
+          else
+            helm template . -f values.yaml
+          fi
+          helm lint .
+        working-directory: ${{ matrix.charts }}
+
+      - name: Build helm package
+        run: |
+          # Set variables
+          oci_registry="oci://ghcr.io/${{ github.actor }}/${GITHUB_REPOSITORY#${{ github.repository_owner }}/}"
+          chart_name=$(cat Chart.yaml | grep -E "^name:" | awk '{print $2}')
+          actual_version=$(cat Chart.yaml | grep -E "^version:" | awk '{print $2}')
+
+          # Check if chart was changed
+          printf "Checking if chart was changed: ${chart_name}\n"
+          last_built_version=$(ls -l ../../charts/*.tgz | grep ${chart_name} | awk '{print $9}' | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | sort -V | tail -n 1)
+          if [[ "${actual_version}" == "${last_built_version}" ]]; then
+              printf "   Chart version is the same as last built version\n"
+              printf "   Chart version: %s\n" "${actual_version}"
+              printf "   Last built version: %s\n" "${last_built_version}"
+              printf "   Skipping build\n"
+              exit 0
+          fi
+
+          # Generate json-schemas
+          printf "Creating json-schemas for chart: ${chart_name}\n"
+          if [[ -f "values.yaml" ]]; then
+              helm schema-gen values.yaml > values.schema.json
+          else
+              printf "   values in %s/values.yaml doesn't exist\n   merging *.example.yaml to values.yaml...\n" "${chart_name}"
+              yq ea '. as $item ireduce ({}; . * $item )' *.example.yaml > values.yaml
+              printf "   merged all examples file in values.yaml successfully\n"
+              helm schema-gen values.yaml > values.schema.json
+          fi
+
+          # Build helm package
+          printf "Creating helm package for chart: ${chart_name}\n"
+          helm package . --dependency-update --destination ../../charts
+          # Push helm packages to oci registry
+          printf "Pushing helm package to ${oci_registry}\n"
+          new_package=$(ls -l ../../charts/*.tgz | grep ${chart_name} | awk '{print $9}' | sort -V | tail -n 1)
+          printf " + %s\n" "${new_package}"
+          echo ${{ github.token }} | helm registry login -u ${{ github.actor }} --password-stdin ghcr.io
+          helm push $new_package $oci_registry
+        working-directory: ${{ matrix.charts }}
+
+      - name: Commit & Push helm chart
+        uses: actions-js/push@v1.5
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          message: "${{ matrix.charts }} helm chart built by GitHub Actions: ${{ github.sha }}"
+          branch: ${{ github.ref }}
+
+
+  build-helm-index:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      checks: read
+      contents: write
+      packages: write
+      security-events: write
+    needs: [build-helm-charts]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build helm index
+        run: |
+          # Build helm index
+          printf "Building helm index.yaml\n"
+          helm repo index charts --url https://helm-charts.charafee.cfd/charts --merge index.yaml
+          printf "Index.yaml created successfully\n"
+          ls -l charts/index.yaml
+          # Move index.yaml to root directory
+          printf "Moving index.yaml to root directory\n"
+          mv charts/index.yaml index.yaml
+
+      - name: Commit & Push index.yaml
+        uses: actions-js/push@v1.5
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          message: "Helm index.yaml built by GitHub Actions: ${{ github.sha }}"
+          branch: ${{ github.ref }}
+          rebase: true

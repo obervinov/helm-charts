@@ -25,6 +25,24 @@ applications: []
 #         app.kubernetes.io/instance: "app1"
 #       extraAnnotations:
 #         checksum/values.yaml: "helm/values.yaml"
+#       # Network policy for the application
+#       networkPolicy:
+#         ingress:
+#           - from:
+#               - podSelector:
+#                   matchLabels:
+#                     app: my-app
+#             ports:
+#               - protocol: TCP
+#                 port: 80
+#         egress:
+#           - to:
+#               - podSelector:
+#                   matchLabels:
+#                     app: my-app
+#             ports:
+#               - protocol: TCP
+#                 port: 80
 #       # Containers in the pod
 #       containers:
 #         - name: container1
@@ -196,7 +214,9 @@ applications: []
 #       paths:
 #         - path: /
 #           pathType: Prefix
+#           # If both `servicePort` and `servicePortName` are set, `servicePortName` takes precedence. Because of this, you can set only one of them.
 #           servicePort: 80
+#           servicePortName: http
 #           serviceName: app1
 #       ingressClassName: nginx
 

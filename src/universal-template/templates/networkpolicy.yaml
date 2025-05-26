@@ -1,0 +1,38 @@
+{{- if .Values.applications                                                               }}
+{{-   range .Values.applications                                                          }}
+{{-     if .app                                                                           }}
+{{-       $app                  := .app                                                   }}
+{{-       if $app.networkPolicy                                                           }}
+{{-         $name               := .name                                                  }}
+{{-         $namespace          := $.Release.Namespace                                    }}
+{{-         $fullName           := include "universal-template.fullName" (list $ . $name) }}
+{{-         $extraLabels        := $app.extraLabels                                       }}
+{{-         $extraAnnotations   := $app.extraAnnotations                                  }}
+{{-         $networkPolicy      := $app.networkPolicy                                     }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ $fullName }}
+  namespace: {{ $namespace }}
+  labels:
+    {{- include "universal-template.labels" $ | nindent 4 }}
+    {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
+    {{- if $extraLabels }}
+    {{- toYaml $extraLabels | nindent 4 }}
+    {{- end }}
+  {{- if $extraAnnotations }}
+  annotations: {{- toYaml $extraAnnotations | nindent 4 }}
+  {{- end }}
+spec:
+  podSelector:
+    matchLabels: {{- include "universal-template.selectorLabels" (list $fullName) | nindent 6 }}
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress: {{- toYaml $networkPolicy.ingress | nindent 4 }}
+  egress: {{- toYaml $networkPolicy.egress | nindent 4 }}
+{{-       end }}
+{{-     end }}
+{{-   end }}
+{{- end }}

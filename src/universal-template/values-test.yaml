@@ -8,6 +8,23 @@ applications:
         app.kubernetes.io/instance: "statefulset-app"
       extraAnnotations:
         checksum/values.yaml: "helm/values.yaml"
+      networkPolicy:
+        ingress:
+          - from:
+              - podSelector:
+                  matchLabels:
+                    app: my-app
+            ports:
+              - protocol: TCP
+                port: 80
+        egress:
+          - to:
+              - podSelector:
+                  matchLabels:
+                    app: my-app
+            ports:
+              - protocol: TCP
+                port: 80
       containers:
         - name: container1
           image:
@@ -439,7 +456,7 @@ applications:
       paths:
         - path: /
           pathType: Prefix
-          servicePort: 80
+          servicePortName: http
           serviceName: app1
       ingressClassName: nginx
     configMap:
