@@ -128,6 +128,13 @@ jobs:
           helm push $new_package $oci_registry
         working-directory: ${{ matrix.charts }}
 
+      - name: Commit & Push builded charts
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          message: "$(echo $new_package | awk -F '/' '{print $NF}') builded by GitHub Actions: ${{ github.sha }}"
+          branch: ${{ github.ref }}
+
 
   build-helm-index:
     runs-on: ubuntu-latest
@@ -140,17 +147,22 @@ jobs:
     needs: [build-helm-charts]
 
     steps:
+      - uses: actions/checkout@v4
+
       - name: Build helm index
         run: |
           # Build helm index
           printf "Building helm index.yaml\n"
           helm repo index charts --url https://helm-charts.charafee.cfd/charts --merge index.yaml
+          printf "Index.yaml created successfully\n"
+          ls -l charts/index.yaml
+          # Move index.yaml to root directory
+          printf "Moving index.yaml to root directory\n"
           mv charts/index.yaml index.yaml
 
-      - name: Commit & Push changes
+      - name: Commit & Push index.yaml
         uses: actions-js/push@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          message: "Build schemas, packages and index for helm repository by GitHub Actions: ${{ github.sha }}"
+          message: "Helm index.yaml builded by GitHub Actions: ${{ github.sha }}"
           branch: ${{ github.ref }}
-
