@@ -35,7 +35,7 @@ jobs:
         run: cd scripts && poetry run python download-crds.py
 
       - name: Commit & Push changes
-        uses: actions-js/push@master
+        uses: actions-js/push@v1.5
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           message: "Include CRDs for Helm-Charts Bundle from ${{ github.ref }}"
@@ -126,11 +126,11 @@ jobs:
           helm push $new_package $oci_registry
         working-directory: ${{ matrix.charts }}
 
-      - name: Commit & Push builded charts
-        uses: actions-js/push@master
+      - name: Commit & Push helm chart
+        uses: actions-js/push@v1.5
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          message: "${{ matrix.charts }} builded by GitHub Actions: ${{ github.sha }}"
+          message: "${{ matrix.charts }} helm chart builded by GitHub Actions: ${{ github.sha }}"
           branch: ${{ github.ref }}
 
 
@@ -160,7 +160,7 @@ jobs:
           mv charts/index.yaml index.yaml
 
       - name: Commit & Push index.yaml
-        uses: actions-js/push@master
+        uses: actions-js/push@v1.5
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           message: "Helm index.yaml builded by GitHub Actions: ${{ github.sha }}"

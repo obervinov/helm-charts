@@ -32,7 +32,6 @@ spec:
     - Egress
   ingress: {{- toYaml $networkPolicy.ingress | nindent 4 }}
   egress: {{- toYaml $networkPolicy.egress | nindent 4 }}
-...
 {{-       end }}
 {{-     end }}
 {{-   end }}
