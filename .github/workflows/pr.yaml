@@ -109,9 +109,9 @@ jobs:
           if [[ -f "values.yaml" ]]; then
               helm schema-gen values.yaml > values.schema.json
           else
-              printf "   values in %s/values.yaml doesn't exist\n   mearging *.example.yaml to values.yaml...\n" "${chart_name}"
+              printf "   values in %s/values.yaml doesn't exist\n   merging *.example.yaml to values.yaml...\n" "${chart_name}"
               yq ea '. as $item ireduce ({}; . * $item )' *.example.yaml > values.yaml
-              printf "   mearged all examples file in values.yaml successful\n"
+              printf "   merged all examples file in values.yaml successfully\n"
               helm schema-gen values.yaml > values.schema.json
           fi
 
