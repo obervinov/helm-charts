@@ -91,7 +91,7 @@ jobs:
       - name: Build helm package
         run: |
           # Set variables
-          oci_registry="oci://ghcr.io/${{ github.repository }}}"
+          oci_registry="oci://ghcr.io/${{ github.actor }}/${GITHUB_REPOSITORY#${{ github.repository_owner }}/}"
           chart_name=$(cat Chart.yaml | grep -E "^name:" | awk '{print $2}')
           actual_version=$(cat Chart.yaml | grep -E "^version:" | awk '{print $2}')
 
@@ -124,8 +124,8 @@ jobs:
           printf "Pushing helm package to ${oci_registry}\n"
           new_package=$(ls -l ../../charts/*.tgz | grep ${chart_name} | awk '{print $9}' | sort -V | tail -n 1)
           printf " + %s\n" "${new_package}"
-          echo ${{ github.token }} | helm registry login -u ${{ github.actor }} --password-stdin ghcr.io/${{ github.actor }}
-          helm push ${new_package} ${oci_registry}
+          echo ${{ github.token }} | helm registry login -u ${{ github.actor }} --password-stdin ghcr.io/${{ github.actor }}/${GITHUB_REPOSITORY#${{ github.repository_owner }}/}
+          helm push ${new_package} ${oci_registry} --debug
         working-directory: ${{ matrix.charts }}
 
 
