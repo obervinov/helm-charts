@@ -18,9 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@main
-        with:
-          persist-credentials: false
-          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -43,6 +40,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           message: "Include CRDs for Helm-Charts Bundle from ${{ github.ref }}"
           branch: ${{ github.ref }}
+          rebase: true
 
   build-helm-charts:
     runs-on: ubuntu-latest
@@ -132,7 +130,7 @@ jobs:
         uses: actions-js/push@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          message: "$(echo $new_package | awk -F '/' '{print $NF}') builded by GitHub Actions: ${{ github.sha }}"
+          message: "${{ matrix.charts }} builded by GitHub Actions: ${{ github.sha }}"
           branch: ${{ github.ref }}
 
 
