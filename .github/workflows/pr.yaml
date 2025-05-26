@@ -125,7 +125,7 @@ jobs:
           new_package=$(ls -l ../../charts/*.tgz | grep ${chart_name} | awk '{print $9}' | sort -V | tail -n 1)
           printf " + %s\n" "${new_package}"
           echo ${{ github.token }} | helm registry login -u ${{ github.actor }} --password-stdin ghcr.io/${{ github.actor }}/${GITHUB_REPOSITORY#${{ github.repository_owner }}/}
-          helm push ${new_package} ${oci_registry} --debug
+          helm push $new_package $oci_registry --debug
         working-directory: ${{ matrix.charts }}
 
 
