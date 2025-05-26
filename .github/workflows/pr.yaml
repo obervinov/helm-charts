@@ -76,7 +76,7 @@ jobs:
 
       - name: Check helm chart
         run: |
-          printf "Templating helm chart: ${pwd}\n"
+          printf "Templating helm chart: $PWD\n"
           helm dependency update .
           if [[ -f "values-test.yaml" ]]; then
             helm template . -f values-test.yaml
@@ -95,11 +95,11 @@ jobs:
 
           # Check if chart was changed
           printf "Checking if chart was changed: ${chart_name}\n"
-          last_builded_version=$(ls -l ../../charts/*.tgz | grep ${chart_name} | awk '{print $9}' | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | sort -V | tail -n 1)
-          if [[ "${actual_version}" == "${last_builded_version}" ]]; then
-              printf "   Chart version is the same as last builded version\n"
+          last_built_version=$(ls -l ../../charts/*.tgz | grep ${chart_name} | awk '{print $9}' | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' | sort -V | tail -n 1)
+          if [[ "${actual_version}" == "${last_built_version}" ]]; then
+              printf "   Chart version is the same as last built version\n"
               printf "   Chart version: %s\n" "${actual_version}"
-              printf "   Last builded version: %s\n" "${last_builded_version}"
+              printf "   Last built version: %s\n" "${last_built_version}"
               printf "   Skipping build\n"
               exit 0
           fi
@@ -130,7 +130,7 @@ jobs:
         uses: actions-js/push@v1.5
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          message: "${{ matrix.charts }} helm chart builded by GitHub Actions: ${{ github.sha }}"
+          message: "${{ matrix.charts }} helm chart built by GitHub Actions: ${{ github.sha }}"
           branch: ${{ github.ref }}
 
 
@@ -163,6 +163,6 @@ jobs:
         uses: actions-js/push@v1.5
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          message: "Helm index.yaml builded by GitHub Actions: ${{ github.sha }}"
+          message: "Helm index.yaml built by GitHub Actions: ${{ github.sha }}"
           branch: ${{ github.ref }}
           rebase: true
