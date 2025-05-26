@@ -145,6 +145,9 @@ jobs:
     needs: [build-helm-charts]
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Build helm index
         run: |
           # Build helm index
