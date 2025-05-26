@@ -145,8 +145,6 @@ jobs:
     needs: [build-helm-charts]
 
     steps:
-      - uses: actions/checkout@v4
-
       - name: Build helm index
         run: |
           # Build helm index
@@ -164,3 +162,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           message: "Helm index.yaml builded by GitHub Actions: ${{ github.sha }}"
           branch: ${{ github.ref }}
+          rebase: true
