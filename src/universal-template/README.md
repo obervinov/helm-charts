@@ -53,6 +53,7 @@ The following table lists the configurable parameters of the chart and their def
 | `applications.app.containers.image.pullSecrets` | List of image pull secrets                        | `[]`                   |
 | `applications.app.containers.commands` | List of commands to run in the container                   | `[]`                   |
 | `applications.app.containers.args` | List of arguments for the container commands                  | `[]`                   |
+| `applications.app.containers.lifecycle` | Lifecycle hooks for the container (postStart, preStop) | `{}`                   |
 | `applications.app.containers.envs` | List of environment variables for the container               | `[]`                   |
 | `applications.app.containers.envs.name` | Environment variable name                                 | `""`                   |
 | `applications.app.containers.envs.value` | Environment variable value                               | `""`                   |
