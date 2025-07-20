@@ -10,6 +10,7 @@ Containers template
 {{-     $persistentVolume   := $containerData.persistentVolume   }}
 {{-     $emptyDirVolume     := $containerData.emptyDirVolume     }}
 {{-     $image              := $app.image                        }}
+{{-     $lifecycle          := $app.lifecycle                    }}
 {{-     $envs               := $app.envs                         }}
 {{-     $resources          := $app.resources                    }}
 {{-     $probes             := $app.probes                       }}

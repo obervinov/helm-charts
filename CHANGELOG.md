@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 * fix the NetworkPolicy manifest in the `universal-template` chart
 #### 🚀 Features
 * [Feature request: Universal-Template chart: support for Attach Handler Lifecycle Event](https://github.com/obervinov/helm-charts/issues/79)
-* bump scripts dependencies
+* update dependencies to latest version
 
 ## v1.2.8 - 2025-05-26
 ### What's Changed
