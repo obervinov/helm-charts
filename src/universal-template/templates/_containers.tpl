@@ -40,7 +40,11 @@ Containers template
       protocol: {{ .protocol }}
   {{-   end }}
   {{- end }}
-  {{- if $envs }}
+  {{- if $lifecycle }}
+  lifecycle:
+  {{-   toYaml $lifecycle | nindent 4 }}
+  {{- end }}
+  {{- if $envs }} 
   env:
   {{-   toYaml $envs | nindent 4 }}
   {{- end }}
