@@ -9,6 +9,9 @@ applications:
       extraAnnotations:
         checksum/values.yaml: "helm/values.yaml"
       networkPolicy:
+        policyTypes:
+          - Ingress
+          - Egress
         ingress:
           - from:
               - podSelector:

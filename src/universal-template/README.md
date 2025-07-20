@@ -78,6 +78,10 @@ The following table lists the configurable parameters of the chart and their def
 | `applications.app.probes.startupProbe` | Startup probe configuration                                | `{}`                   |
 | `applications.app.cronjob` | CronJob specific configuration (only for batch applications and cronjobs) | `{}` |
 | `applications.app.job` | Job specific configuration (only for batch applications and jobs)        | `{}`                   |
+| `applications.app.networkPolicy` | Network policy configuration for the application                   | `{}`                   |
+| `applications.app.networkPolicy.ingress` | Ingress rules for the network policy                        | `[]`                   |
+| `applications.app.networkPolicy.egress` | Egress rules for the network policy                          | `[]`                   |
+| `applications.app.networkPolicy.policyTypes` | List of policy types for the network policy            | `["Ingress", "Egress"]` |
 
 ### Service
 

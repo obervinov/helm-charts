@@ -3,6 +3,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## v1.2.9 - 2025-07-20
+### What's Changed
+**Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.2.8...v1.2.9 by @obervinov in https://github.com/obervinov/helm-charts/pull/79
+#### 🐛 Bug Fixes
+* fix the NetworkPolicy manifest in the `universal-template` chart
+#### 🚀 Features
+* [Feature request: Universal-Template chart: support for Attach Handler Lifecycle Event](https://github.com/obervinov/helm-charts/issues/79)
+
+
 ## v1.2.8 - 2025-05-26
 ### What's Changed
 **Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.2.7...v1.2.8 by @obervinov in https://github.com/obervinov/helm-charts/pull/72

@@ -27,6 +27,9 @@ applications: []
 #         checksum/values.yaml: "helm/values.yaml"
 #       # Network policy for the application
 #       networkPolicy:
+#         policyTypes:
+#           - Ingress
+#           - Egress
 #         ingress:
 #           - from:
 #               - podSelector:
