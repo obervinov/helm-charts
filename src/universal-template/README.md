@@ -53,6 +53,7 @@ The following table lists the configurable parameters of the chart and their def
 | `applications.app.containers.image.pullSecrets` | List of image pull secrets                        | `[]`                   |
 | `applications.app.containers.commands` | List of commands to run in the container                   | `[]`                   |
 | `applications.app.containers.args` | List of arguments for the container commands                  | `[]`                   |
+| `applications.app.containers.lifecycle` | Lifecycle hooks for the container (postStart, preStop) | `{}`                   |
 | `applications.app.containers.envs` | List of environment variables for the container               | `[]`                   |
 | `applications.app.containers.envs.name` | Environment variable name                                 | `""`                   |
 | `applications.app.containers.envs.value` | Environment variable value                               | `""`                   |
@@ -78,6 +79,10 @@ The following table lists the configurable parameters of the chart and their def
 | `applications.app.probes.startupProbe` | Startup probe configuration                                | `{}`                   |
 | `applications.app.cronjob` | CronJob specific configuration (only for batch applications and cronjobs) | `{}` |
 | `applications.app.job` | Job specific configuration (only for batch applications and jobs)        | `{}`                   |
+| `applications.app.networkPolicy` | Network policy configuration for the application                   | `{}`                   |
+| `applications.app.networkPolicy.ingress` | Ingress rules for the network policy                        | `[]`                   |
+| `applications.app.networkPolicy.egress` | Egress rules for the network policy                          | `[]`                   |
+| `applications.app.networkPolicy.policyTypes` | List of policy types for the network policy            | `["Ingress", "Egress"]` |
 
 ### Service
 

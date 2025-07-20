@@ -10,6 +10,7 @@ Containers template
 {{-     $persistentVolume   := $containerData.persistentVolume   }}
 {{-     $emptyDirVolume     := $containerData.emptyDirVolume     }}
 {{-     $image              := $app.image                        }}
+{{-     $lifecycle          := $app.lifecycle                    }}
 {{-     $envs               := $app.envs                         }}
 {{-     $resources          := $app.resources                    }}
 {{-     $probes             := $app.probes                       }}
@@ -40,7 +41,11 @@ Containers template
       protocol: {{ .protocol }}
   {{-   end }}
   {{- end }}
-  {{- if $envs }}
+  {{- if $lifecycle }}
+  lifecycle:
+  {{-   toYaml $lifecycle | nindent 4 }}
+  {{- end }}
+  {{- if $envs }} 
   env:
   {{-   toYaml $envs | nindent 4 }}
   {{- end }}
