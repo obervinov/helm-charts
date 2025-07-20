@@ -27,8 +27,8 @@ metadata:
 spec:
   podSelector:
     matchLabels: {{- include "universal-template.selectorLabels" (list $fullName) | nindent 6 }}
-  policyTypes: {{- if $networkPolicy.policyTypes }}
-  {{- toYaml $networkPolicy.policyTypes | nindent 4 }}
+  {{- if $networkPolicy.policyTypes }}
+  policyTypes: {{- toYaml $networkPolicy.policyTypes | nindent 4 }}
   {{- else }}
   policyTypes:
     - Ingress
