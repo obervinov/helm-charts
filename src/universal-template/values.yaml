@@ -47,7 +47,7 @@ applications: []
 #               - protocol: TCP
 #                 port: 80
 #       imagePullSecrets:
-#         - name: my-secret
+#         - my-secret
 #       # Containers in the pod
 #       containers:
 #         - name: container1

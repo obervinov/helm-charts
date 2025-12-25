@@ -61,7 +61,7 @@ spec:
       {{- if $imagePullSecrets }}
       imagePullSecrets:
       {{-   range $imagePullSecrets }}
-        - name: {{ .name }}
+        - name: {{ . }}
       {{-   end }}
       {{- end }}
       {{- if $initContainers }}

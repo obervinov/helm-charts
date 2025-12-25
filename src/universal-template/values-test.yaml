@@ -29,7 +29,7 @@ applications:
               - protocol: TCP
                 port: 80
       imagePullSecrets:
-        - name: my-secret
+        - my-secret
       containers:
         - name: container1
           image:
@@ -273,7 +273,7 @@ applications:
       extraAnnotations:
         checksum/values.yaml: "helm/values.yaml"
       imagePullSecrets:
-        - name: my-secret
+        - my-secret
       containers:
         - name: container1
           image:
@@ -512,7 +512,7 @@ applications:
       extraAnnotations:
         checksum/values.yaml: "helm/values.yaml"
       imagePullSecrets:
-        - name: my-secret
+        - my-secret
       cronjob:
         schedule: "*/1 * * * *"
         failedJobsHistoryLimit: 1
@@ -717,7 +717,7 @@ applications:
       extraAnnotations:
         checksum/values.yaml: "helm/values.yaml"
       imagePullSecrets:
-        - name: my-secret
+        - my-secret
       job:
         restartPolicy: "OnFailure"
         ttlSecondsAfterFinished: 360
