@@ -8,8 +8,48 @@ updates:
   - package-ecosystem: "pip"
     directory: "/scripts"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
   - package-ecosystem: "github-actions"
     directory: "/.github/workflows"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
+  - package-ecosystem: "helm"
+    directory: "/src/gateway-api-crds"
+    schedule:
+      interval: "monthly"
+  - package-ecosystem: "helm"
+    directory: "/src/gitlab-runners"
+    schedule:
+      interval: "monthly"
+  - package-ecosystem: "helm"
+    directory: "/src/jaeger-stack"
+    schedule:
+      interval: "monthly"
+  - package-ecosystem: "helm"
+    directory: "/src/k8s-haproxy"
+    schedule:
+      interval: "monthly"
+  - package-ecosystem: "helm"
+    directory: "/src/kibana"
+    schedule:
+      interval: "monthly"
+  - package-ecosystem: "helm"
+    directory: "/src/promoperators"
+    schedule:
+      interval: "monthly"
+  - package-ecosystem: "helm"
+    directory: "/src/terraform-operator-crds"
+    schedule:
+      interval: "monthly"
+  - package-ecosystem: "helm"
+    directory: "/src/universal-template"
+    schedule:
+      interval: "monthly"
+  - package-ecosystem: "helm"
+    directory: "/src/wireguard-operator"
+    schedule:
+      interval: "monthly"
+  - package-ecosystem: "helm"
+    directory: "/src/wireguard-operator-crds"
+    schedule:
+      interval: "monthly"

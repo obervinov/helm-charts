@@ -14,7 +14,7 @@
 {{-         $replicas           := $app.replicas                                          }}
 {{-         $initContainers     := $app.initContainers                                    }}
 {{-         $containers         := $app.containers                                        }}
-{{-         $image              := $app.image                                             }}
+{{-         $imagePullSecrets   := $app.imagePullSecrets                                 }}
 {{-         $persistentVolume   := $app.persistentVolume                                  }}
 {{-         $emptyDirVolume     := $app.emptyDirVolume                                    }}
 {{-         $tolerations        := $app.tolerations                                       }}
@@ -58,9 +58,9 @@ spec:
       {{- if $rbac }}
       {{-   include "universal-template.serviceAccount" (list $fullName $rbac) | nindent 6 }}
       {{- end }}
-      {{- if $image.pullSecrets }}
+      {{- if $imagePullSecrets }}
       imagePullSecrets:
-      {{-   range $image.pullSecrets }}
+      {{-   range $imagePullSecrets }}
         - name: {{ . }}
       {{-   end }}
       {{- end }}

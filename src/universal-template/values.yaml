@@ -46,6 +46,8 @@ applications: []
 #             ports:
 #               - protocol: TCP
 #                 port: 80
+#       imagePullSecrets:
+#         - my-secret
 #       # Containers in the pod
 #       containers:
 #         - name: container1
@@ -53,8 +55,6 @@ applications: []
 #             repository: "my-registry/app1"
 #             tag: "1.0.0"
 #             pullPolicy: IfNotPresent
-#             pullSecrets:
-#               - my-secret
 #             commands:
 #               - bash
 #             args:
@@ -100,8 +100,6 @@ applications: []
 #             repository: "my-registry/init-container1"
 #             tag: "1.0.0"
 #             pullPolicy: IfNotPresent
-#             pullSecrets:
-#               - my-secret
 #           envs:
 #             - name: LOG_LEVEL
 #               value: INFO

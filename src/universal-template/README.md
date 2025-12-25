@@ -50,7 +50,7 @@ The following table lists the configurable parameters of the chart and their def
 | `applications.app.containers.image.repository` | Image repository                                  | `""`                   |
 | `applications.app.containers.image.tag` | Image tag                                                 | `""`                   |
 | `applications.app.containers.image.pullPolicy` | Image pull policy                                 | `IfNotPresent`         |
-| `applications.app.containers.image.pullSecrets` | List of image pull secrets                        | `[]`                   |
+| `applications.app.imagePullSecrets` | List of image pull secrets rendered into `podSpec.imagePullSecrets` (list of LocalObjectReference, e.g. `- name: my-registry-secret`) | `[]`                   |
 | `applications.app.containers.commands` | List of commands to run in the container                   | `[]`                   |
 | `applications.app.containers.args` | List of arguments for the container commands                  | `[]`                   |
 | `applications.app.containers.lifecycle` | Lifecycle hooks for the container (postStart, preStop) | `{}`                   |
@@ -220,8 +220,6 @@ applications:
             repository: "my-registry/init-container1"
             tag: "1.0.0"
             pullPolicy: IfNotPresent
-            pullSecrets:
-              - my-secret
           envs:
             - name: LOG_LEVEL
               value: INFO
@@ -366,6 +364,43 @@ applications:
               scheme: http
 ```
 
+<!-- Add an example for creating the docker registry secret -->
+Create the docker registry secret (example):
+
+```sh
+kubectl create secret docker-registry my-registry-secret \
+  --docker-server=<registry> --docker-username=<user> \
+  --docker-password=<password> --docker-email=<email> -n <namespace>
+```
+
+```yaml
+---
+applications:
+  - name: statefulset-app
+    app:
+      type: statefulset
+      replicas: 1
+      extraLabels:
+        app.kubernetes.io/instance: "statefulset-app"
+      extraAnnotations:
+        checksum/values.yaml: "helm/values.yaml"
+      # Register imagePullSecrets at the app level. These are rendered into
+      # podSpec.imagePullSecrets for Deployments/StatefulSets/Jobs/CronJobs.
+      imagePullSecrets:
+        - name: my-registry-secret
+      containers:
+        - name: container1
+          image:
+            repository: "my-registry/app1"
+            tag: "1.0.0"
+            pullPolicy: IfNotPresent
+          commands:
+            - bash
+          args:
+            - -c
+            - env
+...
+```
 ## Contributing
 
 Contributions are welcome! Feel free to submit issues and pull requests.
