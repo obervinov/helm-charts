@@ -12,7 +12,7 @@
 {{-         $extraLabels        := $app.extraLabels                                       }}
 {{-         $replicas           := $app.replicas                                          }}
 {{-         $extraAnnotations   := $app.extraAnnotations                                  }}
-{{-         $image              := $app.image                                             }}
+{{-         $imagePullSecrets   := $app.imagePullSecrets                                  }}
 {{-         $initContainers     := $app.initContainers                                    }}
 {{-         $containers         := $app.containers                                        }}
 {{-         $envs               := $app.envs                                              }}
@@ -87,9 +87,9 @@ spec:
       {{-   $volumesData := dict "targetType" "deployment" "fullName" $fullName "configMap" $configMap "secret" $secret "externalSecrets" $externalSecrets "externalConfigMaps" $externalConfigMaps "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
       volumes: {{- include "universal-template.volumes.template" $volumesData | nindent 8 }}
       {{- end }}
-      {{- if $image.pullSecrets }}
+      {{- if $imagePullSecrets }}
       imagePullSecrets:
-      {{-   range $image.pullSecrets }}
+      {{-   range $imagePullSecrets }}
       - name: {{ . }}
       {{-   end }}
       {{- end }}

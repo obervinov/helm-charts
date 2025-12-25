@@ -28,14 +28,14 @@ applications:
             ports:
               - protocol: TCP
                 port: 80
+      imagePullSecrets:
+        - name: my-secret
       containers:
         - name: container1
           image:
             repository: "my-registry/app1"
             tag: "1.0.0"
             pullPolicy: IfNotPresent
-            pullSecrets:
-              - my-secret
             commands:
               - bash
             args:
@@ -80,8 +80,6 @@ applications:
             repository: "my-registry/app2"
             tag: "1.0.0"
             pullPolicy: IfNotPresent
-            pullSecrets:
-              - my-secret
           envs:
             - name: LOG_LEVEL
               value: INFO
@@ -102,8 +100,6 @@ applications:
             repository: "my-registry/init-container1"
             tag: "1.0.0"
             pullPolicy: IfNotPresent
-            pullSecrets:
-              - my-secret
           envs:
             - name: LOG_LEVEL
               value: INFO
@@ -127,8 +123,6 @@ applications:
             repository: "my-registry/init-container2"
             tag: "1.0.0"
             pullPolicy: IfNotPresent
-            pullSecrets:
-              - my-secret
           envs:
             - name: LOG_LEVEL
               value: INFO
@@ -278,14 +272,14 @@ applications:
         app.kubernetes.io/instance: "deployment-app"
       extraAnnotations:
         checksum/values.yaml: "helm/values.yaml"
+      imagePullSecrets:
+        - name: my-secret
       containers:
         - name: container1
           image:
             repository: "my-registry/app1"
             tag: "1.0.0"
             pullPolicy: IfNotPresent
-            pullSecrets:
-              - my-secret
             commands:
               - bash
             args:
@@ -323,8 +317,6 @@ applications:
             repository: "my-registry/app2"
             tag: "1.0.0"
             pullPolicy: IfNotPresent
-            pullSecrets:
-              - my-secret
           envs:
             - name: LOG_LEVEL
               value: INFO
@@ -345,8 +337,6 @@ applications:
             repository: "my-registry/init-container1"
             tag: "1.0.0"
             pullPolicy: IfNotPresent
-            pullSecrets:
-              - my-secret
           envs:
             - name: LOG_LEVEL
               value: INFO
@@ -370,8 +360,6 @@ applications:
             repository: "my-registry/init-container2"
             tag: "1.0.0"
             pullPolicy: IfNotPresent
-            pullSecrets:
-              - my-secret
           envs:
             - name: LOG_LEVEL
               value: INFO
@@ -523,6 +511,8 @@ applications:
         app.kubernetes.io/instance: "cronjob-app"
       extraAnnotations:
         checksum/values.yaml: "helm/values.yaml"
+      imagePullSecrets:
+        - name: my-secret
       cronjob:
         schedule: "*/1 * * * *"
         failedJobsHistoryLimit: 1
@@ -540,8 +530,6 @@ applications:
             repository: "my-registry/app1"
             tag: "1.0.0"
             pullPolicy: IfNotPresent
-            pullSecrets:
-              - my-secret
             commands:
               - bash
             args:
@@ -571,8 +559,6 @@ applications:
             repository: "my-registry/app2"
             tag: "1.0.0"
             pullPolicy: IfNotPresent
-            pullSecrets:
-              - my-secret
           envs:
             - name: LOG_LEVEL
               value: INFO
@@ -589,8 +575,6 @@ applications:
             repository: "my-registry/init-container1"
             tag: "1.0.0"
             pullPolicy: IfNotPresent
-            pullSecrets:
-              - my-secret
           envs:
             - name: LOG_LEVEL
               value: INFO
@@ -606,8 +590,6 @@ applications:
             repository: "my-registry/init-container2"
             tag: "1.0.0"
             pullPolicy: IfNotPresent
-            pullSecrets:
-              - my-secret
           envs:
             - name: LOG_LEVEL
               value: INFO
@@ -734,6 +716,8 @@ applications:
         app.kubernetes.io/instance: "job-app"
       extraAnnotations:
         checksum/values.yaml: "helm/values.yaml"
+      imagePullSecrets:
+        - name: my-secret
       job:
         restartPolicy: "OnFailure"
         ttlSecondsAfterFinished: 360
@@ -748,8 +732,6 @@ applications:
             repository: "my-registry/app1"
             tag: "1.0.0"
             pullPolicy: IfNotPresent
-            pullSecrets:
-              - my-secret
             commands:
               - bash
             args:
@@ -779,8 +761,6 @@ applications:
             repository: "my-registry/app2"
             tag: "1.0.0"
             pullPolicy: IfNotPresent
-            pullSecrets:
-              - my-secret
           envs:
             - name: LOG_LEVEL
               value: INFO
@@ -797,8 +777,6 @@ applications:
             repository: "my-registry/init-container1"
             tag: "1.0.0"
             pullPolicy: IfNotPresent
-            pullSecrets:
-              - my-secret
           envs:
             - name: LOG_LEVEL
               value: INFO
@@ -814,8 +792,6 @@ applications:
             repository: "my-registry/init-container2"
             tag: "1.0.0"
             pullPolicy: IfNotPresent
-            pullSecrets:
-              - my-secret
           envs:
             - name: LOG_LEVEL
               value: INFO

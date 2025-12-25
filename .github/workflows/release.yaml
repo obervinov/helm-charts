@@ -1,6 +1,10 @@
 ---
 name: Create GitHub Release
 
+permissions:
+  contents: write
+  pull-requests: read
+
 # yamllint disable-line rule:truthy
 on:
   pull_request:

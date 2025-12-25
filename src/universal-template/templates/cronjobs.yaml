@@ -10,7 +10,7 @@
 {{-         $app                := .app                                                   }}
 {{-         $extraLabels        := $app.extraLabels                                       }}
 {{-         $extraAnnotations   := $app.extraAnnotations                                  }}
-{{-         $image              := $app.image                                             }}
+{{-         $imagePullSecrets   := $app.imagePullSecrets                                  }}
 {{-         $initContainers     := $app.initContainers                                    }}
 {{-         $containers         := $app.containers                                        }}
 {{-         $envs               := $app.envs                                              }}
@@ -84,9 +84,9 @@ spec:
           {{-   $volumesData := dict "targetType" "job" "fullName" $fullName "configMap" $configMap "secret" $secret "externalSecrets" $externalSecrets "externalConfigMaps" $externalConfigMaps "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
           volumes: {{- include "universal-template.volumes.template" $volumesData | nindent 12 }}
           {{- end }}
-          {{- if $image.pullSecrets }}
+          {{- if $imagePullSecrets }}
           imagePullSecrets:
-          {{-   range $image.pullSecrets }}
+          {{-   range $imagePullSecrets }}
             - name: {{ . }}
           {{-   end }}
           {{- end }}

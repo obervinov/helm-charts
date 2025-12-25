@@ -20,7 +20,7 @@ packages = [{include = "download-crds.py"}]
 python = "^3.12"
 PyYAML = "^6"
 requests = "^2"
-logger = { git = "https://github.com/obervinov/logger-package.git", tag = "v1.0.6" }
+logger = { git = "https://github.com/obervinov/logger-package.git", tag = "v2.0.4" }
 
 [build-system]
 requires = ["poetry-core"]
