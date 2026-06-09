@@ -13,7 +13,7 @@ metadata:
   labels:
     {{- include "universal-template.labels" $ | nindent 4 }}
     {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 4 }}
-  name: {{ $fullName }}
+  name: {{ $fullName }}-{{ $persistentVolume.name }}
   namespace: {{ $namespace }}
 spec:
   accessModes:

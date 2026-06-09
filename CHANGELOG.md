@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## v1.2.11 - 2026-06-09
+### What's Changed
+**Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.2.10...v1.2.11 by @obervinov in https://github.com/obervinov/helm-charts/pull/89
+#### 🐛 Bug Fixes
+* fix PVC name mismatch with `claimName` in the `universal-template` chart — apps using `app.persistentVolume` (deployment/cronjob/job) had pods stuck Pending on a non-existent PVC
+
+
 ## v1.2.10 - 2025-12-25
 ### What's Changed
 **Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.2.9...v1.2.10 by @obervinov in https://github.com/obervinov/helm-charts/pull/85
