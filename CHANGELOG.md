@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## v1.2.13 - 2026-09-17
+### What's Changed
+#### 📚 Documentation
+* `README.md`: repoint the three header icons at `obervinov/_templates` — the `obervinov/content` repository they came from no longer exists, so all three rendered broken — add the missing `gateway-api-crds` chart to the table, demote the three `#` headings inside the install section to `###`, and update the templates version to `v4.0.0`.
+
+
 ## v1.2.12 - 2026-09-17
 ### What's Changed
 #### 🐛 Bug Fixes
