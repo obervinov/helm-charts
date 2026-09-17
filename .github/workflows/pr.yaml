@@ -15,14 +15,14 @@ on:
 
 jobs:
   pr:
-    uses: obervinov/_templates/.github/workflows/pr.yaml@v2.1.1
+    uses: obervinov/_templates/.github/workflows/pr.yaml@v4.0.0
 
   download-crds:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@main
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -38,7 +38,7 @@ jobs:
         run: cd scripts && poetry run python download-crds.py
 
       - name: Commit & Push changes
-        uses: actions-js/push@v1.5
+        uses: actions-js/push@v1.6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           message: "Include CRDs for Helm-Charts Bundle from ${{ github.ref }}"
@@ -66,7 +66,7 @@ jobs:
           - "src/wireguard-operator-crds"
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Install helm and dependencies
         run: |
@@ -127,7 +127,7 @@ jobs:
         working-directory: ${{ matrix.charts }}
 
       - name: Commit & Push helm chart
-        uses: actions-js/push@v1.5
+        uses: actions-js/push@v1.6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           message: "${{ matrix.charts }} helm chart built by GitHub Actions: ${{ github.sha }}"
@@ -142,7 +142,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Build helm index
         run: |
@@ -156,7 +156,7 @@ jobs:
           mv charts/index.yaml index.yaml
 
       - name: Commit & Push index.yaml
-        uses: actions-js/push@v1.5
+        uses: actions-js/push@v1.6
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           message: "Helm index.yaml built by GitHub Actions: ${{ github.sha }}"
