@@ -6,9 +6,7 @@ This is a helm-registry for storing my helm-packages.
 [![pages-build-deployment](https://github.com/obervinov/helm-charts/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/obervinov/helm-charts/actions/workflows/pages/pages-build-deployment) [![Checks and Build Helm-Charts Bundle](https://github.com/obervinov/helm-charts/actions/workflows/pr.yaml/badge.svg)](https://github.com/obervinov/helm-charts/actions/workflows/pr.yaml) [![Create GitHub Release](https://github.com/obervinov/helm-charts/actions/workflows/release.yaml/badge.svg)](https://github.com/obervinov/helm-charts/actions/workflows/release.yaml)
 
 ## <img src="https://github.com/obervinov/_templates/blob/main/icons/github-actions.png" width="25" title="github-actions"> GitHub Actions
-| Name  | Version |
-| ------------------------ | ----------- |
-| GitHub Actions Templates | [v4.0.0](https://github.com/obervinov/_templates/tree/v4.0.0) |
+[![GitHub Actions Templates](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fraw.githubusercontent.com%2Fobervinov%2Fhelm-charts%2FHEAD%2F.github%2Fworkflows%2Fpr.yaml&search=pr.yaml%40%28v%5B0-9.%5D%2B%29&replace=%241&label=_templates&color=blue&logo=githubactions&logoColor=white)](https://github.com/obervinov/_templates)
 
 ## <img src="https://github.com/obervinov/_templates/blob/main/icons/helm-registry.png" width="30"> List of helm charts available for installation
 <table>
