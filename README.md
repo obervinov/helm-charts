@@ -1,4 +1,4 @@
-# <img src="https://github.com/obervinov/content/blob/main/ico/1945958.png" width="30">  obervinov's helm-charts
+# <img src="https://github.com/obervinov/_templates/blob/main/icons/package-ico.png" width="30">  obervinov's helm-charts
 This repository contains helm charts for all occasions.
 
 This is a helm-registry for storing my helm-packages.
@@ -6,11 +6,9 @@ This is a helm-registry for storing my helm-packages.
 [![pages-build-deployment](https://github.com/obervinov/helm-charts/actions/workflows/pages/pages-build-deployment/badge.svg)](https://github.com/obervinov/helm-charts/actions/workflows/pages/pages-build-deployment) [![Checks and Build Helm-Charts Bundle](https://github.com/obervinov/helm-charts/actions/workflows/pr.yaml/badge.svg)](https://github.com/obervinov/helm-charts/actions/workflows/pr.yaml) [![Create GitHub Release](https://github.com/obervinov/helm-charts/actions/workflows/release.yaml/badge.svg)](https://github.com/obervinov/helm-charts/actions/workflows/release.yaml)
 
 ## <img src="https://github.com/obervinov/_templates/blob/main/icons/github-actions.png" width="25" title="github-actions"> GitHub Actions
-| Name  | Version |
-| ------------------------ | ----------- |
-| GitHub Actions Templates | [v2.1.1](https://github.com/obervinov/_templates/tree/v2.1.1) |
+[![GitHub Actions Templates](https://img.shields.io/badge/dynamic/regex?url=https%3A%2F%2Fraw.githubusercontent.com%2Fobervinov%2Fhelm-charts%2FHEAD%2F.github%2Fworkflows%2Fpr.yaml&search=pr.yaml%40%28v%5B0-9.%5D%2B%29&replace=%241&label=_templates&color=blue&logo=githubactions&logoColor=white)](https://github.com/obervinov/_templates)
 
-## <img src="https://github.com/obervinov/content/blob/main/ico/helm_registry.png" width="30"> List of helm charts available for installation
+## <img src="https://github.com/obervinov/_templates/blob/main/icons/helm-registry.png" width="30"> List of helm charts available for installation
 <table>
   <tr>
     <th>Chart name</th>
@@ -19,6 +17,10 @@ This is a helm-registry for storing my helm-packages.
   <tr>
     <td><b>Helm Index</b></td>
     <td>https://obervinov.github.io/helm-charts/index.yaml</td>
+  </tr>
+  <tr>
+    <td><b>Gateway API CRDs</b></td>
+    <td>https://github.com/obervinov/helm-charts/tree/main/src/gateway-api-crds</td>
   </tr>
   <tr>
     <td><b>Prometheus Operators</b></td>
@@ -58,18 +60,18 @@ This is a helm-registry for storing my helm-packages.
   </tr>
 </table>
 
-## <img src="https://github.com/obervinov/content/blob/main/ico/helm.svg" width="30"> How to add a repository to yourself and set a chart
-# Simple registry
+## <img src="https://github.com/obervinov/_templates/blob/main/icons/helm.svg" width="30"> How to add a repository to yourself and set a chart
+### Simple registry
 ```sh
 helm repo add obervinov https://obervinov.github.io/helm-charts/
 ```
 
-# OCI registry
+### OCI registry
 ```sh
 helm repo add obervinov oci://ghcr.io/obervinov/helm-charts
 ```
 
-# Install a chart
+### Install a chart
 ```sh
 helm repo update
 helm search repo obervinov

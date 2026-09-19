@@ -3,6 +3,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## v1.2.13 - 2026-09-18
+### What's Changed
+#### 📚 Documentation
+* `README.md`: repoint the three header icons at `obervinov/_templates` — the `obervinov/content` repository they came from no longer exists, so all three rendered broken — add the missing `gateway-api-crds` chart to the table, and demote the three `#` headings inside the install section to `###`.
+* `README.md`: replace the hand-maintained GitHub Actions Templates table with a badge that reads the pinned version out of `.github/workflows/pr.yaml` — the table went stale on every template bump because nothing kept it in sync.
+
+
 ## v1.2.12 - 2026-09-17
 ### What's Changed
 #### 🐛 Bug Fixes
