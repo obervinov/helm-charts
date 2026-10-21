@@ -1,20 +1,22 @@
 {{- if .Values.applications }}
-{{-   range .Values.applications }}
-{{-     if .service -}}
-{{-       $name                  := .name }}
+{{-   include "universal-template.validate.release" $ }}
+{{-   range $application := .Values.applications }}
+{{-     range $index, $service := $application.services -}}
+{{-       $name                  := $application.name }}
 {{-       $namespace             := $.Release.Namespace }}
-{{-       $fullName              := include "universal-template.fullName" (list $ . $name) }}
-{{-       $extraLabels           := .service.extraLabels }}
-{{-       $extraAnnotations      := .service.extraAnnotations }}
-{{-       $type                  := .service.type }}
-{{-       $ports                 := .service.ports }}
-{{-       $externalIPs           := .service.externalIPs }}
-{{-       $externalTrafficPolicy := .service.externalTrafficPolicy }}
+{{-       $fullName              := include "universal-template.fullName" (list $ $application $name) }}
+{{-       $serviceName           := include "universal-template.service.name" (list $fullName $name $service $index) }}
+{{-       $extraLabels           := $service.extraLabels }}
+{{-       $extraAnnotations      := $service.extraAnnotations }}
+{{-       $type                  := $service.type }}
+{{-       $ports                 := $service.ports }}
+{{-       $externalIPs           := $service.externalIPs }}
+{{-       $externalTrafficPolicy := $service.externalTrafficPolicy }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ $fullName }}
+  name: {{ $serviceName }}
   namespace: {{ $namespace }}
   labels:
     {{- include "universal-template.labels" $ | nindent 4 }}
@@ -34,6 +36,9 @@ spec:
 {{- else if eq $type "LoadBalancer" }}
   type: LoadBalancer
 {{- end }}
+  {{- if $service.clusterIP }}
+  clusterIP: {{ $service.clusterIP }}
+  {{- end }}
   ports:
   {{- range $ports }}
   - name: {{ .name }}
@@ -53,7 +58,7 @@ spec:
   {{- if $externalTrafficPolicy }}
   externalTrafficPolicy: {{ $externalTrafficPolicy }}
   {{- end }}
-  selector: {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
+  selector: {{- include "universal-template.service.selector" (list $ $fullName $name $service) | nindent 4 }}
 ...
 {{-     end }}
 {{-   end }}

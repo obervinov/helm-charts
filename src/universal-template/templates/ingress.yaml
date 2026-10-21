@@ -1,16 +1,22 @@
 {{- if .Values.applications -}}
-{{-   range .Values.applications -}}
-{{-     if and (.ingress) (.service) -}}
-{{-       $name             := .name }}
-{{-       $fullName         := include "universal-template.fullName" (list $ . $name) }}
+{{-   $serviceNames := include "universal-template.service.allNames" $ | fromJsonArray }}
+{{-   range $application := .Values.applications -}}
+{{-     if $application.ingress -}}
+{{-       $name             := $application.name }}
+{{-       $fullName         := include "universal-template.fullName" (list $ $application $name) }}
 {{-       $namespace        := $.Release.Namespace }}
-{{-       $apiVersion       := .ingress.apiVersion }}
-{{-       $kind             := .ingress.Kind }}
-{{-       $extraAnnotations := .ingress.extraAnnotations }}
-{{-       $useTLS           := .ingress.useTLS }}
-{{-       $fqdn             := .ingress.fqdn }}
-{{-       $paths            := .ingress.paths }}
-{{-       $ingressClassName := .ingress.ingressClassName }}
+{{-       $apiVersion       := $application.ingress.apiVersion }}
+{{-       $kind             := $application.ingress.kind }}
+{{-       $extraAnnotations := $application.ingress.extraAnnotations }}
+{{-       $useTLS           := $application.ingress.useTLS }}
+{{-       $fqdn             := $application.ingress.fqdn }}
+{{-       $paths            := $application.ingress.paths }}
+{{-       $ingressClassName := $application.ingress.ingressClassName }}
+{{-       $defaultService   := "" }}
+{{-       if $application.services }}
+{{-         $defaultService = include "universal-template.service.name" (list $fullName $name (first $application.services) 0) }}
+{{-       end }}
+---
 apiVersion: {{ default "networking.k8s.io/v1" $apiVersion }}
 kind: {{ default "Ingress" $kind }}
 metadata:
@@ -35,11 +41,18 @@ spec:
     http:
       paths:
       {{- range $paths }}
+      {{-   $backend := default $defaultService .serviceName }}
+      {{-   if not $backend }}
+      {{-     fail (printf "applications[%s].ingress.paths[%s]: the application has no services, set serviceName" $name .path) }}
+      {{-   end }}
+      {{-   if not (has $backend $serviceNames) }}
+      {{-     fail (printf "applications[%s].ingress.paths[%s]: serviceName %q is not a Service of this release (known: %s)" $name .path $backend (join ", " $serviceNames)) }}
+      {{-   end }}
       - path: {{ .path }}
         pathType: {{ .pathType }}
         backend:
           service:
-            name: {{ $fullName }}
+            name: {{ $backend }}
             port:
               {{- if .servicePortName }}
               name: {{ .servicePortName }}
