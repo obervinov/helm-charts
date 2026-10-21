@@ -24,10 +24,20 @@ Prometheus Operator has been enabled:
 Ingresses URLs:
 {{-       $name := .name }}
 {{-       if .ingress.useTLS }}
-https://{{ .fqdn }}
+https://{{ .ingress.fqdn }}
 {{-         else }}
-http://{{ .fqdn }}
+http://{{ .ingress.fqdn }}
 {{-         end }}
+{{-     end }}
+
+
+{{-     if .persistentVolumeClaims }}
+{{-       $fullName := include "universal-template.fullName" (list $ . .name) }}
+---
+PersistentVolumeClaims of {{ .name }}:
+{{-       range .persistentVolumeClaims }}
++ {{ include "universal-template.pvc.name" (list $fullName .) }}{{ if or (not (hasKey . "keep")) .keep }} (helm.sh/resource-policy: keep, survives helm uninstall){{ end }}
+{{-       end }}
 {{-     end }}
 
 {{-   end }}

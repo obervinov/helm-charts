@@ -1,11 +1,10 @@
 {{- if .Values.applications }}
-{{-   range .Values.applications }}
-{{-     if .app.persistentVolume }}
-{{-       if or (eq .app.type "deployment") (eq .app.type "cronjob") (eq .app.type "job") }}
-{{-         $name := .name }}
-{{-         $fullName := include "universal-template.fullName" (list $ . $name) }}
-{{-         $namespace := $.Release.Namespace }}
-{{-         $persistentVolume := .app.persistentVolume }}
+{{-   range $application := .Values.applications }}
+{{-     range $pvc := $application.persistentVolumeClaims }}
+{{-       $name        := $application.name }}
+{{-       $fullName    := include "universal-template.fullName" (list $ $application $name) }}
+{{-       $namespace   := $.Release.Namespace }}
+{{-       $keep        := or (not (hasKey $pvc "keep")) $pvc.keep }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -13,25 +12,42 @@ metadata:
   labels:
     {{- include "universal-template.labels" $ | nindent 4 }}
     {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 4 }}
-  name: {{ $fullName }}-{{ $persistentVolume.name }}
+    {{- with $pvc.labels }}
+    {{-   toYaml . | nindent 4 }}
+    {{- end }}
+  {{- if or $keep $pvc.annotations }}
+  annotations:
+    {{- if $keep }}
+    helm.sh/resource-policy: keep
+    {{- end }}
+    {{- with $pvc.annotations }}
+    {{-   toYaml . | nindent 4 }}
+    {{- end }}
+  {{- end }}
+  name: {{ include "universal-template.pvc.name" (list $fullName $pvc) }}
   namespace: {{ $namespace }}
 spec:
   accessModes:
-  {{-         if $persistentVolume.accessModes }}
-  {{-           range $persistentVolume.accessModes }}
+  {{-       if $pvc.accessModes }}
+  {{-         range $pvc.accessModes }}
     - {{ . }}
-  {{-           end }}
-  {{-         else }}
-    - ReadWriteOnce
   {{-         end }}
+  {{-       else }}
+    - ReadWriteOnce
+  {{-       end }}
   resources:
     requests:
-      storage: {{ $persistentVolume.size }}
-  {{-         if $persistentVolume.storageClassName }}
-  storageClassName: {{ $persistentVolume.storageClassName }}
-  {{-         end }}
+      storage: {{ required (printf "applications[%s].persistentVolumeClaims[%s].size is required" $name $pvc.name) $pvc.size }}
+  {{-       if $pvc.storageClassName }}
+  storageClassName: {{ $pvc.storageClassName }}
+  {{-       end }}
+  {{-       if $pvc.volumeMode }}
+  volumeMode: {{ $pvc.volumeMode }}
+  {{-       end }}
+  {{-       if $pvc.volumeName }}
+  volumeName: {{ $pvc.volumeName }}
+  {{-       end }}
 ...
-{{-       end }}
 {{-     end }}
 {{-   end }}
 {{- end }}
