@@ -1,24 +1,25 @@
-# An example of a fully described value file for describing the simplest release
-# The file is divided into sections:
-# - tests - the section describes the tests that will be run after the release
-# - app - the section describes the applications that will be deployed (Deployment, StatefulSet, Job, CronJob)
-# - service - the section describes the service that will be deployed
-# - ingress - the section describes the ingress that will be deployed
-# - configMap - the section describes the configmap that will be deployed
-# - secret - the section describes the secret that will be deployed
-# - rbac - the section describes the rbac that will be deployed
+# universal-template 4.x values reference.
+# Every key below is optional unless marked "required"; values.schema.json rejects unknown keys.
+#
+# An application is a logical group for one microservice:
+# - app                     - the workload (Deployment, StatefulSet, Job, CronJob, or none)
+# - services                - Services for the workload (or for another application of the release)
+# - persistentVolumeClaims  - standalone PVCs
+# - ingress, configMap, secret, rbac, monitoring
+#
+# Names: with one application every object is named <release>, with several <release>-<application name>
+# (below: <fullName>). Pods carry the label `appselector: <fullName>`.
 ---
 # Anchors with ports of your services can be installed here for reuse
 # service_port_http: &service_port_http 80
 # service_metrics_port: &service_metrics_port 9090
 
-# Applications - are a logical group for a microservice that includes
-# App (Deployment, StatefulSet, Job, CronJob), Service, Ingress, ConfigMap, Secret
 applications: []
 # applications:
 #   - name: app1
 #     app:
-#       # Type of application (can be Deployment, StatefulSet, Job, CronJob)
+#       # required: deployment, statefulset, job, cronjob, or none (no workload: only Services,
+#       # PVCs, ingress, configMap, secret of this application are rendered)
 #       type: deployment
 #       replicas: 1
 #       extraLabels:
@@ -94,6 +95,32 @@ applications: []
 #             - name: http
 #               containerPort: 80
 #               protocol: TCP
+#           # Mounts of this container only (name, mountPath required; readOnly, subPath, subPathExpr,
+#           # mountPropagation, recursiveReadOnly optional). Names refer to app.volumes or app.volumeClaimTemplates.
+#           volumeMounts:
+#             - name: data
+#               mountPath: /data
+#             - name: external-secret
+#               mountPath: /etc/my-app/secret
+#               readOnly: true
+#             - name: state
+#               mountPath: /state
+#           probes:
+#             livenessProbe:
+#               httpGet:
+#                 path: /health/liveness
+#                 port: 80
+#               initialDelaySeconds: 30
+#               periodSeconds: 5
+#             readinessProbe:
+#               httpGet:
+#                 path: /health/readiness
+#                 port: 80
+#             startupProbe:
+#               httpGet:
+#                 path: /health/startup
+#                 port: 80
+#               failureThreshold: 30
 #       initContainers:
 #         - name: init-container1
 #           image:
@@ -103,9 +130,13 @@ applications: []
 #           envs:
 #             - name: LOG_LEVEL
 #               value: INFO
-#           capabilities:
-#             add:
-#               - IPC_LOCK
+#           securityContext:
+#             capabilities:
+#               add:
+#                 - IPC_LOCK
+#           volumeMounts:
+#             - name: data
+#               mountPath: /data
 #           resources:
 #             requests:
 #               memory: "256Mi"
@@ -113,25 +144,41 @@ applications: []
 #             limits:
 #               memory: "512Mi"
 #               cpu: "500m"
-#       emptyDirVolume:
-#         name: "data"
-#         medium: ""
-#         sizeLimit: "1Gi"
-#         mountPath: "/data"
-#       persistentVolume:
-#         name: "data"
-#         size: 1Gi
-#         accessModes:
-#           - ReadWriteOnce
-#         storageClassName: "standard"
-#         mountPath: "/data"
-#       # Mounting external secrets and configmaps (Secrets and ConfigMaps deployed in namespace not by this helm-chart)
-#       externalSecrets:
-#         - name: my-secret
-#           mountPath: "/external-secrets"
-#       externalConfigMaps:
-#         - name: my-config
-#           mountPath: "/external-configs"
+#       # Pod volumes: raw Kubernetes volume sources, rendered as is (any number, any type).
+#       # `volume-configs` and `volume-secrets` are reserved for configMap/secret below.
+#       volumes:
+#         - name: cache
+#           emptyDir:
+#             sizeLimit: 1Gi
+#         - name: data
+#           persistentVolumeClaim:
+#             claimName: my-app-data        # a claim from persistentVolumeClaims below, or any existing claim
+#         - name: external-secret
+#           secret:
+#             secretName: my-secret
+#             items:
+#               - key: token
+#                 path: token
+#         - name: external-config
+#           configMap:
+#             name: my-config
+#       # StatefulSet only: claim templates, PVC name <name>-<fullName>-<ordinal>.
+#       # A StatefulSet without volumeClaimTemplates uses the volumes above (standalone PVCs).
+#       # The claims of a StatefulSet are not deleted by helm uninstall; they cannot carry a keep policy.
+#       volumeClaimTemplates:
+#         - name: state
+#           size: 1Gi
+#           storageClassName: standard
+#           accessModes:
+#             - ReadWriteOnce
+#           volumeMode: Filesystem
+#       # Deployment only: passed to spec.strategy as is
+#       strategy:
+#         type: Recreate
+#       # StatefulSet only: spec.updateStrategy as is, and the governing Service name (default <fullName>)
+#       updateStrategy:
+#         type: RollingUpdate
+#       serviceName: my-app-headless
 #       affinity:
 #         nodeAffinity:
 #           requiredDuringSchedulingIgnoredDuringExecution:
@@ -148,39 +195,11 @@ applications: []
 #           operator: "Equal"
 #           value: "value"
 #           effect: "NoSchedule"
-#       probes:
-#         livenessProbe:
-#           httpGet:
-#             path: /health/liveness
-#             port: 80
-#           initialDelaySeconds: 30
-#           periodSeconds: 5
-#           timeoutSeconds: 5
-#           successThreshold: 1
-#           failureThreshold: 3
-#         readinessProbe:
-#           httpGet:
-#             path: /health/readiness
-#             port: 80
-#           initialDelaySeconds: 15
-#           periodSeconds: 5
-#           timeoutSeconds: 5
-#           successThreshold: 1
-#           failureThreshold: 3
-#         startupProbe:
-#           httpGet:
-#             path: /health/startup
-#             port: 80
-#           initialDelaySeconds: 15
-#           periodSeconds: 10
-#           timeoutSeconds: 1
-#           successThreshold: 1
-#           failureThreshold: 3
-#       # Only for batch applications and cronjobs
-#       cronjob:
-#         schedule: "*/1 * * * *"
-#         failedJobsHistoryLimit: 1
-#         successfulJobsHistoryLimit: 0
+#       # type: cronjob only (required there); the key is cronJob
+#       cronJob:
+#         schedule: "*/1 * * * *"            # required
+#         failedJobsHistoryLimit: 1          # default 1
+#         successfulJobsHistoryLimit: 1      # default 1, 0 is allowed
 #         restartPolicy: "OnFailure"
 #         ttlSecondsAfterFinished: 360
 #         activeDeadlineSeconds: 650
@@ -188,29 +207,63 @@ applications: []
 #         concurrencyPolicy: "Forbid"
 #         parallelism: 1
 #         completions: 1
+#       # type: job only
 #       job:
 #         restartPolicy: "OnFailure"
 #         ttlSecondsAfterFinished: 360
 #         activeDeadlineSeconds: 650
 #         backoffLimit: 1
-#         concurrencyPolicy: "Forbid"
 #         parallelism: 1
 #         completions: 1
 #
-#     service:
-#       externalTrafficPolicy: Cluster
-#       externalIPs:
-#         - 1.1.1.1
-#       extraAnnotations:
-#         checksum/values.yaml: "helm/values.yaml"
-#       # Type of service (can be ClusterIP, NodePort, LoadBalancer)
-#       type: NodePort
-#       ports:
-#         - name: http
-#           port: 80
-#           protocol: TCP
-#           targetPort: 80
-#           nodePort: 30080
+#     # Services. The first one defaults to the name <fullName>; others need `name` (exact) or
+#     # `nameSuffix` (<fullName>-<suffix>). The selector defaults to the pods of this application;
+#     # `selectApp: <application name>` selects another application of the release,
+#     # `selector` is a raw label map. Service names must be unique in the release.
+#     services:
+#       - type: NodePort                   # ClusterIP, NodePort, LoadBalancer
+#         externalTrafficPolicy: Cluster
+#         externalIPs:
+#           - 192.0.2.10
+#         extraAnnotations:
+#           checksum/values.yaml: "helm/values.yaml"
+#         ports:
+#           - name: http
+#             port: 80
+#             protocol: TCP
+#             targetPort: 80
+#             nodePort: 30080
+#       - name: my-app-headless
+#         type: ClusterIP
+#         clusterIP: None
+#         ports:
+#           - name: http
+#             port: 80
+#             targetPort: 80
+#             protocol: TCP
+#       - nameSuffix: worker
+#         type: ClusterIP
+#         selectApp: worker
+#         ports:
+#           - name: metrics
+#             port: 9090
+#             targetPort: 9090
+#             protocol: TCP
+#
+#     # Standalone PVCs. Name <fullName>-<name>, or exactly `claimName` (adopt an existing claim).
+#     # Every claim gets helm.sh/resource-policy: keep (survives helm uninstall) unless keep: false.
+#     # Mount them through app.volumes (persistentVolumeClaim.claimName) + volumeMounts.
+#     persistentVolumeClaims:
+#       - name: data
+#         claimName: my-app-data             # optional
+#         size: 1Gi                          # required
+#         storageClassName: standard
+#         accessModes:                       # default [ReadWriteOnce]
+#           - ReadWriteOnce
+#         volumeMode: Filesystem
+#         keep: true                         # default true
+#         annotations: {}
+#         labels: {}
 #
 #     ingress:
 #       apiVersion: networking.k8s.io/v1
@@ -225,13 +278,15 @@ applications: []
 #           # If both `servicePort` and `servicePortName` are set, `servicePortName` takes precedence. Because of this, you can set only one of them.
 #           servicePort: 80
 #           servicePortName: http
-#           serviceName: app1
+#           # Any Service of this release (see services); default: the first Service of this application
+#           serviceName: my-app-headless
 #       ingressClassName: nginx
 
 #     # Description of the ConfigMap
 #     # The contents of the config can be set via
-#     # `--set-file "applications[0].configMap[0].data"="config.json"`
-#     # `mountPath` - the path in the container where all configs will be mapped
+#     # `--set-file "applications[0].configMap.files[0].data"="config.json"`
+#     # `mountPath` - mounts the ConfigMap (volume `volume-configs`) into every container of the pod;
+#     #               leave it unset and use volumeMounts with name `volume-configs` to mount it selectively
 #     # `files[0].name` - the name of the file in the container
 #     # `files[0].data` - the config body is set via the --set-file parameter
 #     configMap:
@@ -241,6 +296,7 @@ applications: []
 #           data: {}
 
 #     # Description of the Secret
+#     # `mountPath` - mounts the Secret (volume `volume-secrets`) into every container of the pod
 #     secret:
 #       mountPath: "/secrets"
 #       data: |

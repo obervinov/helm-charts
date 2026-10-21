@@ -1,410 +1,274 @@
 # Universal Helm Chart for Kubernetes Applications
 
-This Helm chart provides a universal template for deploying applications on Kubernetes. It encompasses various resources such as deployments, services, ingresses, configmaps, secrets, RBAC, and monitoring configurations.
+One chart for simple releases: Deployments, StatefulSets, Jobs and CronJobs with their Services, PersistentVolumeClaims, Ingress, ConfigMap, Secret, RBAC, NetworkPolicy and Prometheus monitors, all described in `values.yaml`.
+
+Version 4.0 changes the values contract (volumes, services, claims). The rendered objects keep their names and labels, so a module translated from 3.x renders the same manifests. See [Migrating from 3.x](#migrating-from-3x).
 
 ## Table of Contents
 
-- [Overview](#overview)
-- [Prerequisites](#prerequisites)
 - [Installation](#installation)
+- [Naming](#naming)
 - [Configuration](#configuration)
-- [Extended Configuration](#extended-configuration)
-- [Usage](#usage)
+  - [Applications](#applications)
+  - [Containers](#containers)
+  - [Volumes and mounts](#volumes-and-mounts)
+  - [PersistentVolumeClaims](#persistentvolumeclaims)
+  - [Services](#services)
+  - [Ingress](#ingress)
+  - [ConfigMap](#configmap)
+  - [Secret](#secret)
+  - [RBAC](#rbac)
+  - [Monitoring](#monitoring)
 - [Examples](#examples)
-- [Contributing](#contributing)
-- [License](#license)
-
-## Overview
-
-This Helm chart enables you to deploy applications on Kubernetes with ease. It includes configurations for different types of applications, services, ingresses, and more. You can customize each component according to your requirements using Helm values.
-
-## Prerequisites
-
-- Kubernetes cluster
-- Helm installed
+- [Migrating from 3.x](#migrating-from-3x)
+- [Usage example for Gitlab-CI](#usage-example-for-gitlab-ci)
 
 ## Installation
 
-To install the chart, use the following command:
-
 ```bash
-helm install <release-name> <chart-name>
+helm repo add obervinov https://obervinov.github.io/helm-charts
+helm upgrade --install my-app obervinov/universal-template -f values.yaml
+# or from the OCI registry
+helm upgrade --install my-app oci://ghcr.io/obervinov/helm-charts/universal-template --version 4.0.0 -f values.yaml
 ```
+
+`values.schema.json` rejects unknown keys, so `helm lint -f values.yaml` catches typos and 3.x keys before anything is applied.
+
+## Naming
+
+- `<fullName>` is the release name when the release has one application, and `<release>-<application name>` when it has several.
+- Every workload, ConfigMap, Secret, ServiceAccount and Ingress is named `<fullName>`.
+- Pods carry the label `appselector: <fullName>`; Deployment/StatefulSet selectors and the default Service selector use it.
 
 ## Configuration
 
-The following table lists the configurable parameters of the chart and their default values:
+`values.yaml` is the full commented reference. The tables list each key; `[]` marks a list.
 
 ### Applications
 
-| Parameter             | Description                                                                 | Default                |
-|-----------------------|-----------------------------------------------------------------------------|------------------------|
-| `applications`        | List of application configurations                                          | `[]`                   |
-| `applications.name`   | Name of the application                                                     | `""`                   |
-| `applications.app.type` | Type of application (Deployment, StatefulSet, Job, CronJob)              | `deployment`           |
-| `applications.app.replicas` | Number of replicas                                                   | `1`                    |
-| `applications.app.extraLabels` | Additional labels for the application                              | `{}`                   |
-| `applications.app.extraAnnotations` | Additional annotations for the application                   | `{}`                   |
-| `applications.app.containers` | List of container configurations                                    | `[]`                   |
-| `applications.app.containers.name` | Name of the container                                         | `""`                   |
-| `applications.app.containers.image.repository` | Image repository                                  | `""`                   |
-| `applications.app.containers.image.tag` | Image tag                                                 | `""`                   |
-| `applications.app.containers.image.pullPolicy` | Image pull policy                                 | `IfNotPresent`         |
-| `applications.app.imagePullSecrets` | List of image pull secrets rendered into `podSpec.imagePullSecrets` (list of LocalObjectReference, e.g. `- name: my-registry-secret`) | `[]`                   |
-| `applications.app.containers.commands` | List of commands to run in the container                   | `[]`                   |
-| `applications.app.containers.args` | List of arguments for the container commands                  | `[]`                   |
-| `applications.app.containers.lifecycle` | Lifecycle hooks for the container (postStart, preStop) | `{}`                   |
-| `applications.app.containers.envs` | List of environment variables for the container               | `[]`                   |
-| `applications.app.containers.envs.name` | Environment variable name                                 | `""`                   |
-| `applications.app.containers.envs.value` | Environment variable value                               | `""`                   |
-| `applications.app.containers.envs.valueFrom` | Source of the environment variable value (e.g., secretKeyRef, fieldRef) | `{}` |
-| `applications.app.containers.resources.requests.memory` | Requested memory                         | `256Mi`                |
-| `applications.app.containers.resources.requests.cpu` | Requested CPU                                 | `250m`                 |
-| `applications.app.containers.resources.limits.memory` | Memory limit                               | `512Mi`                |
-| `applications.app.containers.resources.limits.cpu` | CPU limit                                    | `500m`                 |
-| `applications.app.containers.ports` | List of container ports                                         | `[]`                   |
-| `applications.app.containers.ports.name` | Name of the container port                                   | `""`                   |
-| `applications.app.containers.ports.containerPort` | Port number for the container port                         | `80`                   |
-| `applications.app.containers.ports.protocol` | Protocol for the container port                             | `TCP`                  |
-| `applications.app.initContainers` | List of init container configurations                         | `[]`                   |
-| `applications.app.emptyDirVolume` | Configuration for emptyDir volume                             | `{}`                   |
-| `applications.app.persistentVolume` | Configuration for persistent volume                         | `{}`                   |
-| `applications.app.externalSecrets` | Mounting external secrets                                    | `[]`                   |
-| `applications.app.externalConfigMaps` | Mounting external configmaps                              | `[]`                   |
-| `applications.app.affinity` | Affinity rules for the application                                 | `{}`                   |
-| `applications.app.nodeSelector` | Node selector for the application                              | `{}`                   |
-| `applications.app.tolerations` | Tolerations for the application                                  | `[]`                   |
-| `applications.app.probes.livenessProbe` | Liveness probe configuration                            | `{}`                   |
-| `applications.app.probes.readinessProbe` | Readiness probe configuration                        | `{}`                   |
-| `applications.app.probes.startupProbe` | Startup probe configuration                                | `{}`                   |
-| `applications.app.cronjob` | CronJob specific configuration (only for batch applications and cronjobs) | `{}` |
-| `applications.app.job` | Job specific configuration (only for batch applications and jobs)        | `{}`                   |
-| `applications.app.networkPolicy` | Network policy configuration for the application                   | `{}`                   |
-| `applications.app.networkPolicy.ingress` | Ingress rules for the network policy                        | `[]`                   |
-| `applications.app.networkPolicy.egress` | Egress rules for the network policy                          | `[]`                   |
-| `applications.app.networkPolicy.policyTypes` | List of policy types for the network policy            | `["Ingress", "Egress"]` |
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `applications[]` | List of applications | `[]` |
+| `applications[].name` | Name of the application (required, lowercase DNS label) | |
+| `applications[].app.type` | `deployment`, `statefulset`, `job`, `cronjob` or `none` (no workload: only the Services, claims, ingress, configMap and secret of the application are rendered) | |
+| `applications[].app.replicas` | Number of replicas | `1` |
+| `applications[].app.extraLabels` | Labels added to the workload and its pods | `{}` |
+| `applications[].app.extraAnnotations` | Annotations added to the workload/pods | `{}` |
+| `applications[].app.imagePullSecrets` | Secret names, rendered as `imagePullSecrets: [{name: ...}]` | `[]` |
+| `applications[].app.containers[]` | Containers, see [Containers](#containers) | |
+| `applications[].app.initContainers[]` | Init containers, same keys as containers | `[]` |
+| `applications[].app.volumes[]` | Pod volumes, raw Kubernetes volume sources, see [Volumes and mounts](#volumes-and-mounts) | `[]` |
+| `applications[].app.volumeClaimTemplates[]` | StatefulSet only: claim templates (`name`, `size`, `storageClassName`, `accessModes`, `volumeMode`) | `[]` |
+| `applications[].app.strategy` | Deployment only: `spec.strategy` as is, e.g. `{type: Recreate}` | |
+| `applications[].app.updateStrategy` | StatefulSet only: `spec.updateStrategy` as is | |
+| `applications[].app.serviceName` | StatefulSet only: governing Service name | `<fullName>` |
+| `applications[].app.affinity` | Pod affinity | `{}` |
+| `applications[].app.nodeSelector` | Pod node selector | `{}` |
+| `applications[].app.tolerations` | Pod tolerations | `[]` |
+| `applications[].app.networkPolicy` | `policyTypes`, `ingress`, `egress` of a NetworkPolicy selecting the pods | |
+| `applications[].app.cronJob` | CronJob only (required there): `schedule` (required), `failedJobsHistoryLimit` (default `1`), `successfulJobsHistoryLimit` (default `1`), `concurrencyPolicy` (default `Forbid`), `restartPolicy` (default `Never`), `ttlSecondsAfterFinished` (default `300`), `activeDeadlineSeconds` (default `300`), `backoffLimit` (default `3`), `parallelism`, `completions` | |
+| `applications[].app.job` | Job only: `restartPolicy` (default `Never`), `ttlSecondsAfterFinished` (default `300`), `activeDeadlineSeconds` (default `600`), `backoffLimit` (default `3`), `parallelism`, `completions` | |
 
-### Service
+### Containers
 
-| Parameter                           | Description                                                                 | Default    |
-|-------------------------------------|-----------------------------------------------------------------------------|------------|
-| `applications.service.externalTrafficPolicy` | External traffic policy for the service                                    | `Cluster`  |
-| `applications.service.externalIPs` | External IPs for the service                                                | `[]`       |
-| `applications.service.extraAnnotations` | Additional annotations for the service                                     | `{}`       |
-| `applications.service.type` | Type of service (ClusterIP, NodePort, LoadBalancer)                           | `ClusterIP` |
-| `applications.service.ports` | List of service ports                                                       | `[]`       |
-| `applications.service.ports.name` | Name of the service port                                                   | `""`       |
-| `applications.service.ports.port` | Port number for the service                                                | `80`       |
-| `applications.service.ports.protocol` | Protocol for the service port                                             | `TCP`      |
-| `applications.service.ports.targetPort` | Target port for the service                                               | `80`       |
-| `applications.service.ports.nodePort` | Node port for the service                                                  | `""`       |
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `containers[].name` | Container name (required) | |
+| `containers[].image.repository` / `.tag` | Image (required) | |
+| `containers[].image.pullPolicy` | Pull policy | `IfNotPresent` |
+| `containers[].image.commands` / `.args` | `command` / `args` | `[]` |
+| `containers[].envs[]` | `env` as is (`value`, `valueFrom`) | `[]` |
+| `containers[].ports[]` | `name`, `containerPort`, `protocol` | `[]` |
+| `containers[].resources` | Requests and limits | |
+| `containers[].securityContext` | Container security context | |
+| `containers[].lifecycle` | `postStart` / `preStop` hooks | |
+| `containers[].probes` | `livenessProbe`, `readinessProbe`, `startupProbe`; only the ones set are rendered | |
+| `containers[].volumeMounts[]` | Mounts of this container only: `name`, `mountPath` (required), `readOnly`, `subPath`, `subPathExpr`, `mountPropagation`, `recursiveReadOnly` | `[]` |
+
+### Volumes and mounts
+
+`app.volumes` is the pod's volume list, written as Kubernetes volume sources and rendered as is: `emptyDir`, `persistentVolumeClaim`, `secret` (with `items`), `configMap`, `projected`, `hostPath`, any number of each. Each container mounts only what its own `volumeMounts` list names, init containers included.
+
+The chart adds two volumes of its own: `volume-configs` (the ConfigMap from `configMap.files`) and `volume-secrets` (the Secret from `secret.data`, when `secret.mountPath` is set). Their names are reserved. Rendering fails when a volume name is used twice or a mount names a volume that does not exist.
+
+```yaml
+app:
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: my-app-data
+    - name: host-keys
+      secret:
+        secretName: my-app-keys
+        items:
+          - key: ssh_host_ed25519_key
+            path: ssh_host_ed25519_key
+  containers:
+    - name: server
+      volumeMounts:
+        - name: data
+          mountPath: /data
+    - name: sidecar
+      volumeMounts:
+        - name: data
+          mountPath: /export
+          readOnly: true
+        - name: host-keys
+          mountPath: /host-keys
+```
+
+A StatefulSet either lists `app.volumeClaimTemplates` (claims named `<name>-<fullName>-<ordinal>`, created by the StatefulSet controller) or mounts standalone claims through `app.volumes`. A StatefulSet without `volumeClaimTemplates` gets none.
+
+### PersistentVolumeClaims
+
+`applications[].persistentVolumeClaims[]` renders standalone claims, for any workload type (also `none`).
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `name` | Logical name (required) | |
+| `claimName` | Exact claim name, e.g. to adopt an existing claim | `<fullName>-<name>` |
+| `size` | Requested storage (required) | |
+| `storageClassName` | Storage class | cluster default |
+| `accessModes` | Access modes | `[ReadWriteOnce]` |
+| `volumeMode` | `Filesystem` or `Block` | |
+| `volumeName` | Bind to this PersistentVolume | |
+| `keep` | Adds `helm.sh/resource-policy: keep`: the claim survives `helm uninstall` and a rename of the release | `true` |
+| `annotations` / `labels` | Extra metadata | `{}` |
+
+Claims from `volumeClaimTemplates` cannot carry the keep annotation. Helm does not manage them, and with the default retention policy the StatefulSet controller keeps them when the StatefulSet is deleted.
+
+### Services
+
+`applications[].services[]` is a list. Service names must be unique in the release.
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `name` | Exact Service name | first Service: `<fullName>` |
+| `nameSuffix` | Service name `<fullName>-<nameSuffix>` | |
+| `type` | `ClusterIP`, `NodePort`, `LoadBalancer` | not set (Kubernetes uses `ClusterIP`) |
+| `clusterIP` | e.g. `None` for a headless Service | |
+| `ports[]` | `name`, `port`, `targetPort`, `protocol`, `nodePort` (NodePort only) | |
+| `selectApp` | Select the pods of another application of this release | this application |
+| `selector` | Raw label selector, used as is | |
+| `externalIPs[]` / `externalTrafficPolicy` | As in Kubernetes | |
+| `extraLabels` / `extraAnnotations` | Extra metadata | |
+
+The second and later Services need `name` or `nameSuffix`. `selectApp` and `selector` are mutually exclusive.
 
 ### Ingress
 
-| Parameter                           | Description                                                                 | Default    |
-|-------------------------------------|-----------------------------------------------------------------------------|------------|
-| `applications.ingress.apiVersion` | API version for the ingress                                                 | `networking.k8s.io/v1` |
-| `applications.ingress.kind` | Kind of the ingress                                                         | `Ingress`  |
-| `applications.ingress.extraAnnotations` | Additional annotations for the ingress                                     | `{}`       |
-| `applications.ingress.useTLS` | Use TLS for the ingress                                                     | `true`     |
-| `applications.ingress.fqdn` | Fully qualified domain name for the ingress                                   | `""`       |
-| `applications.ingress.paths` | List of ingress paths                                                       | `[]`       |
-| `applications.ingress.paths.path` | Path for the ingress                                                       | `/`        |
-| `applications.ingress.paths.pathType` | Path type for the ingress                                                 | `Prefix`   |
-| `applications.ingress.paths.servicePort` | Service port for the ingress                                              | `80`       |
-| `applications.ingress.paths.serviceName` | Service name for the ingress                                              | `""`       |
-| `applications.ingress.ingressClassName` | Ingress class name                                                        | `nginx`    |
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `ingress.apiVersion` / `ingress.kind` | API version and kind | `networking.k8s.io/v1`, `Ingress` |
+| `ingress.extraAnnotations` | Annotations | `{}` |
+| `ingress.useTLS` | Adds a TLS section with secret `<fullName>-tls` | `false` |
+| `ingress.fqdn` | Host | |
+| `ingress.ingressClassName` | Ingress class | `nginx` |
+| `ingress.paths[].path` / `.pathType` | Path and path type | |
+| `ingress.paths[].serviceName` | Any Service of this release; rendering fails for an unknown name | first Service of this application |
+| `ingress.paths[].servicePortName` / `.servicePort` | Backend port by name (wins) or number | |
 
 ### ConfigMap
 
-| Parameter                           | Description                                                                 | Default    |
-|-------------------------------------|-----------------------------------------------------------------------------|------------|
-| `applications.configMap.mountPath` | Path in the container where the config maps will be mounted                | `""`       |
-| `applications.configMap.files` | List of config files                                                       | `[]`       |
-| `applications.configMap.files.name` | Name of the config file                                                    | `""`       |
-| `applications.configMap.files.data` | Data for the config file                                                   | `{}`       |
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `configMap.files[].name` / `.data` | Files of the ConfigMap `<fullName>` (set `data` with `--set-file`) | `[]` |
+| `configMap.mountPath` | Mounts volume `volume-configs` into every container; leave unset and use `volumeMounts` with `name: volume-configs` to mount it selectively | |
+| `configMap.extraLabels` / `.extraAnnotations` | Extra metadata | |
 
 ### Secret
 
-| Parameter                           | Description                                                                 | Default    |
-|-------------------------------------|-----------------------------------------------------------------------------|------------|
-| `applications.secret.mountPath` | Path in the container where the secrets will be mounted                    | `""`       |
-| `applications.secret.data` | Data for the secrets                                                       | `{}`       |
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `secret.data` | YAML string of `key: value` pairs for the Secret `<fullName>` | |
+| `secret.mountPath` | Mounts volume `volume-secrets` into every container | |
+| `secret.extraLabels` / `.extraAnnotations` | Extra metadata | |
 
 ### RBAC
-For create ServiceAccount without Role, just not set `applications.rbac.rules` parameter.
+To create a ServiceAccount without a Role, leave `rbac.rules` unset.
 
-| Parameter                           | Description                                                                 | Default    |
-|-------------------------------------|-----------------------------------------------------------------------------|------------|
-| `applications.rbac.create` | Create RBAC resources                                                         | `false`    |
-| `applications.rbac.useExistingServiceAccount` | Use existing ServiceAccount for the RBAC resources. Cannot be used with `create` | `""`       |
-| `applications.rbac.legacyToken` | Use legacy token for the RBAC resources. Cannot be used with `create`        | `false`    |
-| `applications.rbac.rules` | List of RBAC rules                                                             | `[]`       |
-| `applications.rbac.rules.apiGroups` | API groups for the RBAC rules                                              | `[""]`     |
-| `applications.rbac.rules.resources` | Resources for the RBAC rules                                               | `["pods"]` |
-| `applications.rbac.rules.verbs` | Verbs for the RBAC rules                                                   | `["get", "watch", "list"]` |
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `rbac.create` | Create a ServiceAccount `<fullName>` (and Role/RoleBinding with `rules`) | `false` |
+| `rbac.useExistingServiceAccount` | Use an existing ServiceAccount. Cannot be used with `create` | |
+| `rbac.legacyToken` | Create a long-lived token Secret for the ServiceAccount | `false` |
+| `rbac.rules[]` | `apiGroups`, `resources`, `verbs` | `[]` |
+| `rbac.extraLabels` / `.extraAnnotations` | Extra metadata | |
 
 ### Monitoring
 
-| Parameter                           | Description                                                                 | Default    |
-|-------------------------------------|-----------------------------------------------------------------------------|------------|
-| `applications.monitoring.prometheus` | List of Prometheus monitoring configurations                               | `[]`       |
-| `applications.monitoring.prometheus.name` | Name of the Prometheus configuration                                    | `""`       |
-| `applications.monitoring.prometheus.apiVersion` | API version for the Prometheus configuration                             | `monitoring.coreos.com/v1` |
-| `applications.monitoring.prometheus.kind` | Kind of the Prometheus configuration                                     | `ServiceMonitor` |
-| `applications.monitoring.prometheus.namespacesSelector` | Namespace selector for the Prometheus configuration                       | `[]`       |
-| `applications.monitoring.prometheus.endpoints` | List of endpoints for the Prometheus configuration                       | `[]`       |
-| `applications.monitoring.prometheus.endpoints.port` | Port for the Prometheus endpoint                                         | `http`     |
-| `applications.monitoring.prometheus.endpoints.path` | Path for the Prometheus endpoint                                         | `/metrics` |
-| `applications.monitoring.prometheus.endpoints.interval` | Interval for the Prometheus endpoint                                     | `15s`      |
-| `applications.monitoring.prometheus.endpoints.scheme` | Scheme for the Prometheus endpoint                                       | `http`     |
-
-## Usage
-
-To use this Helm chart, follow these steps:
-
-1. Prepare your application configurations.
-2. Modify the `values.yaml` file according to your requirements.
-3. Install the chart using the `helm install` command.
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `monitoring.prometheus[].name` | Name of the monitor (required) | |
+| `monitoring.prometheus[].apiVersion` / `.kind` | `ServiceMonitor` or `PodMonitor` | `monitoring.coreos.com/v1` |
+| `monitoring.prometheus[].namespacesSelector[]` | Namespaces to watch | release namespace |
+| `monitoring.prometheus[].endpoints[]` | `port`, `path`, `interval`, `scheme`, `bearerTokenFile`, `honorLabels` | |
+| `monitoring.prometheus[].jobLabel` | Job label | `k8s-app` |
 
 ## Examples
 
-Here's an example of how to deploy a simple application using this Helm chart:
+The values files in [`tests/`](tests/) pass `helm lint . -f tests/<file>` and cover the common shapes:
+
+- [`tests/simple-deployment.yaml`](tests/simple-deployment.yaml) - one Deployment behind one Service, no volumes
+- [`tests/deployment-sidecar-pvcs.yaml`](tests/deployment-sidecar-pvcs.yaml) - a Deployment with a sidecar on two adopted claims, one Secret mounted twice with different `items`, two Services on the same pod, `Recreate` strategy
+- [`tests/statefulset-standalone-pvcs.yaml`](tests/statefulset-standalone-pvcs.yaml) - a StatefulSet on standalone claims with init containers, a CronJob on emptyDirs, and a Service-only application selecting the StatefulSet
+
+A StatefulSet with a claim template:
 
 ```yaml
----
 applications:
-  - name: statefulset-app
+  - name: my-app
     app:
       type: statefulset
-      replicas: 1
-      extraLabels:
-        app.kubernetes.io/instance: "statefulset-app"
-      extraAnnotations:
-        checksum/values.yaml: "helm/values.yaml"
       containers:
-        - name: container1
+        - name: my-app
           image:
-            repository: "my-registry/app1"
+            repository: registry.example.com/my-app
             tag: "1.0.0"
-            pullPolicy: IfNotPresent
-            pullSecrets:
-              - my-secret
-            commands:
-              - bash
-            args:
-              - -c
-              - env
-          envs:
-            - name: LOG_LEVEL
-              value: INFO
-            - name: SECRET_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: my-secret
-                  key: username
-            - name: NAMESPACE
-              valueFrom:
-                fieldRef:
-                  fieldPath: metadata.namespace
-          resources:
-            requests:
-              memory: "256Mi"
-              cpu: "250m"
-            limits:
-              memory: "512Mi"
-              cpu: "500m"
-      initContainers:
-        - name: init-container1
-          image:
-            repository: "my-registry/init-container1"
-            tag: "1.0.0"
-            pullPolicy: IfNotPresent
-          envs:
-            - name: LOG_LEVEL
-              value: INFO
-          resources:
-            requests:
-              memory: "256Mi"
-              cpu: "250m"
-            limits:
-              memory: "512Mi"
-              cpu: "500m"
-      emptyDirVolume:
-        name: "data"
-        medium: ""
-        sizeLimit: "1Gi"
-        mountPath: "/data"
-      persistentVolume:
-        name: "data"
-        size: 1Gi
-        accessModes: [ "ReadWriteOnce" ]
-        storageClassName: "standard"
-        mountPath: "/data"
-      externalSecrets:
-        - name: my-external-secret
-          mountPath: "/external-secrets"
-      externalConfigMaps:
-        - name: my-external-config
-          mountPath: "/external-configs"
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              - matchExpressions:
-                  - key: kubernetes.io/e2e-az-name
-                    operator: In
-                    values:
-                      - e2e-az1
-      nodeSelector:
-        disktype: ssd
-      tolerations:
-        - key: "key"
-          operator: "Equal"
-          value: "value"
-          effect: "NoSchedule"
-      probes:
-        livenessProbe:
-          httpGet:
-            path: /health/liveness
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/my-app
+      volumeClaimTemplates:
+        - name: data              # claim data-my-app-0
+          size: 1Gi
+          storageClassName: standard
+    services:
+      - type: ClusterIP
+        ports:
+          - name: http
             port: 80
-          initialDelaySeconds: 30
-          periodSeconds: 5
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /health/readiness
-            port: 80
-          initialDelaySeconds: 15
-          periodSeconds: 5
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
-        startupProbe:
-          httpGet:
-            path: /health/startup
-            port: 80
-          initialDelaySeconds: 15
-          periodSeconds: 10
-          timeoutSeconds: 1
-          successThreshold: 1
-          failureThreshold: 3
-    service:
-      externalTrafficPolicy: Cluster
-      externalIPs:
-        - 1.1.1.1
-      extraAnnotations:
-        checksum/values.yaml: "helm/values.yaml"
-      type: ClusterIP
-      ports:
-        - name: http
-          port: 80
-          protocol: TCP
-          targetPort: 80
-    ingress:
-      apiVersion: networking.k8s.io/v1
-      kind: Ingress
-      extraAnnotations:
-        checksum/values.yaml: "helm/values.yaml"
-      useTLS: true
-      fqdn: my-service.example.com
-      paths:
-        - path: /
-          pathType: Prefix
-          servicePort: 80
-          serviceName: app1
-      ingressClassName: nginx
-    configMap:
-      mountPath: "/configs"
-      files:
-        - name: "config.json"
-          data: |
-            {
-              "key": "value"
-            }
-    secret:
-      mountPath: "/secrets"
-      data: |
-        key1: "value1"
-        key2: "value2"
-    rbac:
-      legacyToken: true
-      rules:
-        - apiGroups:
-            - ""
-          resources:
-            - pods
-          verbs:
-            - get
-            - watch
-            - list
-    monitoring:
-      prometheus:
-        - name: ServiceMonitor1
-          apiVersion: monitoring.coreos.com/v1
-          kind: ServiceMonitor
-          namespacesSelector:
-            - monitoring
-          endpoints:
-            - port: http
-              path: /metrics
-              interval: 15s
-              scheme: http
-        - name: PodMonitor1
-          apiVersion: monitoring.coreos.com/v1
-          kind: PodMonitor
-          namespacesSelector:
-            - monitoring
-          endpoints:
-            - port: http
-              path: /metrics
-              interval: 15s
-              scheme: http
+            targetPort: 8080
+            protocol: TCP
 ```
 
-<!-- Add an example for creating the docker registry secret -->
-Create the docker registry secret (example):
+## Migrating from 3.x
 
-```sh
-kubectl create secret docker-registry my-registry-secret \
-  --docker-server=<registry> --docker-username=<user> \
-  --docker-password=<password> --docker-email=<email> -n <namespace>
+Only values change. Names, labels and selectors of the rendered objects stay the same, so a translated module upgrades in place.
+
+| 3.x key | 4.0 key |
+|---------|---------|
+| `service: {type, ports, ...}` | `services: [{type, ports, ...}]` - the first Service keeps the name `<fullName>` and the same selector |
+| `app.emptyDirVolume: {name, sizeLimit, mountPath}` | `app.volumes: [{name, emptyDir: {sizeLimit}}]` + `containers[].volumeMounts: [{name, mountPath}]` |
+| `app.persistentVolume` on a deployment/job/cronjob | `persistentVolumeClaims: [{name, size, storageClassName, accessModes}]` (claim `<fullName>-<name>` as before, or `claimName`) + `app.volumes: [{name, persistentVolumeClaim: {claimName: <fullName>-<name>}}]` + `containers[].volumeMounts` |
+| `app.persistentVolume` on a statefulset | `app.volumeClaimTemplates: [{name, size, storageClassName, accessModes}]` + `containers[].volumeMounts` - claims stay `<name>-<fullName>-<ordinal>` |
+| `app.externalSecrets: [{name, mountPath}]` | `app.volumes: [{name, secret: {secretName}}]` + `containers[].volumeMounts: [{name, mountPath, readOnly: true}]` |
+| `app.externalConfigMaps: [{name, mountPath}]` | `app.volumes: [{name, configMap: {name}}]` + `containers[].volumeMounts: [{name, mountPath, readOnly: true}]` |
+| `app.cronjob` (was never read) | `app.cronJob` |
+| `app.probes`, `app.envs`, `app.resources` (were never applied) | `containers[].probes`, `containers[].envs`, `containers[].resources` |
+| `ingress.paths[].serviceName` (was ignored) | now honoured: must name a Service of the release, or be left out |
+
+Behaviour that changes with the same intent:
+
+- 3.x mounted every volume into every container, init containers included. In 4.0 a container mounts only its own `volumeMounts`: list the mount on each container that needs it.
+- Standalone claims get `helm.sh/resource-policy: keep` by default; set `keep: false` to let `helm uninstall` delete them.
+- CronJob history limits default to `1` instead of `0`.
+- A StatefulSet whose only volume was a claim template no longer renders an empty `volumes:` key.
+
+`helm lint` fails on every removed key and names its replacement:
+
+```text
+[ERROR] values.yaml: - at '/applications/0/service': value must be 'REMOVED in universal-template 4.0: use services (a list): services: [{type, ports}] renders the same Service <fullName>'
 ```
-
-```yaml
----
-applications:
-  - name: statefulset-app
-    app:
-      type: statefulset
-      replicas: 1
-      extraLabels:
-        app.kubernetes.io/instance: "statefulset-app"
-      extraAnnotations:
-        checksum/values.yaml: "helm/values.yaml"
-      # Register imagePullSecrets at the app level. These are rendered into
-      # podSpec.imagePullSecrets for Deployments/StatefulSets/Jobs/CronJobs.
-      imagePullSecrets:
-        - name: my-registry-secret
-      containers:
-        - name: container1
-          image:
-            repository: "my-registry/app1"
-            tag: "1.0.0"
-            pullPolicy: IfNotPresent
-          commands:
-            - bash
-          args:
-            - -c
-            - env
-...
-```
-## Contributing
-
-Contributions are welcome! Feel free to submit issues and pull requests.
-
 
 ## Usage example for Gitlab-CI
 **To work, you will also need to add vault-client and kubectl to the image**
@@ -427,10 +291,10 @@ deploy-helm:
   script:
     - helm repo add obervinov https://obervinov.github.io/helm-charts
     # Example of adding the contents of an external config from your repository
-    # --set-file "applications[0].configmap[0].data"="config/config.json"
+    # --set-file "applications[0].configMap.files[0].data"="config/config.json"
     # Example of adding secret contents unloaded from vault
     # --set-file "applications[0].secret.data"=".helm/vault.secret.yaml"
-    # -f .helm/values.yaml - устанавливаем путь к values.yaml файлу в вашем реппозитории
+    # -f .helm/values.yaml - path to the values file in your repository
     - |
       helm upgrade --install ${HELM_RELEASE_NAME} obervinov/universal-template \
         --set-file "applications[0].configMap.files[0].data"="config/config.json" \
@@ -462,7 +326,7 @@ helm repo update
 ```bash
 # ${HELM_RELEASE_NAME} - release name, consisting of the project name and the name of the current branch in gtilab
 # obervinov/universal-template - link to the package in the connected repository
-# --set-file "applications[0].configmap[0].data"="config/config.json" - we throw the contents of the external config into the chart
+# --set-file "applications[0].configMap.files[0].data"="config/config.json" - we throw the contents of the external config into the chart
 # --set-file "applications[0].secret.data"=".helm/vault.secret..yaml" - we forward the data received from the volt to the chart
 # --namespace=${HELM_RELEASE_NAMESPACE} - namespace in the kube to install the chart
 # -f .helm/values.yaml - a link to the values file created in the previous step
