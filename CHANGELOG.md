@@ -3,6 +3,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## v1.3.0 - 2026-10-21
+### What's Changed
+**Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.2.13...v1.3.0 by @obervinov
+#### 💥 Breaking Changes
+* `universal-template` 4.0.0: the values contract for volumes, Services and claims changes; names, labels and selectors of the rendered objects do not. `app.emptyDirVolume`, `app.persistentVolume`, `app.externalSecrets`, `app.externalConfigMaps` and the single-map `service` are removed, see "Migrating from 3.x" in the chart README
+* `universal-template`: a container mounts only its own `volumeMounts`; 3.x mounted every volume into every container, init containers included
+* `universal-template`: `values.schema.json` is hand-written and strict, so unknown keys and the removed 3.x keys fail `helm lint` with the replacement named; keys 3.x accepted but never applied (`app.probes`, `app.envs`, `app.resources`, `app.cronjob`) fail too
+* `universal-template`: CronJob `failedJobsHistoryLimit` / `successfulJobsHistoryLimit` default to `1` instead of `0`
+#### 🚀 Features
+* `universal-template`: `app.volumes` (raw volume sources, any number) and per-container `volumeMounts` with `readOnly` / `subPath`
+* `universal-template`: `persistentVolumeClaims` at the application level, with an exact `claimName` to adopt an existing claim and `helm.sh/resource-policy: keep` by default
+* `universal-template`: `app.volumeClaimTemplates` as a list; a StatefulSet can also run on standalone claims without any claim template
+* `universal-template`: `services` as a list, with explicit names, `selectApp` to select another application of the release, a raw `selector`, and `clusterIP`
+* `universal-template`: `ingress.paths[].serviceName` routes to any Service of the release
+* `universal-template`: `app.strategy` (Deployment), `app.updateStrategy` and `app.serviceName` (StatefulSet), `app.type: none` for an application without a workload
+* `.github/workflows/pr.yaml`: keep a `values.schema.json` marked "do not regenerate" instead of overwriting it with `helm schema-gen`
+#### 🐛 Bug Fixes
+* `universal-template`: a StatefulSet always rendered a volumeClaimTemplate for `persistentVolume` and never mounted a standalone claim
+* `universal-template`: rendering crashed with a nil pointer for an application with only a Service
+* `universal-template`: the secret mount was dropped when it was the only chart-managed mount of a container
+* `universal-template`: `values.yaml` documented `cronjob` while the template read `cronJob`; `ingress.kind` was read as `ingress.Kind`; the Job spec carried `backoffLimit` twice; NOTES printed an empty ingress host; several Ingresses in one release ran together in one document
+* `universal-template`: probes render only the probes that are set instead of `null` for the missing ones
+
+
 ## v1.2.13 - 2026-09-18
 ### What's Changed
 #### 📚 Documentation
