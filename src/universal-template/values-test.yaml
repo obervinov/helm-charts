@@ -5,9 +5,9 @@ applications:
       type: statefulset
       replicas: 1
       extraLabels:
-        app.kubernetes.io/instance: "statefulset-app"
+        app.kubernetes.io/instance: statefulset-app
       extraAnnotations:
-        checksum/values.yaml: "helm/values.yaml"
+        checksum/values.yaml: helm/values.yaml
       networkPolicy:
         policyTypes:
           - Ingress
@@ -33,8 +33,8 @@ applications:
       containers:
         - name: container1
           image:
-            repository: "my-registry/app1"
-            tag: "1.0.0"
+            repository: my-registry/app1
+            tag: 1.0.0
             pullPolicy: IfNotPresent
             commands:
               - bash
@@ -44,10 +44,16 @@ applications:
           lifecycle:
             postStart:
               exec:
-                command: ["/bin/sh", "-c", "echo Hello from the postStart handler > /usr/share/message"]
+                command:
+                  - /bin/sh
+                  - -c
+                  - echo Hello from the postStart handler > /usr/share/message
             preStop:
               exec:
-                command: ["/bin/sh", "-c", "nginx -s quit; while killall -0 nginx; do sleep 1; done"]
+                command:
+                  - /bin/sh
+                  - -c
+                  - nginx -s quit; while killall -0 nginx; do sleep 1; done
           envs:
             - name: LOG_LEVEL
               value: INFO
@@ -66,39 +72,82 @@ applications:
                 - IPC_LOCK
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "250m"
+              memory: 256Mi
+              cpu: 250m
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: 512Mi
+              cpu: 500m
           ports:
             - name: http
               containerPort: 80
               protocol: TCP
+          volumeMounts:
+            - name: empty-data
+              mountPath: /cache
+            - name: data
+              mountPath: /data
+            - name: my-external-secret
+              mountPath: /external-secrets
+              readOnly: true
+            - name: my-external-config
+              mountPath: /external-configs
+              readOnly: true
+          probes:
+            livenessProbe:
+              httpGet:
+                path: /health/liveness
+                port: 80
+              initialDelaySeconds: 30
+              periodSeconds: 5
+              timeoutSeconds: 5
+              successThreshold: 1
+              failureThreshold: 3
+            readinessProbe:
+              httpGet:
+                path: /health/readiness
+                port: 80
+              initialDelaySeconds: 15
+              periodSeconds: 5
+              timeoutSeconds: 5
+              successThreshold: 1
+              failureThreshold: 3
+            startupProbe:
+              httpGet:
+                path: /health/startup
+                port: 80
+              initialDelaySeconds: 15
+              periodSeconds: 10
+              timeoutSeconds: 1
+              successThreshold: 1
+              failureThreshold: 3
         - name: container2
           image:
-            repository: "my-registry/app2"
-            tag: "1.0.0"
+            repository: my-registry/app2
+            tag: 1.0.0
             pullPolicy: IfNotPresent
           envs:
             - name: LOG_LEVEL
               value: INFO
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "250m"
+              memory: 256Mi
+              cpu: 250m
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: 512Mi
+              cpu: 500m
           ports:
             - name: http
               containerPort: 80
               protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: /data
+              readOnly: true
       initContainers:
         - name: init-container1
           image:
-            repository: "my-registry/init-container1"
-            tag: "1.0.0"
+            repository: my-registry/init-container1
+            tag: 1.0.0
             pullPolicy: IfNotPresent
           envs:
             - name: LOG_LEVEL
@@ -109,52 +158,38 @@ applications:
                 - IPC_LOCK
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "250m"
+              memory: 256Mi
+              cpu: 250m
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: 512Mi
+              cpu: 500m
           ports:
             - name: http
               containerPort: 80
               protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: /data
+              subPath: init
         - name: init-container2
           image:
-            repository: "my-registry/init-container2"
-            tag: "1.0.0"
+            repository: my-registry/init-container2
+            tag: 1.0.0
             pullPolicy: IfNotPresent
           envs:
             - name: LOG_LEVEL
               value: INFO
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "250m"
+              memory: 256Mi
+              cpu: 250m
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: 512Mi
+              cpu: 500m
           ports:
             - name: http
               containerPort: 80
               protocol: TCP
-      emptyDirVolume:
-        name: "emptyData"
-        medium: ""
-        sizeLimit: "1Gi"
-        mountPath: "/data"
-      persistentVolume:
-        name: "data"
-        size: 1Gi
-        accessModes:
-          - ReadWriteOnce
-        storageClassName: "standard"
-        mountPath: "/data"
-      externalSecrets:
-        - name: my-external-secret
-          mountPath: "/external-secrets"
-      externalConfigMaps:
-        - name: my-external-config
-          mountPath: "/external-configs"
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -167,84 +202,73 @@ applications:
       nodeSelector:
         disktype: ssd
       tolerations:
-        - key: "key"
-          operator: "Equal"
-          value: "value"
-          effect: "NoSchedule"
-      probes:
-        livenessProbe:
-          httpGet:
-            path: /health/liveness
+        - key: key
+          operator: Equal
+          value: value
+          effect: NoSchedule
+      volumeClaimTemplates:
+        - name: data
+          size: 1Gi
+          accessModes:
+            - ReadWriteOnce
+          storageClassName: standard
+      volumes:
+        - name: empty-data
+          emptyDir:
+            sizeLimit: 1Gi
+        - name: my-external-secret
+          secret:
+            secretName: my-external-secret
+        - name: my-external-config
+          configMap:
+            name: my-external-config
+      updateStrategy:
+        type: RollingUpdate
+    services:
+      - externalTrafficPolicy: Cluster
+        externalIPs:
+          - 1.1.1.1
+        extraAnnotations:
+          checksum/values.yaml: helm/values.yaml
+        type: NodePort
+        ports:
+          - name: http
             port: 80
-          initialDelaySeconds: 30
-          periodSeconds: 5
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /health/readiness
-            port: 80
-          initialDelaySeconds: 15
-          periodSeconds: 5
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
-        startupProbe:
-          httpGet:
-            path: /health/startup
-            port: 80
-          initialDelaySeconds: 15
-          periodSeconds: 10
-          timeoutSeconds: 1
-          successThreshold: 1
-          failureThreshold: 3
-    service:
-      externalTrafficPolicy: Cluster
-      externalIPs:
-        - 1.1.1.1
-      extraAnnotations:
-        checksum/values.yaml: "helm/values.yaml"
-      type: NodePort
-      ports:
-        - name: http
-          port: 80
-          protocol: TCP
-          targetPort: 80
-          nodePort: 30080
+            protocol: TCP
+            targetPort: 80
+            nodePort: 30080
     ingress:
       apiVersion: networking.k8s.io/v1
       kind: Ingress
       extraAnnotations:
-        checksum/values.yaml: "helm/values.yaml"
+        checksum/values.yaml: helm/values.yaml
       useTLS: true
       fqdn: my-service.example.com
       paths:
         - path: /
           pathType: Prefix
           servicePort: 80
-          serviceName: app1
       ingressClassName: nginx
     configMap:
-      mountPath: "/configs"
+      mountPath: /configs
       files:
-        - name: "config.json"
+        - name: config.json
           data: |
             {
               "key": "value"
             }
     secret:
-      mountPath: "/secrets"
+      mountPath: /secrets
       data: |
         key1: "value1"
         key2: "value2"
     rbac:
       create: false
-      useExistingServiceAccount: "my-existing-service-account"
+      useExistingServiceAccount: my-existing-service-account
       legacyToken: true
     monitoring:
       prometheus:
-        - name: ServiceMonitor1
+        - name: servicemonitor1
           apiVersion: monitoring.coreos.com/v1
           kind: ServiceMonitor
           namespacesSelector:
@@ -254,7 +278,7 @@ applications:
               path: /metrics
               interval: 15s
               scheme: http
-        - name: PodMonitor1
+        - name: podmonitor1
           apiVersion: monitoring.coreos.com/v1
           kind: PodMonitor
           namespacesSelector:
@@ -269,16 +293,16 @@ applications:
       type: deployment
       replicas: 1
       extraLabels:
-        app.kubernetes.io/instance: "deployment-app"
+        app.kubernetes.io/instance: deployment-app
       extraAnnotations:
-        checksum/values.yaml: "helm/values.yaml"
+        checksum/values.yaml: helm/values.yaml
       imagePullSecrets:
         - my-secret
       containers:
         - name: container1
           image:
-            repository: "my-registry/app1"
-            tag: "1.0.0"
+            repository: my-registry/app1
+            tag: 1.0.0
             pullPolicy: IfNotPresent
             commands:
               - bash
@@ -303,39 +327,82 @@ applications:
                 - IPC_LOCK
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "250m"
+              memory: 256Mi
+              cpu: 250m
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: 512Mi
+              cpu: 500m
           ports:
             - name: http
               containerPort: 80
               protocol: TCP
+          volumeMounts:
+            - name: empty-data
+              mountPath: /cache
+            - name: data
+              mountPath: /data
+            - name: my-external-secret
+              mountPath: /external-secrets
+              readOnly: true
+            - name: my-external-config
+              mountPath: /external-configs
+              readOnly: true
+          probes:
+            livenessProbe:
+              httpGet:
+                path: /health/liveness
+                port: 80
+              initialDelaySeconds: 30
+              periodSeconds: 5
+              timeoutSeconds: 5
+              successThreshold: 1
+              failureThreshold: 3
+            readinessProbe:
+              httpGet:
+                path: /health/readiness
+                port: 80
+              initialDelaySeconds: 15
+              periodSeconds: 5
+              timeoutSeconds: 5
+              successThreshold: 1
+              failureThreshold: 3
+            startupProbe:
+              httpGet:
+                path: /health/startup
+                port: 80
+              initialDelaySeconds: 15
+              periodSeconds: 10
+              timeoutSeconds: 1
+              successThreshold: 1
+              failureThreshold: 3
         - name: container2
           image:
-            repository: "my-registry/app2"
-            tag: "1.0.0"
+            repository: my-registry/app2
+            tag: 1.0.0
             pullPolicy: IfNotPresent
           envs:
             - name: LOG_LEVEL
               value: INFO
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "250m"
+              memory: 256Mi
+              cpu: 250m
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: 512Mi
+              cpu: 500m
           ports:
             - name: http
               containerPort: 80
               protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: /data
+              readOnly: true
       initContainers:
         - name: init-container1
           image:
-            repository: "my-registry/init-container1"
-            tag: "1.0.0"
+            repository: my-registry/init-container1
+            tag: 1.0.0
             pullPolicy: IfNotPresent
           envs:
             - name: LOG_LEVEL
@@ -346,48 +413,34 @@ applications:
                 - IPC_LOCK
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "250m"
+              memory: 256Mi
+              cpu: 250m
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: 512Mi
+              cpu: 500m
           ports:
             - name: http
               containerPort: 80
               protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: /data
+              subPath: init
         - name: init-container2
           image:
-            repository: "my-registry/init-container2"
-            tag: "1.0.0"
+            repository: my-registry/init-container2
+            tag: 1.0.0
             pullPolicy: IfNotPresent
           envs:
             - name: LOG_LEVEL
               value: INFO
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "250m"
+              memory: 256Mi
+              cpu: 250m
             limits:
-              memory: "512Mi"
-              cpu: "500m"
-      emptyDirVolume:
-        name: "emptyData"
-        medium: ""
-        sizeLimit: "1Gi"
-        mountPath: "/data"
-      persistentVolume:
-        name: "data"
-        size: 1Gi
-        accessModes:
-          - ReadWriteOnce
-        storageClassName: "standard"
-        mountPath: "/data"
-      externalSecrets:
-        - name: my-external-secret
-          mountPath: "/external-secrets"
-      externalConfigMaps:
-        - name: my-external-config
-          mountPath: "/external-configs"
+              memory: 512Mi
+              cpu: 500m
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -400,73 +453,81 @@ applications:
       nodeSelector:
         disktype: ssd
       tolerations:
-        - key: "key"
-          operator: "Equal"
-          value: "value"
-          effect: "NoSchedule"
-      probes:
-        livenessProbe:
-          httpGet:
-            path: /health/liveness
+        - key: key
+          operator: Equal
+          value: value
+          effect: NoSchedule
+      volumes:
+        - name: empty-data
+          emptyDir:
+            sizeLimit: 1Gi
+        - name: data
+          persistentVolumeClaim:
+            claimName: my-app-deployment-app-data
+        - name: my-external-secret
+          secret:
+            secretName: my-external-secret
+        - name: my-external-config
+          configMap:
+            name: my-external-config
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 1
+          maxUnavailable: 0
+    services:
+      - externalTrafficPolicy: Cluster
+        externalIPs:
+          - 1.1.1.1
+        extraAnnotations:
+          checksum/values.yaml: helm/values.yaml
+        type: ClusterIP
+        ports:
+          - name: http
             port: 80
-          initialDelaySeconds: 30
-          periodSeconds: 5
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /health/readiness
+            protocol: TCP
+            targetPort: 80
+      - name: my-app-sts
+        type: ClusterIP
+        selectApp: statefulset-app
+        ports:
+          - name: http
             port: 80
-          initialDelaySeconds: 15
-          periodSeconds: 5
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
-        startupProbe:
-          httpGet:
-            path: /health/startup
-            port: 80
-          initialDelaySeconds: 15
-          periodSeconds: 10
-          timeoutSeconds: 1
-          successThreshold: 1
-          failureThreshold: 3
-    service:
-      externalTrafficPolicy: Cluster
-      externalIPs:
-        - 1.1.1.1
-      extraAnnotations:
-        checksum/values.yaml: "helm/values.yaml"
-      type: ClusterIP
-      ports:
-        - name: http
-          port: 80
-          protocol: TCP
-          targetPort: 80
+            targetPort: 80
+            protocol: TCP
+    persistentVolumeClaims:
+      - name: data
+        size: 1Gi
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: standard
+        claimName: my-app-deployment-app-data
     ingress:
       apiVersion: networking.k8s.io/v1
       kind: Ingress
       extraAnnotations:
-        checksum/values.yaml: "helm/values.yaml"
+        checksum/values.yaml: helm/values.yaml
       useTLS: true
       fqdn: my-service.example.com
       paths:
         - path: /
           pathType: Prefix
           servicePortName: http
-          serviceName: app1
+        - path: /sts
+          pathType: Prefix
+          servicePortName: http
+          serviceName: my-app-sts
       ingressClassName: nginx
     configMap:
-      mountPath: "/configs"
+      mountPath: /configs
       files:
-        - name: "config.json"
+        - name: config.json
           data: |
             {
               "key": "value"
             }
     secret:
-      mountPath: "/secrets"
+      mountPath: /secrets
       data: |
         key1: "value1"
         key2: "value2"
@@ -474,7 +535,7 @@ applications:
       create: true
       rules:
         - apiGroups:
-            - ""
+            - ''
           resources:
             - pods
           verbs:
@@ -483,7 +544,7 @@ applications:
             - list
     monitoring:
       prometheus:
-        - name: ServiceMonitor1
+        - name: servicemonitor1
           apiVersion: monitoring.coreos.com/v1
           kind: ServiceMonitor
           namespacesSelector:
@@ -493,7 +554,7 @@ applications:
               path: /metrics
               interval: 15s
               scheme: http
-        - name: PodMonitor1
+        - name: podmonitor1
           apiVersion: monitoring.coreos.com/v1
           kind: PodMonitor
           namespacesSelector:
@@ -506,29 +567,17 @@ applications:
   - name: cronjob-app
     app:
       type: cronjob
-      replicas: 1
       extraLabels:
-        app.kubernetes.io/instance: "cronjob-app"
+        app.kubernetes.io/instance: cronjob-app
       extraAnnotations:
-        checksum/values.yaml: "helm/values.yaml"
+        checksum/values.yaml: helm/values.yaml
       imagePullSecrets:
         - my-secret
-      cronjob:
-        schedule: "*/1 * * * *"
-        failedJobsHistoryLimit: 1
-        successfulJobsHistoryLimit: 0
-        restartPolicy: "OnFailure"
-        ttlSecondsAfterFinished: 360
-        activeDeadlineSeconds: 650
-        backoffLimit: 1
-        concurrencyPolicy: "Forbid"
-        parallelism: 1
-        completions: 1
       containers:
         - name: container1
           image:
-            repository: "my-registry/app1"
-            tag: "1.0.0"
+            repository: my-registry/app1
+            tag: 1.0.0
             pullPolicy: IfNotPresent
             commands:
               - bash
@@ -549,75 +598,104 @@ applications:
                   fieldPath: metadata.namespace
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "250m"
+              memory: 256Mi
+              cpu: 250m
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: 512Mi
+              cpu: 500m
+          volumeMounts:
+            - name: empty-data
+              mountPath: /cache
+            - name: data
+              mountPath: /data
+            - name: my-external-secret
+              mountPath: /external-secrets
+              readOnly: true
+            - name: my-external-config
+              mountPath: /external-configs
+              readOnly: true
+          probes:
+            livenessProbe:
+              httpGet:
+                path: /health/liveness
+                port: 80
+              initialDelaySeconds: 30
+              periodSeconds: 5
+              timeoutSeconds: 5
+              successThreshold: 1
+              failureThreshold: 3
+            readinessProbe:
+              httpGet:
+                path: /health/readiness
+                port: 80
+              initialDelaySeconds: 15
+              periodSeconds: 5
+              timeoutSeconds: 5
+              successThreshold: 1
+              failureThreshold: 3
+            startupProbe:
+              httpGet:
+                path: /health/startup
+                port: 80
+              initialDelaySeconds: 15
+              periodSeconds: 10
+              timeoutSeconds: 1
+              successThreshold: 1
+              failureThreshold: 3
         - name: container2
           image:
-            repository: "my-registry/app2"
-            tag: "1.0.0"
+            repository: my-registry/app2
+            tag: 1.0.0
             pullPolicy: IfNotPresent
           envs:
             - name: LOG_LEVEL
               value: INFO
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "250m"
+              memory: 256Mi
+              cpu: 250m
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: 512Mi
+              cpu: 500m
+          volumeMounts:
+            - name: data
+              mountPath: /data
+              readOnly: true
       initContainers:
         - name: init-container1
           image:
-            repository: "my-registry/init-container1"
-            tag: "1.0.0"
+            repository: my-registry/init-container1
+            tag: 1.0.0
             pullPolicy: IfNotPresent
           envs:
             - name: LOG_LEVEL
               value: INFO
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "250m"
+              memory: 256Mi
+              cpu: 250m
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: 512Mi
+              cpu: 500m
+          volumeMounts:
+            - name: data
+              mountPath: /data
+              subPath: init
         - name: init-container2
           image:
-            repository: "my-registry/init-container2"
-            tag: "1.0.0"
+            repository: my-registry/init-container2
+            tag: 1.0.0
             pullPolicy: IfNotPresent
           envs:
             - name: LOG_LEVEL
               value: INFO
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "250m"
+              memory: 256Mi
+              cpu: 250m
             limits:
-              memory: "512Mi"
-              cpu: "500m"
-      emptyDirVolume:
-        name: "emptyData"
-        medium: ""
-        sizeLimit: "1Gi"
-        mountPath: "/data"
-      persistentVolume:
-        name: "data"
-        size: 1Gi
-        accessModes:
-          - ReadWriteOnce
-        storageClassName: "standard"
-        mountPath: "/data"
-      externalSecrets:
-        - name: my-external-secret
-          mountPath: "/external-secrets"
-      externalConfigMaps:
-        - name: my-external-config
-          mountPath: "/external-configs"
+              memory: 512Mi
+              cpu: 500m
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -630,48 +708,51 @@ applications:
       nodeSelector:
         disktype: ssd
       tolerations:
-        - key: "key"
-          operator: "Equal"
-          value: "value"
-          effect: "NoSchedule"
-      probes:
-        livenessProbe:
-          httpGet:
-            path: /health/liveness
-            port: 80
-          initialDelaySeconds: 30
-          periodSeconds: 5
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /health/readiness
-            port: 80
-          initialDelaySeconds: 15
-          periodSeconds: 5
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
-        startupProbe:
-          httpGet:
-            path: /health/startup
-            port: 80
-          initialDelaySeconds: 15
-          periodSeconds: 10
-          timeoutSeconds: 1
-          successThreshold: 1
-          failureThreshold: 3
+        - key: key
+          operator: Equal
+          value: value
+          effect: NoSchedule
+      volumes:
+        - name: empty-data
+          emptyDir:
+            sizeLimit: 1Gi
+        - name: data
+          persistentVolumeClaim:
+            claimName: my-app-cronjob-app-data
+        - name: my-external-secret
+          secret:
+            secretName: my-external-secret
+        - name: my-external-config
+          configMap:
+            name: my-external-config
+      cronJob:
+        schedule: '*/1 * * * *'
+        failedJobsHistoryLimit: 1
+        successfulJobsHistoryLimit: 0
+        restartPolicy: OnFailure
+        ttlSecondsAfterFinished: 360
+        activeDeadlineSeconds: 650
+        backoffLimit: 1
+        concurrencyPolicy: Forbid
+        parallelism: 1
+        completions: 1
+    persistentVolumeClaims:
+      - name: data
+        size: 1Gi
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: standard
+        claimName: my-app-cronjob-app-data
     configMap:
-      mountPath: "/configs"
+      mountPath: /configs
       files:
-        - name: "config.json"
+        - name: config.json
           data: |
             {
               "key": "value"
             }
     secret:
-      mountPath: "/secrets"
+      mountPath: /secrets
       data: |
         key1: "value1"
         key2: "value2"
@@ -679,7 +760,7 @@ applications:
       legacyToken: false
       rules:
         - apiGroups:
-            - ""
+            - ''
           resources:
             - pods
           verbs:
@@ -688,7 +769,7 @@ applications:
             - list
     monitoring:
       prometheus:
-        - name: ServiceMonitor1
+        - name: servicemonitor1
           apiVersion: monitoring.coreos.com/v1
           kind: ServiceMonitor
           namespacesSelector:
@@ -698,7 +779,7 @@ applications:
               path: /metrics
               interval: 15s
               scheme: http
-        - name: PodMonitor1
+        - name: podmonitor1
           apiVersion: monitoring.coreos.com/v1
           kind: PodMonitor
           namespacesSelector:
@@ -711,26 +792,24 @@ applications:
   - name: job-app
     app:
       type: job
-      replicas: 1
       extraLabels:
-        app.kubernetes.io/instance: "job-app"
+        app.kubernetes.io/instance: job-app
       extraAnnotations:
-        checksum/values.yaml: "helm/values.yaml"
+        checksum/values.yaml: helm/values.yaml
       imagePullSecrets:
         - my-secret
       job:
-        restartPolicy: "OnFailure"
+        restartPolicy: OnFailure
         ttlSecondsAfterFinished: 360
         activeDeadlineSeconds: 650
         backoffLimit: 1
-        concurrencyPolicy: "Forbid"
         parallelism: 1
         completions: 1
       containers:
         - name: container1
           image:
-            repository: "my-registry/app1"
-            tag: "1.0.0"
+            repository: my-registry/app1
+            tag: 1.0.0
             pullPolicy: IfNotPresent
             commands:
               - bash
@@ -751,75 +830,104 @@ applications:
                   fieldPath: metadata.namespace
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "250m"
+              memory: 256Mi
+              cpu: 250m
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: 512Mi
+              cpu: 500m
+          volumeMounts:
+            - name: empty-data
+              mountPath: /cache
+            - name: data
+              mountPath: /data
+            - name: my-external-secret
+              mountPath: /external-secrets
+              readOnly: true
+            - name: my-external-config
+              mountPath: /external-configs
+              readOnly: true
+          probes:
+            livenessProbe:
+              httpGet:
+                path: /health/liveness
+                port: 80
+              initialDelaySeconds: 30
+              periodSeconds: 5
+              timeoutSeconds: 5
+              successThreshold: 1
+              failureThreshold: 3
+            readinessProbe:
+              httpGet:
+                path: /health/readiness
+                port: 80
+              initialDelaySeconds: 15
+              periodSeconds: 5
+              timeoutSeconds: 5
+              successThreshold: 1
+              failureThreshold: 3
+            startupProbe:
+              httpGet:
+                path: /health/startup
+                port: 80
+              initialDelaySeconds: 15
+              periodSeconds: 10
+              timeoutSeconds: 1
+              successThreshold: 1
+              failureThreshold: 3
         - name: container2
           image:
-            repository: "my-registry/app2"
-            tag: "1.0.0"
+            repository: my-registry/app2
+            tag: 1.0.0
             pullPolicy: IfNotPresent
           envs:
             - name: LOG_LEVEL
               value: INFO
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "250m"
+              memory: 256Mi
+              cpu: 250m
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: 512Mi
+              cpu: 500m
+          volumeMounts:
+            - name: data
+              mountPath: /data
+              readOnly: true
       initContainers:
         - name: init-container1
           image:
-            repository: "my-registry/init-container1"
-            tag: "1.0.0"
+            repository: my-registry/init-container1
+            tag: 1.0.0
             pullPolicy: IfNotPresent
           envs:
             - name: LOG_LEVEL
               value: INFO
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "250m"
+              memory: 256Mi
+              cpu: 250m
             limits:
-              memory: "512Mi"
-              cpu: "500m"
+              memory: 512Mi
+              cpu: 500m
+          volumeMounts:
+            - name: data
+              mountPath: /data
+              subPath: init
         - name: init-container2
           image:
-            repository: "my-registry/init-container2"
-            tag: "1.0.0"
+            repository: my-registry/init-container2
+            tag: 1.0.0
             pullPolicy: IfNotPresent
           envs:
             - name: LOG_LEVEL
               value: INFO
           resources:
             requests:
-              memory: "256Mi"
-              cpu: "250m"
+              memory: 256Mi
+              cpu: 250m
             limits:
-              memory: "512Mi"
-              cpu: "500m"
-      emptyDirVolume:
-        name: "emptyData"
-        medium: ""
-        sizeLimit: "1Gi"
-        mountPath: "/data"
-      persistentVolume:
-        name: "data"
-        size: 1Gi
-        accessModes:
-          - ReadWriteOnce
-        storageClassName: "standard"
-        mountPath: "/data"
-      externalSecrets:
-        - name: my-external-secret
-          mountPath: "/external-secrets"
-      externalConfigMaps:
-        - name: my-external-config
-          mountPath: "/external-configs"
+              memory: 512Mi
+              cpu: 500m
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -832,48 +940,41 @@ applications:
       nodeSelector:
         disktype: ssd
       tolerations:
-        - key: "key"
-          operator: "Equal"
-          value: "value"
-          effect: "NoSchedule"
-      probes:
-        livenessProbe:
-          httpGet:
-            path: /health/liveness
-            port: 80
-          initialDelaySeconds: 30
-          periodSeconds: 5
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /health/readiness
-            port: 80
-          initialDelaySeconds: 15
-          periodSeconds: 5
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
-        startupProbe:
-          httpGet:
-            path: /health/startup
-            port: 80
-          initialDelaySeconds: 15
-          periodSeconds: 10
-          timeoutSeconds: 1
-          successThreshold: 1
-          failureThreshold: 3
+        - key: key
+          operator: Equal
+          value: value
+          effect: NoSchedule
+      volumes:
+        - name: empty-data
+          emptyDir:
+            sizeLimit: 1Gi
+        - name: data
+          persistentVolumeClaim:
+            claimName: my-app-job-app-data
+        - name: my-external-secret
+          secret:
+            secretName: my-external-secret
+        - name: my-external-config
+          configMap:
+            name: my-external-config
+    persistentVolumeClaims:
+      - name: data
+        size: 1Gi
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: standard
+        keep: false
+        claimName: my-app-job-app-data
     configMap:
-      mountPath: "/configs"
+      mountPath: /configs
       files:
-        - name: "config.json"
+        - name: config.json
           data: |
             {
               "key": "value"
             }
     secret:
-      mountPath: "/secrets"
+      mountPath: /secrets
       data: |
         key1: "value1"
         key2: "value2"
@@ -881,7 +982,7 @@ applications:
       legacyToken: false
       rules:
         - apiGroups:
-            - ""
+            - ''
           resources:
             - pods
           verbs:
@@ -890,7 +991,7 @@ applications:
             - list
     monitoring:
       prometheus:
-        - name: ServiceMonitor1
+        - name: servicemonitor1
           apiVersion: monitoring.coreos.com/v1
           kind: ServiceMonitor
           namespacesSelector:
@@ -900,7 +1001,7 @@ applications:
               path: /metrics
               interval: 15s
               scheme: http
-        - name: PodMonitor1
+        - name: podmonitor1
           apiVersion: monitoring.coreos.com/v1
           kind: PodMonitor
           namespacesSelector:
@@ -910,3 +1011,15 @@ applications:
               path: /metrics
               interval: 15s
               scheme: http
+  - name: shared-storage
+    app:
+      type: none
+    persistentVolumeClaims:
+      - name: shared
+        claimName: my-shared-claim
+        size: 10Gi
+        storageClassName: standard
+        accessModes:
+          - ReadWriteMany
+        annotations:
+          example.com/backup: daily
