@@ -7,8 +7,6 @@ Containers template
 {{-     $app                := $containerData.app                }}
 {{-     $configMap          := $containerData.configMap          }}
 {{-     $secret             := $containerData.secret             }}
-{{-     $persistentVolume   := $containerData.persistentVolume   }}
-{{-     $emptyDirVolume     := $containerData.emptyDirVolume     }}
 {{-     $image              := $app.image                        }}
 {{-     $lifecycle          := $app.lifecycle                    }}
 {{-     $envs               := $app.envs                         }}
@@ -16,8 +14,17 @@ Containers template
 {{-     $probes             := $app.probes                       }}
 {{-     $ports              := $app.ports                        }}
 {{-     $securityContext    := $app.securityContext              }}
-{{-     $externalSecrets    := $containerData.externalSecrets    }}
-{{-     $externalConfigMaps := $containerData.externalConfigMaps }}
+{{-     $volumeMounts       := $app.volumeMounts                 }}
+{{-     $mounts             := ""                                }}
+{{-     if and $configMap $configMap.mountPath }}
+{{-       $mounts = printf "%s\n- name: volume-configs\n  mountPath: %s\n  readOnly: true" $mounts ($configMap.mountPath | lower) }}
+{{-     end }}
+{{-     if and $secret $secret.mountPath }}
+{{-       $mounts = printf "%s\n- name: volume-secrets\n  mountPath: %s\n  readOnly: true" $mounts ($secret.mountPath | lower) }}
+{{-     end }}
+{{-     if $volumeMounts }}
+{{-       $mounts = printf "%s%s" $mounts (include "universal-template.volumeMounts" $volumeMounts) }}
+{{-     end }}
 - name: {{ $name }}
   image: {{ $image.repository }}:{{ $image.tag }}
   imagePullPolicy: {{ default "IfNotPresent" $image.pullPolicy }}
@@ -56,56 +63,23 @@ Containers template
   {{- if $resources }}
   resources: {{-   toYaml $resources | nindent 4 }}
   {{- end }}
-  {{- if or $configMap $persistentVolume $emptyDirVolume }}
+  {{- if $mounts }}
   volumeMounts:
-  {{-   if $configMap }}
-  {{-     if $configMap.mountPath }}
-    - name: volume-configs
-      mountPath: {{ $configMap.mountPath | lower }}
-      readOnly: true
-  {{-     end }}
-  {{-   end }}
-  {{-   if $externalConfigMaps }}
-  {{-     range $externalConfigMaps }}
-  {{-       if .mountPath }}
-    - name: {{ .name }}
-      mountPath: {{ .mountPath }}
-      readOnly: true
-  {{-       end }}
-  {{-     end }}
-  {{-   end }}
-  {{-   if $secret }}
-  {{-     if $secret.mountPath }}
-    - name: volume-secrets
-      mountPath: {{ $secret.mountPath | lower }}
-      readOnly: true
-  {{-     end }}
-  {{-   end }}
-  {{-   if $externalSecrets }}
-  {{-     range $externalSecrets }}
-  {{-       if .mountPath }}
-    - name: {{ .name }}
-      mountPath: {{ .mountPath }}
-      readOnly: true
-  {{-       end }}
-  {{-     end }}
-  {{-   end }}
-  {{-   if $persistentVolume }}
-    - name: {{ $persistentVolume.name }}
-      mountPath: {{ $persistentVolume.mountPath }}
-  {{-   end }}
-  {{-   if $emptyDirVolume }}
-    - name: {{ $emptyDirVolume.name }}
-      mountPath: {{ $emptyDirVolume.mountPath }}
-  {{-   end }}
+  {{-   $mounts | trimPrefix "\n" | nindent 4 }}
   {{- end }}
   {{- if $probes }}
+  {{-   with $probes.livenessProbe }}
   livenessProbe:
-  {{-   toYaml $probes.livenessProbe | nindent 4 }}
+  {{-     toYaml . | nindent 4 }}
+  {{-   end }}
+  {{-   with $probes.readinessProbe }}
   readinessProbe:
-  {{-   toYaml $probes.readinessProbe | nindent 4 }}
+  {{-     toYaml . | nindent 4 }}
+  {{-   end }}
+  {{-   with $probes.startupProbe }}
   startupProbe:
-  {{-   toYaml $probes.startupProbe | nindent 4 }}
+  {{-     toYaml . | nindent 4 }}
+  {{-   end }}
   {{- end }}
 
 {{- end }}
