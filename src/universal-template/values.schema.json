@@ -1,9 +1,892 @@
 {
-    "$schema": "http://json-schema.org/schema#",
-    "type": "object",
-    "properties": {
-        "applications": {
-            "type": "array"
-        }
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$comment": "Hand-written for universal-template 4.x; do not regenerate with helm schema-gen.",
+  "title": "universal-template values",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "applications": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/application"
+      }
+    },
+    "global": {
+      "type": "object"
     }
+  },
+  "definitions": {
+    "application": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$"
+        },
+        "app": {
+          "$ref": "#/definitions/app"
+        },
+        "services": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/service"
+          }
+        },
+        "persistentVolumeClaims": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/persistentVolumeClaim"
+          }
+        },
+        "ingress": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "apiVersion": {
+              "type": "string"
+            },
+            "kind": {
+              "type": "string"
+            },
+            "extraAnnotations": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "useTLS": {
+              "type": "boolean"
+            },
+            "fqdn": {
+              "type": "string"
+            },
+            "ingressClassName": {
+              "type": "string"
+            },
+            "paths": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "path"
+                ],
+                "properties": {
+                  "path": {
+                    "type": "string"
+                  },
+                  "pathType": {
+                    "enum": [
+                      "Prefix",
+                      "Exact",
+                      "ImplementationSpecific"
+                    ]
+                  },
+                  "servicePort": {
+                    "type": "integer"
+                  },
+                  "servicePortName": {
+                    "type": "string"
+                  },
+                  "serviceName": {
+                    "type": "string",
+                    "description": "Any Service of this release; default: the first Service of this application"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "configMap": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mountPath": {
+              "type": "string"
+            },
+            "extraLabels": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "extraAnnotations": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "files": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "data": {}
+                }
+              }
+            }
+          }
+        },
+        "secret": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mountPath": {
+              "type": "string"
+            },
+            "data": {
+              "type": "string"
+            },
+            "extraLabels": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "extraAnnotations": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "rbac": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "create": {
+              "type": "boolean"
+            },
+            "legacyToken": {
+              "type": "boolean"
+            },
+            "useExistingServiceAccount": {
+              "type": "string"
+            },
+            "rules": {
+              "type": "array"
+            },
+            "extraLabels": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "extraAnnotations": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "monitoring": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "prometheus": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "apiVersion": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "enum": [
+                      "ServiceMonitor",
+                      "PodMonitor"
+                    ]
+                  },
+                  "namespacesSelector": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "jobLabel": {
+                    "type": "string"
+                  },
+                  "endpoints": {
+                    "type": "array"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "service": {
+          "description": "Removed in 4.0. use services (a list): services: [{type, ports}] renders the same Service <fullName>",
+          "const": "REMOVED in universal-template 4.0: use services (a list): services: [{type, ports}] renders the same Service <fullName>"
+        }
+      }
+    },
+    "app": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "deployment",
+            "statefulset",
+            "cronjob",
+            "job",
+            "none"
+          ]
+        },
+        "replicas": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "extraLabels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "extraAnnotations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "networkPolicy": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "policyTypes": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "Ingress",
+                  "Egress"
+                ]
+              }
+            },
+            "ingress": {
+              "type": "array"
+            },
+            "egress": {
+              "type": "array"
+            }
+          }
+        },
+        "imagePullSecrets": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "containers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/container"
+          }
+        },
+        "initContainers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/container"
+          }
+        },
+        "volumes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "volumeClaimTemplates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/volumeClaimTemplate"
+          }
+        },
+        "strategy": {
+          "type": "object"
+        },
+        "updateStrategy": {
+          "type": "object"
+        },
+        "serviceName": {
+          "type": "string"
+        },
+        "affinity": {
+          "type": "object"
+        },
+        "nodeSelector": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "tolerations": {
+          "type": "array"
+        },
+        "cronJob": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "schedule"
+          ],
+          "properties": {
+            "schedule": {
+              "type": "string"
+            },
+            "failedJobsHistoryLimit": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "successfulJobsHistoryLimit": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "restartPolicy": {
+              "enum": [
+                "OnFailure",
+                "Never"
+              ]
+            },
+            "ttlSecondsAfterFinished": {
+              "type": "integer"
+            },
+            "activeDeadlineSeconds": {
+              "type": "integer"
+            },
+            "backoffLimit": {
+              "type": "integer"
+            },
+            "concurrencyPolicy": {
+              "enum": [
+                "Allow",
+                "Forbid",
+                "Replace"
+              ]
+            },
+            "parallelism": {
+              "type": "integer"
+            },
+            "completions": {
+              "type": "integer"
+            }
+          }
+        },
+        "job": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "restartPolicy": {
+              "enum": [
+                "OnFailure",
+                "Never"
+              ]
+            },
+            "ttlSecondsAfterFinished": {
+              "type": "integer"
+            },
+            "activeDeadlineSeconds": {
+              "type": "integer"
+            },
+            "backoffLimit": {
+              "type": "integer"
+            },
+            "parallelism": {
+              "type": "integer"
+            },
+            "completions": {
+              "type": "integer"
+            }
+          }
+        },
+        "emptyDirVolume": {
+          "description": "Removed in 4.0. use app.volumes (emptyDir) + containers[].volumeMounts",
+          "const": "REMOVED in universal-template 4.0: use app.volumes (emptyDir) + containers[].volumeMounts"
+        },
+        "persistentVolume": {
+          "description": "Removed in 4.0. use persistentVolumeClaims (deployment/cronjob/job) or app.volumeClaimTemplates (statefulset), + app.volumes and containers[].volumeMounts",
+          "const": "REMOVED in universal-template 4.0: use persistentVolumeClaims (deployment/cronjob/job) or app.volumeClaimTemplates (statefulset), + app.volumes and containers[].volumeMounts"
+        },
+        "externalSecrets": {
+          "description": "Removed in 4.0. use app.volumes (secret) + containers[].volumeMounts",
+          "const": "REMOVED in universal-template 4.0: use app.volumes (secret) + containers[].volumeMounts"
+        },
+        "externalConfigMaps": {
+          "description": "Removed in 4.0. use app.volumes (configMap) + containers[].volumeMounts",
+          "const": "REMOVED in universal-template 4.0: use app.volumes (configMap) + containers[].volumeMounts"
+        },
+        "cronjob": {
+          "description": "Removed in 4.0. the key is cronJob (camelCase)",
+          "const": "REMOVED in universal-template 4.0: the key is cronJob (camelCase)"
+        },
+        "probes": {
+          "description": "Removed in 4.0. app-level probes were never applied; use containers[].probes",
+          "const": "REMOVED in universal-template 4.0: app-level probes were never applied; use containers[].probes"
+        },
+        "envs": {
+          "description": "Removed in 4.0. app-level envs were never applied; use containers[].envs",
+          "const": "REMOVED in universal-template 4.0: app-level envs were never applied; use containers[].envs"
+        },
+        "resources": {
+          "description": "Removed in 4.0. app-level resources were never applied; use containers[].resources",
+          "const": "REMOVED in universal-template 4.0: app-level resources were never applied; use containers[].resources"
+        },
+        "podAnnotations": {
+          "description": "Removed in 4.0. was never applied; use app.extraAnnotations",
+          "const": "REMOVED in universal-template 4.0: was never applied; use app.extraAnnotations"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "cronjob"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "cronJob",
+              "containers"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "deployment",
+                  "statefulset",
+                  "job"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "containers"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "not": {
+                  "const": "statefulset"
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "volumeClaimTemplates": {
+                "const": "volumeClaimTemplates is for type statefulset only; use persistentVolumeClaims"
+              },
+              "updateStrategy": {
+                "const": "updateStrategy is for type statefulset only; a Deployment uses strategy"
+              },
+              "serviceName": {
+                "const": "serviceName is for type statefulset only"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "not": {
+                  "const": "deployment"
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "strategy": {
+                "const": "strategy is for type deployment only; a StatefulSet uses updateStrategy"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "container": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "image"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "image": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "repository",
+            "tag"
+          ],
+          "properties": {
+            "repository": {
+              "type": "string"
+            },
+            "tag": {
+              "type": [
+                "integer",
+                "string"
+              ]
+            },
+            "pullPolicy": {
+              "enum": [
+                "Always",
+                "IfNotPresent",
+                "Never"
+              ]
+            },
+            "commands": {
+              "type": "array"
+            },
+            "args": {
+              "type": "array"
+            }
+          }
+        },
+        "lifecycle": {
+          "type": "object"
+        },
+        "envs": {
+          "type": "array"
+        },
+        "securityContext": {
+          "type": "object"
+        },
+        "resources": {
+          "type": "object"
+        },
+        "ports": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "containerPort"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "containerPort": {
+                "type": "integer"
+              },
+              "protocol": {
+                "enum": [
+                  "TCP",
+                  "UDP",
+                  "SCTP"
+                ]
+              }
+            }
+          }
+        },
+        "probes": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "livenessProbe": {
+              "type": "object"
+            },
+            "readinessProbe": {
+              "type": "object"
+            },
+            "startupProbe": {
+              "type": "object"
+            }
+          }
+        },
+        "volumeMounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/volumeMount"
+          }
+        },
+        "capabilities": {
+          "description": "Removed in 4.0. was never applied; use securityContext.capabilities",
+          "const": "REMOVED in universal-template 4.0: was never applied; use securityContext.capabilities"
+        }
+      }
+    },
+    "volumeMount": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "mountPath"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "mountPath": {
+          "type": "string"
+        },
+        "readOnly": {
+          "type": "boolean"
+        },
+        "subPath": {
+          "type": "string"
+        },
+        "subPathExpr": {
+          "type": "string"
+        },
+        "mountPropagation": {
+          "enum": [
+            "None",
+            "HostToContainer",
+            "Bidirectional"
+          ]
+        },
+        "recursiveReadOnly": {
+          "enum": [
+            "Disabled",
+            "IfPossible",
+            "Enabled"
+          ]
+        }
+      }
+    },
+    "service": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ports"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Exact Service name"
+        },
+        "nameSuffix": {
+          "type": "string",
+          "description": "Service name <fullName>-<nameSuffix>"
+        },
+        "type": {
+          "enum": [
+            "ClusterIP",
+            "NodePort",
+            "LoadBalancer"
+          ]
+        },
+        "clusterIP": {
+          "type": "string"
+        },
+        "ports": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "port"
+            ],
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "port": {
+                "type": "integer"
+              },
+              "targetPort": {
+                "type": [
+                  "integer",
+                  "string"
+                ]
+              },
+              "protocol": {
+                "enum": [
+                  "TCP",
+                  "UDP",
+                  "SCTP"
+                ]
+              },
+              "nodePort": {
+                "type": "integer"
+              }
+            }
+          }
+        },
+        "selectApp": {
+          "type": "string",
+          "description": "Select the pods of another application of this release"
+        },
+        "selector": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "externalIPs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "externalTrafficPolicy": {
+          "enum": [
+            "Cluster",
+            "Local"
+          ]
+        },
+        "extraLabels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "extraAnnotations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "not": {
+        "required": [
+          "selectApp",
+          "selector"
+        ]
+      }
+    },
+    "persistentVolumeClaim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "size"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Logical name; the claim is <fullName>-<name> unless claimName is set"
+        },
+        "claimName": {
+          "type": "string",
+          "description": "Exact PersistentVolumeClaim name (adopt an existing claim)"
+        },
+        "size": {
+          "type": "string"
+        },
+        "storageClassName": {
+          "type": "string"
+        },
+        "accessModes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "volumeMode": {
+          "enum": [
+            "Filesystem",
+            "Block"
+          ]
+        },
+        "volumeName": {
+          "type": "string"
+        },
+        "keep": {
+          "type": "boolean",
+          "default": true,
+          "description": "Adds helm.sh/resource-policy: keep (default true)"
+        },
+        "annotations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "volumeClaimTemplate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "size"
+      ],
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "size": {
+          "type": "string"
+        },
+        "storageClassName": {
+          "type": "string"
+        },
+        "accessModes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "volumeMode": {
+          "enum": [
+            "Filesystem",
+            "Block"
+          ]
+        },
+        "annotations": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "labels": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
 }
