@@ -1,5 +1,6 @@
 # One Deployment behind one Service, no volumes.
-# Renders the same manifests as 3.x did with `service:` instead of `services:`.
+# Renders the same manifests as 3.x did with `service:` instead of `services:`,
+# except the deliberate 4.0 label changes (see "Migrating from 3.x" in the README).
 ---
 applications:
   - name: my-app

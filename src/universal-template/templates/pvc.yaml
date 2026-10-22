@@ -1,53 +1,17 @@
-{{- if .Values.applications }}
-{{-   range $application := .Values.applications }}
-{{-     range $pvc := $application.persistentVolumeClaims }}
-{{-       $name        := $application.name }}
-{{-       $fullName    := include "universal-template.fullName" (list $ $application $name) }}
-{{-       $namespace   := $.Release.Namespace }}
-{{-       $keep        := or (not (hasKey $pvc "keep")) $pvc.keep }}
+{{- range $application := .Values.applications }}
+{{-   $fullName := include "universal-template.fullName" (list $ .name) }}
+{{-   range .persistentVolumeClaims }}
+{{-     $annotations := deepCopy (.annotations | default dict) }}
+{{-     if dig "keep" true . }}
+{{-       $_ := set $annotations "helm.sh/resource-policy" "keep" }}
+{{-     end }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  labels:
-    {{- include "universal-template.labels" $ | nindent 4 }}
-    {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 4 }}
-    {{- with $pvc.labels }}
-    {{-   toYaml . | nindent 4 }}
-    {{- end }}
-  {{- if or $keep $pvc.annotations }}
-  annotations:
-    {{- if $keep }}
-    helm.sh/resource-policy: keep
-    {{- end }}
-    {{- with $pvc.annotations }}
-    {{-   toYaml . | nindent 4 }}
-    {{- end }}
-  {{- end }}
-  name: {{ include "universal-template.pvc.name" (list $fullName $pvc) }}
-  namespace: {{ $namespace }}
-spec:
-  accessModes:
-  {{-       if $pvc.accessModes }}
-  {{-         range $pvc.accessModes }}
-    - {{ . }}
-  {{-         end }}
-  {{-       else }}
-    - ReadWriteOnce
-  {{-       end }}
-  resources:
-    requests:
-      storage: {{ required (printf "applications[%s].persistentVolumeClaims[%s].size is required" $name $pvc.name) $pvc.size }}
-  {{-       if $pvc.storageClassName }}
-  storageClassName: {{ $pvc.storageClassName }}
-  {{-       end }}
-  {{-       if $pvc.volumeMode }}
-  volumeMode: {{ $pvc.volumeMode }}
-  {{-       end }}
-  {{-       if $pvc.volumeName }}
-  volumeName: {{ $pvc.volumeName }}
-  {{-       end }}
-...
-{{-     end }}
+  name: {{ include "universal-template.pvc.name" (list $fullName .) }}
+  namespace: {{ $.Release.Namespace }}
+  {{- include "universal-template.metadata" (dict "root" $ "fullName" $fullName "labels" .labels "annotations" $annotations) | nindent 2 }}
+spec: {{- include "universal-template.pvc.spec" . | nindent 2 }}
 {{-   end }}
 {{- end }}

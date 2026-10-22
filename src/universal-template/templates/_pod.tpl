@@ -1,0 +1,95 @@
+{{/*
+Pod template shared by Deployment, StatefulSet, Job and CronJob.
+app.extraLabels and app.extraAnnotations go on the pod; app.extraLabels also on the workload.
+Usage: include "universal-template.podTemplate" (dict "root" $ "application" $application "fullName" $fullName ["restartPolicy" "Never"])
+*/}}
+{{- define "universal-template.podTemplate" -}}
+{{- include "universal-template.validate.pod" . -}}
+metadata:
+  {{- include "universal-template.metadata" (dict "root" .root "fullName" .fullName "pod" true "labels" .application.app.extraLabels "annotations" .application.app.extraAnnotations) | nindent 2 }}
+spec:
+  {{- include "universal-template.podSpec" . | trim | nindent 2 }}
+{{- end }}
+
+
+{{/*
+Pod spec. Everything built from values is rendered as data (toYaml), never spliced into YAML text.
+*/}}
+{{- define "universal-template.podSpec" -}}
+{{- $app := .application.app -}}
+{{- with .application.rbac }}
+serviceAccountName: {{ ternary $.fullName (.useExistingServiceAccount | default "default") (.create | default false) }}
+{{- end }}
+{{- with $app.imagePullSecrets }}
+imagePullSecrets:
+  {{- range . }}
+  - name: {{ . }}
+  {{- end }}
+{{- end }}
+{{- with $app.affinity }}
+affinity: {{- toYaml . | nindent 2 }}
+{{- end }}
+{{- with $app.nodeSelector }}
+nodeSelector: {{- toYaml . | nindent 2 }}
+{{- end }}
+{{- with $app.tolerations }}
+tolerations: {{- toYaml . | nindent 2 }}
+{{- end }}
+{{- with $app.initContainers }}
+initContainers:
+  {{- range . }}
+  - {{ include "universal-template.container" . | nindent 4 | trim }}
+  {{- end }}
+{{- end }}
+containers:
+  {{- range $app.containers }}
+  - {{ include "universal-template.container" . | nindent 4 | trim }}
+  {{- end }}
+{{- with include "universal-template.volumes" . | fromYamlArray }}
+volumes: {{- toYaml . | nindent 2 }}
+{{- end }}
+{{- with .restartPolicy }}
+restartPolicy: {{ . }}
+{{- end }}
+{{- end }}
+
+
+{{/*
+One container. Keys that are unset or empty are left out.
+Usage: include "universal-template.container" $container
+*/}}
+{{- define "universal-template.container" -}}
+{{- $container := dict "name" .name "image" (printf "%s:%v" .image.repository .image.tag) "imagePullPolicy" (.image.pullPolicy | default "IfNotPresent") -}}
+{{- $optional := merge (pick . "ports" "lifecycle" "securityContext" "resources" "volumeMounts") (.probes | default dict) -}}
+{{- $_ := merge $optional (dict "env" .envs "command" (.image.commands | default list | toStrings) "args" (.image.args | default list | toStrings)) -}}
+{{- range $key, $value := $optional -}}
+{{-   if $value -}}
+{{-     $_ := set $container $key $value -}}
+{{-   end -}}
+{{- end -}}
+{{- toYaml $container -}}
+{{- end }}
+
+
+{{/*
+Volumes of the pod, as a YAML list: the chart's ConfigMap/Secret under the reserved names
+volume-configs/volume-secrets (only when the chart renders them), then app.volumes as is.
+A container mounts them only by listing them in its volumeMounts.
+Usage: include "universal-template.volumes" (dict "application" $application "fullName" $fullName)
+*/}}
+{{- define "universal-template.volumes" -}}
+{{- $volumes := list -}}
+{{- $items := list -}}
+{{- range (dig "configMap" "files" list .application) -}}
+{{-   if .data -}}
+{{-     $items = append $items (dict "key" .name "path" .name) -}}
+{{-   end -}}
+{{- end -}}
+{{- with $items -}}
+{{-   $volumes = append $volumes (dict "name" "volume-configs" "configMap" (dict "name" $.fullName "items" .)) -}}
+{{- end -}}
+{{- if dig "secret" "data" "" .application -}}
+{{-   $volumes = append $volumes (dict "name" "volume-secrets" "secret" (dict "secretName" .fullName)) -}}
+{{- end -}}
+{{- toYaml (concat $volumes (.application.app.volumes | default list)) -}}
+{{- end }}

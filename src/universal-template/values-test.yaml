@@ -5,7 +5,7 @@ applications:
       type: statefulset
       replicas: 1
       extraLabels:
-        app.kubernetes.io/instance: statefulset-app
+        tier: statefulset-app
       extraAnnotations:
         checksum/values.yaml: helm/values.yaml
       networkPolicy:
@@ -91,6 +91,12 @@ applications:
               readOnly: true
             - name: my-external-config
               mountPath: /external-configs
+              readOnly: true
+            - name: volume-configs
+              mountPath: /configs
+              readOnly: true
+            - name: volume-secrets
+              mountPath: /secrets
               readOnly: true
           probes:
             livenessProbe:
@@ -250,7 +256,6 @@ applications:
           servicePort: 80
       ingressClassName: nginx
     configMap:
-      mountPath: /configs
       files:
         - name: config.json
           data: |
@@ -258,7 +263,6 @@ applications:
               "key": "value"
             }
     secret:
-      mountPath: /secrets
       data: |
         key1: "value1"
         key2: "value2"
@@ -293,7 +297,7 @@ applications:
       type: deployment
       replicas: 1
       extraLabels:
-        app.kubernetes.io/instance: deployment-app
+        tier: deployment-app
       extraAnnotations:
         checksum/values.yaml: helm/values.yaml
       imagePullSecrets:
@@ -346,6 +350,12 @@ applications:
               readOnly: true
             - name: my-external-config
               mountPath: /external-configs
+              readOnly: true
+            - name: volume-configs
+              mountPath: /configs
+              readOnly: true
+            - name: volume-secrets
+              mountPath: /secrets
               readOnly: true
           probes:
             livenessProbe:
@@ -519,7 +529,6 @@ applications:
           serviceName: my-app-sts
       ingressClassName: nginx
     configMap:
-      mountPath: /configs
       files:
         - name: config.json
           data: |
@@ -527,7 +536,6 @@ applications:
               "key": "value"
             }
     secret:
-      mountPath: /secrets
       data: |
         key1: "value1"
         key2: "value2"
@@ -568,7 +576,7 @@ applications:
     app:
       type: cronjob
       extraLabels:
-        app.kubernetes.io/instance: cronjob-app
+        tier: cronjob-app
       extraAnnotations:
         checksum/values.yaml: helm/values.yaml
       imagePullSecrets:
@@ -613,6 +621,12 @@ applications:
               readOnly: true
             - name: my-external-config
               mountPath: /external-configs
+              readOnly: true
+            - name: volume-configs
+              mountPath: /configs
+              readOnly: true
+            - name: volume-secrets
+              mountPath: /secrets
               readOnly: true
           probes:
             livenessProbe:
@@ -744,7 +758,6 @@ applications:
         storageClassName: standard
         claimName: my-app-cronjob-app-data
     configMap:
-      mountPath: /configs
       files:
         - name: config.json
           data: |
@@ -752,7 +765,6 @@ applications:
               "key": "value"
             }
     secret:
-      mountPath: /secrets
       data: |
         key1: "value1"
         key2: "value2"
@@ -793,7 +805,7 @@ applications:
     app:
       type: job
       extraLabels:
-        app.kubernetes.io/instance: job-app
+        tier: job-app
       extraAnnotations:
         checksum/values.yaml: helm/values.yaml
       imagePullSecrets:
@@ -845,6 +857,12 @@ applications:
               readOnly: true
             - name: my-external-config
               mountPath: /external-configs
+              readOnly: true
+            - name: volume-configs
+              mountPath: /configs
+              readOnly: true
+            - name: volume-secrets
+              mountPath: /secrets
               readOnly: true
           probes:
             livenessProbe:
@@ -964,9 +982,7 @@ applications:
           - ReadWriteOnce
         storageClassName: standard
         keep: false
-        claimName: my-app-job-app-data
     configMap:
-      mountPath: /configs
       files:
         - name: config.json
           data: |
@@ -974,7 +990,6 @@ applications:
               "key": "value"
             }
     secret:
-      mountPath: /secrets
       data: |
         key1: "value1"
         key2: "value2"

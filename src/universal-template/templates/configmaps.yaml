@@ -1,34 +1,19 @@
-{{- if .Values.applications }}
-{{-   range .Values.applications }}
-{{-     if .configMap }}
-{{-       $name := .name }}
-{{-       $fullName := include "universal-template.fullName" (list $ . $name) }}
-{{-       $namespace := $.Release.Namespace }}
-{{-       $files     := .configMap.files }}
-{{-       $extraLabels := .configMap.extraLabels }}
-{{-       $extraAnnotations := .configMap.extraAnnotations }}
+{{- range $application := .Values.applications }}
+{{-   with .configMap }}
+{{-     $fullName := include "universal-template.fullName" (list $ $application.name) }}
+{{-     $data     := dict }}
+{{-     range .files }}
+{{-       if .data }}
+{{-         $_ := set $data .name (regexReplaceAll "\n+$" (toString .data) "") }}
+{{-       end }}
+{{-     end }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  labels:
-    {{- include "universal-template.labels" $ | nindent 4 }}
-    {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
-    {{- if $extraLabels }}
-    {{- toYaml $extraLabels | nindent 4 }}
-    {{- end }}
-  {{- if $extraAnnotations }}
-  annotations: {{- toYaml $extraAnnotations | nindent 4 }}
-  {{- end }}
   name: {{ $fullName }}
-  namespace: {{ $namespace }}
-data:
-{{-       range $files }}
-{{-         if .data }}
-{{-             printf "%s: |-" .name | nindent 2 }} {{- printf "%s" .data | nindent 4 -}}
-{{-         end }}
-{{-       end }}
-...
-{{-     end }}
+  namespace: {{ $.Release.Namespace }}
+  {{- include "universal-template.metadata" (dict "root" $ "fullName" $fullName "labels" .extraLabels "annotations" .extraAnnotations) | nindent 2 }}
+data: {{- toYaml $data | nindent 2 }}
 {{-   end }}
 {{- end }}

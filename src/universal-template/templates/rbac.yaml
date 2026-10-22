@@ -1,112 +1,49 @@
-{{- if .Values.applications                                                                 }}
-{{-   range .Values.applications                                                            }}
-{{-     if .rbac                                                                            }}
-{{-       $name                   := .name                                                  }}
-{{-       $fullName               := include "universal-template.fullName" (list $ . $name) }}
-{{-       $namespace              := $.Release.Namespace                                    }}
-{{-       $rbac                   := .rbac                                                  }}
-{{-       $rules                  := $rbac.rules                                            }}
-{{-       $createServiceAccount   := $rbac.create                                           }}
-{{-       $createLegacyToken      := $rbac.legacyToken                                      }}
-{{-       $existingServiceAccount := $rbac.useExistingServiceAccount                        }}
-{{-       $extraLabels            := $rbac.extraLabels                                      }}
-{{-       $extraAnnotations       := $rbac.extraAnnotations                                 }}
-
-{{-       if $createServiceAccount }}
+{{- range $application := .Values.applications }}
+{{-   with .rbac }}
+{{-     $fullName := include "universal-template.fullName" (list $ $application.name) }}
+{{-     $metadata := include "universal-template.metadata" (dict "root" $ "fullName" $fullName "labels" .extraLabels "annotations" .extraAnnotations) }}
+{{-     if .create }}
 ---
-kind: ServiceAccount
 apiVersion: v1
+kind: ServiceAccount
 metadata:
   name: {{ $fullName }}
-  namespace: {{ $namespace }}
-  labels:
-    {{- include "universal-template.labels" $ | nindent 4 }}
-    {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
-    {{- if $extraLabels }}
-    {{- toYaml $extraLabels | nindent 4 }}
-    {{- end }}
-  {{- if $extraAnnotations }}
-  annotations: {{- toYaml $extraAnnotations | nindent 4 }}
-  {{- end }}
-...
-
-{{-         if $createLegacyToken }}
+  namespace: {{ $.Release.Namespace }}
+  {{- $metadata | nindent 2 }}
+{{-       if .legacyToken }}
 ---
-kind: Secret
 apiVersion: v1
+kind: Secret
 metadata:
   name: {{ $fullName }}-token
-  namespace: {{ $namespace }}
-  labels:
-    {{- include "universal-template.labels" $ | nindent 4 }}
-    {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
-  {{- if $extraLabels }}
-    {{- toYaml $extraLabels | nindent 4 }}
-    {{- end }}
-  annotations:
-    kubernetes.io/service-account.name: {{ $fullName }}
-    {{- if $extraAnnotations }}
-    {{- toYaml $extraAnnotations | nindent 4 }}
-    {{- end }}
+  namespace: {{ $.Release.Namespace }}
+  {{- include "universal-template.metadata" (dict "root" $ "fullName" $fullName "labels" .extraLabels "annotations" (merge (dict "kubernetes.io/service-account.name" $fullName) (.extraAnnotations | default dict))) | nindent 2 }}
 type: kubernetes.io/service-account-token
-...
-{{-         end }}
-{{-         if $rules }} 
+{{-       end }}
+{{-       with .rules }}
 ---
+apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
-apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: {{ $fullName }}
-  namespace: {{ $namespace }}
-  labels:
-    {{- include "universal-template.labels" $ | nindent 4 }}
-    {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
-    {{- if $extraLabels }}
-    {{- toYaml $extraLabels | nindent 4 }}
-    {{- end }}
-  {{- if $extraAnnotations }}
-  annotations: {{- toYaml $extraAnnotations | nindent 4 }}
-  {{- end }}
-rules:
-{{-           range $rules }}
-  - apiGroups:
-    {{-         range .apiGroups }}
-      - {{ . | quote }}
-    {{-         end }}   
-    resources:
-    {{-         range .resources }}
-      - {{ . | quote }}
-    {{-         end }}   
-    verbs:
-    {{-         range .verbs }}
-      - {{ . | quote }}
-    {{-         end }}
-{{-           end }}
+  namespace: {{ $.Release.Namespace }}
+  {{- $metadata | nindent 2 }}
+rules: {{- toYaml . | nindent 2 }}
 ---
-kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
 metadata:
   name: {{ $fullName }}
-  namespace: {{ $namespace }}
-  labels:
-    {{- include "universal-template.labels" $ | nindent 4 }}
-    {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
-    {{- if $extraLabels }}
-    {{- toYaml $extraLabels | nindent 4 }}
-    {{- end }}
-  {{- if $extraAnnotations }}
-  annotations: {{- toYaml $extraAnnotations | nindent 4 }}
-  {{- end }}
+  namespace: {{ $.Release.Namespace }}
+  {{- $metadata | nindent 2 }}
 subjects:
   - kind: ServiceAccount
     name: {{ $fullName }}
-    namespace: {{ $namespace }}
+    namespace: {{ $.Release.Namespace }}
 roleRef:
   kind: Role
   name: {{ $fullName }}
   apiGroup: rbac.authorization.k8s.io
-...
-{{-         end }}
 {{-       end }}
 {{-     end }}
 {{-   end }}

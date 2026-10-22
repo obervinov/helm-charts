@@ -1,65 +1,32 @@
-{{- if .Values.applications }}
-{{-   include "universal-template.validate.release" $ }}
-{{-   range $application := .Values.applications }}
-{{-     range $index, $service := $application.services -}}
-{{-       $name                  := $application.name }}
-{{-       $namespace             := $.Release.Namespace }}
-{{-       $fullName              := include "universal-template.fullName" (list $ $application $name) }}
-{{-       $serviceName           := include "universal-template.service.name" (list $fullName $name $service $index) }}
-{{-       $extraLabels           := $service.extraLabels }}
-{{-       $extraAnnotations      := $service.extraAnnotations }}
-{{-       $type                  := $service.type }}
-{{-       $ports                 := $service.ports }}
-{{-       $externalIPs           := $service.externalIPs }}
-{{-       $externalTrafficPolicy := $service.externalTrafficPolicy }}
+{{- range .Values.applications }}
+{{-   $fullName := include "universal-template.fullName" (list $ .name) }}
+{{-   range .services }}
+{{-     $nodePort := eq .type "NodePort" }}
+{{-     $ports    := list }}
+{{-     range .ports }}
+{{-       $ports = append $ports ($nodePort | ternary . (omit . "nodePort")) }}
+{{-     end }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ $serviceName }}
-  namespace: {{ $namespace }}
-  labels:
-    {{- include "universal-template.labels" $ | nindent 4 }}
-    {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
-  {{- if $extraLabels }}
-  {{-   toYaml $extraLabels | nindent 4 }}
-  {{- end }}
-  {{- if $extraAnnotations }}
-  annotations:
-    {{- toYaml $extraAnnotations | nindent 4 }}
-  {{- end }}
+  name: {{ include "universal-template.service.name" (list $fullName .) }}
+  namespace: {{ $.Release.Namespace }}
+  {{- include "universal-template.metadata" (dict "root" $ "fullName" $fullName "labels" .extraLabels "annotations" .extraAnnotations) | nindent 2 }}
 spec:
-{{- if eq $type "ClusterIP" }}
-  type: ClusterIP
-{{- else if eq $type "NodePort" }}
-  type: NodePort
-{{- else if eq $type "LoadBalancer" }}
-  type: LoadBalancer
-{{- end }}
-  {{- if $service.clusterIP }}
-  clusterIP: {{ $service.clusterIP }}
+  {{- with .type }}
+  type: {{ . }}
   {{- end }}
-  ports:
-  {{- range $ports }}
-  - name: {{ .name }}
-    port: {{ .port }}
-    targetPort: {{ .targetPort }}
-    protocol: {{ .protocol }}
-    {{- if and (eq $type "NodePort") .nodePort }}
-    nodePort: {{ .nodePort }}
-    {{- end }}
+  {{- with .clusterIP }}
+  clusterIP: {{ . }}
   {{- end }}
-  {{- if $externalIPs }}
-  externalIPs:
-  {{- range $externalIPs }}
-  - {{ . }}
+  ports: {{- toYaml $ports | nindent 4 }}
+  {{- with .externalIPs }}
+  externalIPs: {{- toYaml . | nindent 4 }}
   {{- end }}
+  {{- with .externalTrafficPolicy }}
+  externalTrafficPolicy: {{ . }}
   {{- end }}
-  {{- if $externalTrafficPolicy }}
-  externalTrafficPolicy: {{ $externalTrafficPolicy }}
-  {{- end }}
-  selector: {{- include "universal-template.service.selector" (list $ $fullName $name $service) | nindent 4 }}
-...
-{{-     end }}
+  selector: {{- include "universal-template.service.selector" (list $ $fullName .) | nindent 4 }}
 {{-   end }}
 {{- end }}
