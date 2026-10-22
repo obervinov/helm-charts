@@ -2,7 +2,7 @@
 
 One chart for simple releases: Deployments, StatefulSets, Jobs and CronJobs with their Services, PersistentVolumeClaims, Ingress, ConfigMap, Secret, RBAC, NetworkPolicy and Prometheus monitors, all described in `values.yaml`.
 
-Version 4.0 changes the values contract (volumes, services, claims). The rendered objects keep their names and labels, so a module translated from 3.x renders the same manifests. See [Migrating from 3.x](#migrating-from-3x).
+Version 4.0 changes the values contract (volumes, services, claims). The rendered objects keep their names and the Deployment/StatefulSet selectors, so a module translated from 3.x upgrades in place; pods restart once because their labels change. See [Migrating from 3.x](#migrating-from-3x).
 
 ## Table of Contents
 
@@ -37,8 +37,9 @@ helm upgrade --install my-app oci://ghcr.io/obervinov/helm-charts/universal-temp
 ## Naming
 
 - `<fullName>` is the release name when the release has one application, and `<release>-<application name>` when it has several.
-- Every workload, ConfigMap, Secret, ServiceAccount and Ingress is named `<fullName>`.
-- Pods carry the label `appselector: <fullName>`; Deployment/StatefulSet selectors and the default Service selector use it.
+- Every workload, ConfigMap, Secret, ServiceAccount and Ingress is named `<fullName>`; a Prometheus monitor is named `<fullName>-<monitor name>`.
+- Every object carries `app.kubernetes.io/managed-by`, `app.kubernetes.io/instance: <release>`, `app: <release>`, `appselector: <fullName>`, and the chart version as `app.kubernetes.io/version` and `version`. Pod templates carry the same labels without the chart version, so a chart upgrade alone does not restart pods. These labels win over `extraLabels` with the same key.
+- Deployment/StatefulSet selectors are `appselector: <fullName>`. Services, NetworkPolicies and monitors select `appselector: <fullName>` plus `app.kubernetes.io/instance: <release>`, so two releases whose names happen to join into the same `<fullName>` do not select each other's pods.
 
 ## Configuration
 
@@ -52,8 +53,8 @@ helm upgrade --install my-app oci://ghcr.io/obervinov/helm-charts/universal-temp
 | `applications[].name` | Name of the application (required, lowercase DNS label) | |
 | `applications[].app.type` | `deployment`, `statefulset`, `job`, `cronjob` or `none` (no workload: only the Services, claims, ingress, configMap and secret of the application are rendered) | |
 | `applications[].app.replicas` | Number of replicas | `1` |
-| `applications[].app.extraLabels` | Labels added to the workload and its pods | `{}` |
-| `applications[].app.extraAnnotations` | Annotations added to the workload/pods | `{}` |
+| `applications[].app.extraLabels` | Labels added to the workload, its pods and its NetworkPolicy | `{}` |
+| `applications[].app.extraAnnotations` | Annotations added to the pod template, for every workload type (not to the workload object) | `{}` |
 | `applications[].app.imagePullSecrets` | Secret names, rendered as `imagePullSecrets: [{name: ...}]` | `[]` |
 | `applications[].app.containers[]` | Containers, see [Containers](#containers) | |
 | `applications[].app.initContainers[]` | Init containers, same keys as containers | `[]` |
@@ -83,13 +84,13 @@ helm upgrade --install my-app oci://ghcr.io/obervinov/helm-charts/universal-temp
 | `containers[].securityContext` | Container security context | |
 | `containers[].lifecycle` | `postStart` / `preStop` hooks | |
 | `containers[].probes` | `livenessProbe`, `readinessProbe`, `startupProbe`; only the ones set are rendered | |
-| `containers[].volumeMounts[]` | Mounts of this container only: `name`, `mountPath` (required), `readOnly`, `subPath`, `subPathExpr`, `mountPropagation`, `recursiveReadOnly` | `[]` |
+| `containers[].volumeMounts[]` | Mounts of this container only: `name`, `mountPath` (required), `readOnly`, `subPath`, `subPathExpr`, `mountPropagation`, `recursiveReadOnly`. `name` is a volume from `app.volumes`, `app.volumeClaimTemplates`, `volume-configs` or `volume-secrets` | `[]` |
 
 ### Volumes and mounts
 
 `app.volumes` is the pod's volume list, written as Kubernetes volume sources and rendered as is: `emptyDir`, `persistentVolumeClaim`, `secret` (with `items`), `configMap`, `projected`, `hostPath`, any number of each. Each container mounts only what its own `volumeMounts` list names, init containers included.
 
-The chart adds two volumes of its own: `volume-configs` (the ConfigMap from `configMap.files`) and `volume-secrets` (the Secret from `secret.data`, when `secret.mountPath` is set). Their names are reserved. Rendering fails when a volume name is used twice or a mount names a volume that does not exist.
+The chart adds two volumes of its own, only when it renders the object behind them: `volume-configs` (the ConfigMap `<fullName>`, when `configMap.files` has a file with `data`) and `volume-secrets` (the Secret `<fullName>`, when `secret.data` is set). Their names are reserved. Nothing is mounted automatically: a container that needs them lists them in its `volumeMounts`. Rendering fails when a volume name is used twice or a mount names a volume that does not exist.
 
 ```yaml
 app:
@@ -115,6 +116,13 @@ app:
           readOnly: true
         - name: host-keys
           mountPath: /host-keys
+        - name: volume-configs      # the chart's ConfigMap, this container only
+          mountPath: /etc/sidecar
+          readOnly: true
+configMap:
+  files:
+    - name: sidecar.conf
+      data: "..."                   # usually --set-file
 ```
 
 A StatefulSet either lists `app.volumeClaimTemplates` (claims named `<name>-<fullName>-<ordinal>`, created by the StatefulSet controller) or mounts standalone claims through `app.volumes`. A StatefulSet without `volumeClaimTemplates` gets none.
@@ -126,7 +134,7 @@ A StatefulSet either lists `app.volumeClaimTemplates` (claims named `<name>-<ful
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `name` | Logical name (required) | |
-| `claimName` | Exact claim name, e.g. to adopt an existing claim | `<fullName>-<name>` |
+| `claimName` | Exact claim name, e.g. to adopt an existing claim (see below) | `<fullName>-<name>` |
 | `size` | Requested storage (required) | |
 | `storageClassName` | Storage class | cluster default |
 | `accessModes` | Access modes | `[ReadWriteOnce]` |
@@ -134,6 +142,8 @@ A StatefulSet either lists `app.volumeClaimTemplates` (claims named `<name>-<ful
 | `volumeName` | Bind to this PersistentVolume | |
 | `keep` | Adds `helm.sh/resource-policy: keep`: the claim survives `helm uninstall` and a rename of the release | `true` |
 | `annotations` / `labels` | Extra metadata | `{}` |
+
+Adopting an existing claim with `claimName`: Helm only takes over an object that carries its ownership metadata (label `app.kubernetes.io/managed-by: Helm`, annotations `meta.helm.sh/release-name` and `meta.helm.sh/release-namespace`), or with `helm upgrade --install --take-ownership`. An adopted claim must keep `keep: true`: with `keep: false` a later `helm uninstall` or the removal of the entry would delete a claim, and its data, that this release did not create. Rendering fails for `claimName` together with `keep: false`.
 
 Claims from `volumeClaimTemplates` cannot carry the keep annotation. Helm does not manage them, and with the default retention policy the StatefulSet controller keeps them when the StatefulSet is deleted.
 
@@ -143,17 +153,16 @@ Claims from `volumeClaimTemplates` cannot carry the keep annotation. Helm does n
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `name` | Exact Service name | first Service: `<fullName>` |
-| `nameSuffix` | Service name `<fullName>-<nameSuffix>` | |
+| `name` | Exact Service name; required for every Service but the first | first Service: `<fullName>` |
 | `type` | `ClusterIP`, `NodePort`, `LoadBalancer` | not set (Kubernetes uses `ClusterIP`) |
 | `clusterIP` | e.g. `None` for a headless Service | |
 | `ports[]` | `name`, `port`, `targetPort`, `protocol`, `nodePort` (NodePort only) | |
-| `selectApp` | Select the pods of another application of this release | this application |
+| `selectApp` | Select the pods of another application of this release (`appselector` + `app.kubernetes.io/instance`) | this application |
 | `selector` | Raw label selector, used as is | |
 | `externalIPs[]` / `externalTrafficPolicy` | As in Kubernetes | |
 | `extraLabels` / `extraAnnotations` | Extra metadata | |
 
-The second and later Services need `name` or `nameSuffix`. `selectApp` and `selector` are mutually exclusive.
+`selectApp` and `selector` are mutually exclusive; rendering fails for a `selectApp` that is not an application of the release.
 
 ### Ingress
 
@@ -172,17 +181,19 @@ The second and later Services need `name` or `nameSuffix`. `selectApp` and `sele
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `configMap.files[].name` / `.data` | Files of the ConfigMap `<fullName>` (set `data` with `--set-file`) | `[]` |
-| `configMap.mountPath` | Mounts volume `volume-configs` into every container; leave unset and use `volumeMounts` with `name: volume-configs` to mount it selectively | |
+| `configMap.files[].name` / `.data` | Files of the ConfigMap `<fullName>` (set `data` with `--set-file`); files without `data` are skipped | `[]` |
 | `configMap.extraLabels` / `.extraAnnotations` | Extra metadata | |
+
+The pod gets the volume `volume-configs` with these files; mount it with `containers[].volumeMounts: [{name: volume-configs, mountPath: ...}]` in the containers that need it.
 
 ### Secret
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `secret.data` | YAML string of `key: value` pairs for the Secret `<fullName>` | |
-| `secret.mountPath` | Mounts volume `volume-secrets` into every container | |
 | `secret.extraLabels` / `.extraAnnotations` | Extra metadata | |
+
+The pod gets the volume `volume-secrets`; mount it with `containers[].volumeMounts: [{name: volume-secrets, mountPath: ..., readOnly: true}]`, or read single keys with `envs[].valueFrom.secretKeyRef`.
 
 ### RBAC
 To create a ServiceAccount without a Role, leave `rbac.rules` unset.
@@ -199,10 +210,11 @@ To create a ServiceAccount without a Role, leave `rbac.rules` unset.
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `monitoring.prometheus[].name` | Name of the monitor (required) | |
-| `monitoring.prometheus[].apiVersion` / `.kind` | `ServiceMonitor` or `PodMonitor` | `monitoring.coreos.com/v1` |
+| `monitoring.prometheus[].name` | Name of the monitor (required); the object is `<fullName>-<name>` | |
+| `monitoring.prometheus[].apiVersion` | API version | `monitoring.coreos.com/v1` |
+| `monitoring.prometheus[].kind` | `ServiceMonitor` (selects the Services of this application) or `PodMonitor` (selects its pods) | `ServiceMonitor` |
 | `monitoring.prometheus[].namespacesSelector[]` | Namespaces to watch | release namespace |
-| `monitoring.prometheus[].endpoints[]` | `port`, `path`, `interval`, `scheme`, `bearerTokenFile`, `honorLabels` | |
+| `monitoring.prometheus[].endpoints[]` | `port`, `path` (`/metrics`), `interval` (`30s`), `scheme` (`http`); ServiceMonitor also `bearerTokenFile`, `honorLabels` (`true`) | |
 | `monitoring.prometheus[].jobLabel` | Job label | `k8s-app` |
 
 ## Examples
@@ -212,6 +224,8 @@ The values files in [`tests/`](tests/) pass `helm lint . -f tests/<file>` and co
 - [`tests/simple-deployment.yaml`](tests/simple-deployment.yaml) - one Deployment behind one Service, no volumes
 - [`tests/deployment-sidecar-pvcs.yaml`](tests/deployment-sidecar-pvcs.yaml) - a Deployment with a sidecar on two adopted claims, one Secret mounted twice with different `items`, two Services on the same pod, `Recreate` strategy
 - [`tests/statefulset-standalone-pvcs.yaml`](tests/statefulset-standalone-pvcs.yaml) - a StatefulSet on standalone claims with init containers, a CronJob on emptyDirs, and a Service-only application selecting the StatefulSet
+- [`tests/job-configmap-secret.yaml`](tests/job-configmap-secret.yaml) - a Job whose main container mounts the chart's ConfigMap and Secret, and a sidecar that does not
+- [`tests/monitoring.yaml`](tests/monitoring.yaml) - a ServiceMonitor and a PodMonitor, each selecting its own application
 
 A StatefulSet with a claim template:
 
@@ -243,7 +257,7 @@ applications:
 
 ## Migrating from 3.x
 
-Only values change. Names, labels and selectors of the rendered objects stay the same, so a translated module upgrades in place.
+Object names and the Deployment/StatefulSet selectors stay the same, so a translated module upgrades in place.
 
 | 3.x key | 4.0 key |
 |---------|---------|
@@ -253,6 +267,8 @@ Only values change. Names, labels and selectors of the rendered objects stay the
 | `app.persistentVolume` on a statefulset | `app.volumeClaimTemplates: [{name, size, storageClassName, accessModes}]` + `containers[].volumeMounts` - claims stay `<name>-<fullName>-<ordinal>` |
 | `app.externalSecrets: [{name, mountPath}]` | `app.volumes: [{name, secret: {secretName}}]` + `containers[].volumeMounts: [{name, mountPath, readOnly: true}]` |
 | `app.externalConfigMaps: [{name, mountPath}]` | `app.volumes: [{name, configMap: {name}}]` + `containers[].volumeMounts: [{name, mountPath, readOnly: true}]` |
+| `configMap.mountPath` (mounted into every container) | `containers[].volumeMounts: [{name: volume-configs, mountPath, readOnly: true}]` on each container that reads the files |
+| `secret.mountPath` (mounted into every container) | `containers[].volumeMounts: [{name: volume-secrets, mountPath, readOnly: true}]` on each container that reads the Secret |
 | `app.cronjob` (was never read) | `app.cronJob` |
 | `app.probes`, `app.envs`, `app.resources` (were never applied) | `containers[].probes`, `containers[].envs`, `containers[].resources` |
 | `ingress.paths[].serviceName` (was ignored) | now honoured: must name a Service of the release, or be left out |
@@ -260,14 +276,21 @@ Only values change. Names, labels and selectors of the rendered objects stay the
 Behaviour that changes with the same intent:
 
 - 3.x mounted every volume into every container, init containers included. In 4.0 a container mounts only its own `volumeMounts`: list the mount on each container that needs it.
+- Pod templates no longer carry the chart version (`version`, `app.kubernetes.io/version`), so the first upgrade to 4.0 restarts the pods once and later chart upgrades do not.
+- Service and NetworkPolicy selectors add `app.kubernetes.io/instance: <release>` next to `appselector`; the pods already carry it.
+- Job and CronJob pods carry the same labels as other pods of the chart.
+- `app.extraAnnotations` go on the pod template for every workload type; 3.x put them on the StatefulSet and CronJob objects as well (CronJob: only there).
+- Prometheus monitors are named `<fullName>-<name>` and select the Services or pods of their application; in 3.x the selector was built from the monitor name and matched nothing.
 - Standalone claims get `helm.sh/resource-policy: keep` by default; set `keep: false` to let `helm uninstall` delete them.
 - CronJob history limits default to `1` instead of `0`.
 - A StatefulSet whose only volume was a claim template no longer renders an empty `volumes:` key.
 
-`helm lint` fails on every removed key and names its replacement:
+`helm lint` fails on every removed or unknown key:
 
 ```text
-[ERROR] values.yaml: - at '/applications/0/service': value must be 'REMOVED in universal-template 4.0: use services (a list): services: [{type, ports}] renders the same Service <fullName>'
+[ERROR] values.yaml: - at '/applications/0': validation failed
+  - at '/applications/0/app': additional properties 'persistentVolume' not allowed
+  - at '/applications/0': additional properties 'service' not allowed
 ```
 
 ## Usage example for Gitlab-CI
