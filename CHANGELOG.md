@@ -23,12 +23,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 * `universal-template`: `services` as a list, with explicit names, `selectApp` to select another application of the release, a raw `selector`, and `clusterIP`
 * `universal-template`: `ingress.paths[].serviceName` routes to any Service of the release
 * `universal-template`: `app.strategy` (Deployment), `app.updateStrategy` and `app.serviceName` (StatefulSet), `app.type: none` for an application without a workload
-* `universal-template`: rendering fails with a named cause for a duplicate volume, Service or claim name, a mount of an undeclared volume, an unknown `selectApp` or ingress `serviceName`, and `claimName` with `keep: false`
+* `universal-template`: rendering fails with a named cause for a duplicate application, volume, Service or claim name, a mount of an undeclared volume, an unknown `selectApp` or ingress `serviceName`, `claimName` with `keep: false`, and a `secret.data` that is not a YAML map
+* `universal-template`: the schema rejects `rbac.create` together with `rbac.useExistingServiceAccount`, unknown keys in monitor `endpoints`, and `app.cronJob` / `app.job` on another workload type
 * `.github/workflows/pr.yaml`: keep a `values.schema.json` marked "do not regenerate" instead of overwriting it with `helm schema-gen`
 #### 🐛 Bug Fixes
 * `universal-template`: Job and CronJob pods carried no labels, so no Service, NetworkPolicy or PodMonitor could select them
 * `universal-template`: ServiceMonitor/PodMonitor selected `appselector` built from the monitor name, rendered a null `matchLabels`, and rendered no endpoints when `kind` was omitted; `honorLabels: false` was ignored
-* `universal-template`: values are rendered as data, so a newline in a mount path, file name or label can no longer inject extra YAML
+* `universal-template`: values are rendered as data or as quoted scalars, so a newline in any value (a name, a path, an ingress host, a ServiceAccount, an image pull secret) can no longer inject extra YAML such as `hostNetwork: true`; the schema also restricts names to DNS names and hosts, paths and API versions to strings without whitespace
+* `universal-template`: Job and CronJob `backoffLimit`, `ttlSecondsAfterFinished` and `activeDeadlineSeconds` of `0` were replaced by their defaults
+* `universal-template`: invalid YAML in `secret.data` rendered a Secret with the key `Error` holding the parse error
 * `universal-template`: the ConfigMap volume listed files without `data`, which the ConfigMap leaves out, and lowercased the file names it pointed at
 * `universal-template`: two applications with the same monitor name rendered monitors with the same name
 * `universal-template`: a StatefulSet always rendered a volumeClaimTemplate for `persistentVolume` and never mounted a standalone claim

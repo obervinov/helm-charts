@@ -106,8 +106,6 @@ applications: []
 #             - name: external-secret
 #               mountPath: /etc/my-app/secret
 #               readOnly: true
-#             - name: state
-#               mountPath: /state
 #             - name: volume-configs
 #               mountPath: /configs
 #               readOnly: true
@@ -168,23 +166,9 @@ applications: []
 #         - name: external-config
 #           configMap:
 #             name: my-config
-#       # StatefulSet only: claim templates, PVC name <name>-<fullName>-<ordinal>.
-#       # A StatefulSet without volumeClaimTemplates uses the volumes above (standalone PVCs).
-#       # The claims of a StatefulSet are not deleted by helm uninstall; they cannot carry a keep policy.
-#       volumeClaimTemplates:
-#         - name: state
-#           size: 1Gi
-#           storageClassName: standard
-#           accessModes:
-#             - ReadWriteOnce
-#           volumeMode: Filesystem
-#       # Deployment only: passed to spec.strategy as is
+#       # Deployment only: passed to spec.strategy as is (a StatefulSet uses updateStrategy, see app2 below)
 #       strategy:
 #         type: Recreate
-#       # StatefulSet only: spec.updateStrategy as is, and the governing Service name (default <fullName>)
-#       updateStrategy:
-#         type: RollingUpdate
-#       serviceName: my-app-headless
 #       affinity:
 #         nodeAffinity:
 #           requiredDuringSchedulingIgnoredDuringExecution:
@@ -201,26 +185,6 @@ applications: []
 #           operator: "Equal"
 #           value: "value"
 #           effect: "NoSchedule"
-#       # type: cronjob only (required there); the key is cronJob
-#       cronJob:
-#         schedule: "*/1 * * * *"            # required
-#         failedJobsHistoryLimit: 1          # default 1
-#         successfulJobsHistoryLimit: 1      # default 1, 0 is allowed
-#         restartPolicy: "OnFailure"
-#         ttlSecondsAfterFinished: 360
-#         activeDeadlineSeconds: 650
-#         backoffLimit: 1
-#         concurrencyPolicy: "Forbid"
-#         parallelism: 1
-#         completions: 1
-#       # type: job only
-#       job:
-#         restartPolicy: "OnFailure"
-#         ttlSecondsAfterFinished: 360
-#         activeDeadlineSeconds: 650
-#         backoffLimit: 1
-#         parallelism: 1
-#         completions: 1
 #
 #     # Services. The first one defaults to the name <fullName>; every other one needs `name`.
 #     # The selector defaults to the pods of this application;
@@ -247,9 +211,9 @@ applications: []
 #             port: 80
 #             targetPort: 80
 #             protocol: TCP
-#       - name: my-app-worker
+#       - name: my-app-db-metrics
 #         type: ClusterIP
-#         selectApp: worker
+#         selectApp: db                    # the pods of the application `db` below
 #         ports:
 #           - name: metrics
 #             port: 9090
@@ -311,7 +275,8 @@ applications: []
 #     rbac:
 #       create: true
 #       legacyToken: true
-#       useExistingServiceAccount: my-existing-service-account
+#       # Instead of create: run the pods under an existing ServiceAccount (cannot be combined with create: true)
+#       # useExistingServiceAccount: my-existing-service-account
 #       rules:
 #         - apiGroups:
 #             - ""
@@ -348,3 +313,76 @@ applications: []
 #               path: /metrics
 #               interval: 15s
 #               scheme: http
+#
+#   # A StatefulSet. volumeClaimTemplates, updateStrategy and serviceName are for type statefulset only.
+#   - name: db
+#     app:
+#       type: statefulset
+#       containers:
+#         - name: db
+#           image:
+#             repository: "my-registry/db"
+#             tag: "1.0.0"
+#           volumeMounts:
+#             - name: state
+#               mountPath: /state
+#       # Claim templates, PVC name <name>-<fullName>-<ordinal>. A StatefulSet without volumeClaimTemplates
+#       # mounts standalone PVCs through app.volumes, like a Deployment.
+#       # The claims of a StatefulSet are not deleted by helm uninstall; they cannot carry a keep policy.
+#       volumeClaimTemplates:
+#         - name: state
+#           size: 1Gi
+#           storageClassName: standard
+#           accessModes:
+#             - ReadWriteOnce
+#           volumeMode: Filesystem
+#           annotations: {}
+#           labels: {}
+#       # spec.updateStrategy as is, and the governing Service name (default <fullName>)
+#       updateStrategy:
+#         type: RollingUpdate
+#       serviceName: my-app-db-headless
+#     services:
+#       - name: my-app-db-headless
+#         clusterIP: None
+#         ports:
+#           - name: db
+#             port: 5432
+#
+#   # A CronJob: the key cronJob is for type cronjob only (required there)
+#   - name: cleanup
+#     app:
+#       type: cronjob
+#       containers:
+#         - name: cleanup
+#           image:
+#             repository: "my-registry/cleanup"
+#             tag: "1.0.0"
+#       cronJob:
+#         schedule: "*/1 * * * *"            # required
+#         failedJobsHistoryLimit: 1          # default 1, 0 is allowed
+#         successfulJobsHistoryLimit: 1      # default 1, 0 is allowed
+#         concurrencyPolicy: "Forbid"        # default Forbid
+#         restartPolicy: "OnFailure"         # default Never
+#         ttlSecondsAfterFinished: 360       # default 300
+#         activeDeadlineSeconds: 650         # default 300
+#         backoffLimit: 1                    # default 3
+#         parallelism: 1                     # default 1
+#         completions: 1                     # default 1
+#
+#   # A Job: the key job is for type job only. The Job is named <fullName>-<unix time>.
+#   - name: migrate
+#     app:
+#       type: job
+#       containers:
+#         - name: migrate
+#           image:
+#             repository: "my-registry/migrate"
+#             tag: "1.0.0"
+#       job:
+#         restartPolicy: "OnFailure"         # default Never
+#         ttlSecondsAfterFinished: 360       # default 300
+#         activeDeadlineSeconds: 650         # default 600
+#         backoffLimit: 1                    # default 3
+#         parallelism: 1                     # default 1
+#         completions: 1                     # default 1

@@ -39,18 +39,19 @@ helm upgrade --install my-app oci://ghcr.io/obervinov/helm-charts/universal-temp
 - `<fullName>` is the release name when the release has one application, and `<release>-<application name>` when it has several.
 - Every workload, ConfigMap, Secret, ServiceAccount and Ingress is named `<fullName>`; a Prometheus monitor is named `<fullName>-<monitor name>`.
 - Every object carries `app.kubernetes.io/managed-by`, `app.kubernetes.io/instance: <release>`, `app: <release>`, `appselector: <fullName>`, and the chart version as `app.kubernetes.io/version` and `version`. Pod templates carry the same labels without the chart version, so a chart upgrade alone does not restart pods. These labels win over `extraLabels` with the same key.
-- Deployment/StatefulSet selectors are `appselector: <fullName>`. Services, NetworkPolicies and monitors select `appselector: <fullName>` plus `app.kubernetes.io/instance: <release>`, so two releases whose names happen to join into the same `<fullName>` do not select each other's pods.
+- Deployment/StatefulSet selectors are `appselector: <fullName>` only. `spec.selector` is immutable, so the chart keeps the 3.x selector to let a module upgrade in place. `<fullName>` is not unique across releases: in one namespace, a release `a-b` with one application and a release `a` with an application `b` both get `appselector: a-b`, and their workloads' selectors overlap, which Kubernetes does not support (the controllers fight over the pods). Name releases that share a namespace so that they cannot join into the same `<fullName>`.
+- Services, NetworkPolicies and monitors select `appselector: <fullName>` plus `app.kubernetes.io/instance: <release>`, so they never select the pods of another release, even with such a collision.
 
 ## Configuration
 
-`values.yaml` is the full commented reference. The tables list each key; `[]` marks a list.
+`values.yaml` is the full commented reference (uncommented, it passes `helm lint --strict`). The tables list each key; `[]` marks a list.
 
 ### Applications
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `applications[]` | List of applications | `[]` |
-| `applications[].name` | Name of the application (required, lowercase DNS label) | |
+| `applications[].name` | Name of the application (required, lowercase DNS label, unique in the release) | |
 | `applications[].app.type` | `deployment`, `statefulset`, `job`, `cronjob` or `none` (no workload: only the Services, claims, ingress, configMap and secret of the application are rendered) | |
 | `applications[].app.replicas` | Number of replicas | `1` |
 | `applications[].app.extraLabels` | Labels added to the workload, its pods and its NetworkPolicy | `{}` |
@@ -59,7 +60,7 @@ helm upgrade --install my-app oci://ghcr.io/obervinov/helm-charts/universal-temp
 | `applications[].app.containers[]` | Containers, see [Containers](#containers) | |
 | `applications[].app.initContainers[]` | Init containers, same keys as containers | `[]` |
 | `applications[].app.volumes[]` | Pod volumes, raw Kubernetes volume sources, see [Volumes and mounts](#volumes-and-mounts) | `[]` |
-| `applications[].app.volumeClaimTemplates[]` | StatefulSet only: claim templates (`name`, `size`, `storageClassName`, `accessModes`, `volumeMode`) | `[]` |
+| `applications[].app.volumeClaimTemplates[]` | StatefulSet only: claim templates (`name`, `size`, `storageClassName`, `accessModes`, `volumeMode`, `annotations`, `labels`) | `[]` |
 | `applications[].app.strategy` | Deployment only: `spec.strategy` as is, e.g. `{type: Recreate}` | |
 | `applications[].app.updateStrategy` | StatefulSet only: `spec.updateStrategy` as is | |
 | `applications[].app.serviceName` | StatefulSet only: governing Service name | `<fullName>` |
@@ -67,8 +68,8 @@ helm upgrade --install my-app oci://ghcr.io/obervinov/helm-charts/universal-temp
 | `applications[].app.nodeSelector` | Pod node selector | `{}` |
 | `applications[].app.tolerations` | Pod tolerations | `[]` |
 | `applications[].app.networkPolicy` | `policyTypes`, `ingress`, `egress` of a NetworkPolicy selecting the pods | |
-| `applications[].app.cronJob` | CronJob only (required there): `schedule` (required), `failedJobsHistoryLimit` (default `1`), `successfulJobsHistoryLimit` (default `1`), `concurrencyPolicy` (default `Forbid`), `restartPolicy` (default `Never`), `ttlSecondsAfterFinished` (default `300`), `activeDeadlineSeconds` (default `300`), `backoffLimit` (default `3`), `parallelism`, `completions` | |
-| `applications[].app.job` | Job only: `restartPolicy` (default `Never`), `ttlSecondsAfterFinished` (default `300`), `activeDeadlineSeconds` (default `600`), `backoffLimit` (default `3`), `parallelism`, `completions` | |
+| `applications[].app.cronJob` | CronJob only (required there, rejected on other types): `schedule` (required), `failedJobsHistoryLimit` (default `1`), `successfulJobsHistoryLimit` (default `1`), `concurrencyPolicy` (default `Forbid`), `restartPolicy` (default `Never`), `ttlSecondsAfterFinished` (default `300`), `activeDeadlineSeconds` (default `300`), `backoffLimit` (default `3`), `parallelism` (default `1`), `completions` (default `1`); `0` is kept | |
+| `applications[].app.job` | Job only (rejected on other types): `restartPolicy` (default `Never`), `ttlSecondsAfterFinished` (default `300`), `activeDeadlineSeconds` (default `600`), `backoffLimit` (default `3`), `parallelism` (default `1`), `completions` (default `1`); `0` is kept | |
 
 ### Containers
 
@@ -201,7 +202,7 @@ To create a ServiceAccount without a Role, leave `rbac.rules` unset.
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `rbac.create` | Create a ServiceAccount `<fullName>` (and Role/RoleBinding with `rules`) | `false` |
-| `rbac.useExistingServiceAccount` | Use an existing ServiceAccount. Cannot be used with `create` | |
+| `rbac.useExistingServiceAccount` | Run the pods under an existing ServiceAccount. The schema rejects it together with `create: true` | |
 | `rbac.legacyToken` | Create a long-lived token Secret for the ServiceAccount | `false` |
 | `rbac.rules[]` | `apiGroups`, `resources`, `verbs` | `[]` |
 | `rbac.extraLabels` / `.extraAnnotations` | Extra metadata | |
