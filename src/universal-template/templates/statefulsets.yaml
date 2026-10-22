@@ -10,7 +10,7 @@ metadata:
   {{- include "universal-template.metadata" (dict "root" $ "fullName" $fullName "labels" .app.extraLabels) | nindent 2 }}
 spec:
   serviceName: {{ .app.serviceName | default $fullName }}
-  replicas: {{ .app.replicas | default 1 }}
+  replicas: {{ hasKey .app "replicas" | ternary .app.replicas 1 }}
   {{- with .app.updateStrategy }}
   updateStrategy: {{- toYaml . | nindent 4 }}
   {{- end }}

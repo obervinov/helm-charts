@@ -9,7 +9,7 @@ metadata:
   namespace: {{ $.Release.Namespace }}
   {{- include "universal-template.metadata" (dict "root" $ "fullName" $fullName "labels" .app.extraLabels) | nindent 2 }}
 spec:
-  replicas: {{ .app.replicas | default 1 }}
+  replicas: {{ hasKey .app "replicas" | ternary .app.replicas 1 }}
   {{- with .app.strategy }}
   strategy: {{- toYaml . | nindent 4 }}
   {{- end }}
