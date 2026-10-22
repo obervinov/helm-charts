@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
-## v1.3.0 - 2026-10-21
+## v1.3.0 - 2026-10-22
 ### What's Changed
 **Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.2.13...v1.3.0 by @obervinov
 #### 💥 Breaking Changes
