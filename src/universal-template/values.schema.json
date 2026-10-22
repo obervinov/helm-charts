@@ -105,9 +105,6 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "mountPath": {
-              "type": "string"
-            },
             "extraLabels": {
               "type": "object",
               "additionalProperties": {
@@ -142,9 +139,6 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "mountPath": {
-              "type": "string"
-            },
             "data": {
               "type": "string"
             },
@@ -206,7 +200,9 @@
                 ],
                 "properties": {
                   "name": {
-                    "type": "string"
+                    "type": "string",
+                    "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+                    "description": "The monitor is named <fullName>-<name>"
                   },
                   "apiVersion": {
                     "type": "string"
@@ -233,10 +229,6 @@
               }
             }
           }
-        },
-        "service": {
-          "description": "Removed in 4.0. use services (a list): services: [{type, ports}] renders the same Service <fullName>",
-          "const": "REMOVED in universal-template 4.0: use services (a list): services: [{type, ports}] renders the same Service <fullName>"
         }
       }
     },
@@ -426,42 +418,6 @@
               "type": "integer"
             }
           }
-        },
-        "emptyDirVolume": {
-          "description": "Removed in 4.0. use app.volumes (emptyDir) + containers[].volumeMounts",
-          "const": "REMOVED in universal-template 4.0: use app.volumes (emptyDir) + containers[].volumeMounts"
-        },
-        "persistentVolume": {
-          "description": "Removed in 4.0. use persistentVolumeClaims (deployment/cronjob/job) or app.volumeClaimTemplates (statefulset), + app.volumes and containers[].volumeMounts",
-          "const": "REMOVED in universal-template 4.0: use persistentVolumeClaims (deployment/cronjob/job) or app.volumeClaimTemplates (statefulset), + app.volumes and containers[].volumeMounts"
-        },
-        "externalSecrets": {
-          "description": "Removed in 4.0. use app.volumes (secret) + containers[].volumeMounts",
-          "const": "REMOVED in universal-template 4.0: use app.volumes (secret) + containers[].volumeMounts"
-        },
-        "externalConfigMaps": {
-          "description": "Removed in 4.0. use app.volumes (configMap) + containers[].volumeMounts",
-          "const": "REMOVED in universal-template 4.0: use app.volumes (configMap) + containers[].volumeMounts"
-        },
-        "cronjob": {
-          "description": "Removed in 4.0. the key is cronJob (camelCase)",
-          "const": "REMOVED in universal-template 4.0: the key is cronJob (camelCase)"
-        },
-        "probes": {
-          "description": "Removed in 4.0. app-level probes were never applied; use containers[].probes",
-          "const": "REMOVED in universal-template 4.0: app-level probes were never applied; use containers[].probes"
-        },
-        "envs": {
-          "description": "Removed in 4.0. app-level envs were never applied; use containers[].envs",
-          "const": "REMOVED in universal-template 4.0: app-level envs were never applied; use containers[].envs"
-        },
-        "resources": {
-          "description": "Removed in 4.0. app-level resources were never applied; use containers[].resources",
-          "const": "REMOVED in universal-template 4.0: app-level resources were never applied; use containers[].resources"
-        },
-        "podAnnotations": {
-          "description": "Removed in 4.0. was never applied; use app.extraAnnotations",
-          "const": "REMOVED in universal-template 4.0: was never applied; use app.extraAnnotations"
         }
       },
       "allOf": [
@@ -642,10 +598,6 @@
           "items": {
             "$ref": "#/definitions/volumeMount"
           }
-        },
-        "capabilities": {
-          "description": "Removed in 4.0. was never applied; use securityContext.capabilities",
-          "const": "REMOVED in universal-template 4.0: was never applied; use securityContext.capabilities"
         }
       }
     },
@@ -697,11 +649,7 @@
       "properties": {
         "name": {
           "type": "string",
-          "description": "Exact Service name"
-        },
-        "nameSuffix": {
-          "type": "string",
-          "description": "Service name <fullName>-<nameSuffix>"
+          "description": "Exact Service name; required for every Service but the first, which defaults to <fullName>"
         },
         "type": {
           "enum": [

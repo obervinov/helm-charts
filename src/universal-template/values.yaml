@@ -22,8 +22,10 @@ applications: []
 #       # PVCs, ingress, configMap, secret of this application are rendered)
 #       type: deployment
 #       replicas: 1
+#       # Labels of the workload and its pods (chart labels such as appselector cannot be overridden)
 #       extraLabels:
-#         app.kubernetes.io/instance: "app1"
+#         tier: backend
+#       # Annotations of the pod template (every workload type)
 #       extraAnnotations:
 #         checksum/values.yaml: "helm/values.yaml"
 #       # Network policy for the application
@@ -96,7 +98,8 @@ applications: []
 #               containerPort: 80
 #               protocol: TCP
 #           # Mounts of this container only (name, mountPath required; readOnly, subPath, subPathExpr,
-#           # mountPropagation, recursiveReadOnly optional). Names refer to app.volumes or app.volumeClaimTemplates.
+#           # mountPropagation, recursiveReadOnly optional). Names refer to app.volumes, app.volumeClaimTemplates,
+#           # or volume-configs / volume-secrets (the chart's ConfigMap and Secret, see configMap and secret below).
 #           volumeMounts:
 #             - name: data
 #               mountPath: /data
@@ -105,6 +108,9 @@ applications: []
 #               readOnly: true
 #             - name: state
 #               mountPath: /state
+#             - name: volume-configs
+#               mountPath: /configs
+#               readOnly: true
 #           probes:
 #             livenessProbe:
 #               httpGet:
@@ -145,7 +151,7 @@ applications: []
 #               memory: "512Mi"
 #               cpu: "500m"
 #       # Pod volumes: raw Kubernetes volume sources, rendered as is (any number, any type).
-#       # `volume-configs` and `volume-secrets` are reserved for configMap/secret below.
+#       # `volume-configs` and `volume-secrets` are reserved: the chart adds them for configMap.files / secret.data.
 #       volumes:
 #         - name: cache
 #           emptyDir:
@@ -216,8 +222,8 @@ applications: []
 #         parallelism: 1
 #         completions: 1
 #
-#     # Services. The first one defaults to the name <fullName>; others need `name` (exact) or
-#     # `nameSuffix` (<fullName>-<suffix>). The selector defaults to the pods of this application;
+#     # Services. The first one defaults to the name <fullName>; every other one needs `name`.
+#     # The selector defaults to the pods of this application;
 #     # `selectApp: <application name>` selects another application of the release,
 #     # `selector` is a raw label map. Service names must be unique in the release.
 #     services:
@@ -241,7 +247,7 @@ applications: []
 #             port: 80
 #             targetPort: 80
 #             protocol: TCP
-#       - nameSuffix: worker
+#       - name: my-app-worker
 #         type: ClusterIP
 #         selectApp: worker
 #         ports:
@@ -250,7 +256,8 @@ applications: []
 #             targetPort: 9090
 #             protocol: TCP
 #
-#     # Standalone PVCs. Name <fullName>-<name>, or exactly `claimName` (adopt an existing claim).
+#     # Standalone PVCs. Name <fullName>-<name>, or exactly `claimName` (adopt an existing claim: it needs
+#     # helm ownership metadata or `helm upgrade --take-ownership`, and must keep `keep: true`).
 #     # Every claim gets helm.sh/resource-policy: keep (survives helm uninstall) unless keep: false.
 #     # Mount them through app.volumes (persistentVolumeClaim.claimName) + volumeMounts.
 #     persistentVolumeClaims:
@@ -285,20 +292,17 @@ applications: []
 #     # Description of the ConfigMap
 #     # The contents of the config can be set via
 #     # `--set-file "applications[0].configMap.files[0].data"="config.json"`
-#     # `mountPath` - mounts the ConfigMap (volume `volume-configs`) into every container of the pod;
-#     #               leave it unset and use volumeMounts with name `volume-configs` to mount it selectively
+#     # The pod gets the volume `volume-configs`; mount it with containers[].volumeMounts (name: volume-configs)
 #     # `files[0].name` - the name of the file in the container
 #     # `files[0].data` - the config body is set via the --set-file parameter
 #     configMap:
-#       mountPath: "/configs"
 #       files:
 #         - name: "config.json"
-#           data: {}
+#           data: '{"key": "value"}'   # usually set with --set-file
 
 #     # Description of the Secret
-#     # `mountPath` - mounts the Secret (volume `volume-secrets`) into every container of the pod
+#     # The pod gets the volume `volume-secrets`; mount it with containers[].volumeMounts (name: volume-secrets)
 #     secret:
-#       mountPath: "/secrets"
 #       data: |
 #         username: admin
 #         password: admin
@@ -319,10 +323,11 @@ applications: []
 #             - list
 
 #     # Description of the Monitoring
-#     # The monitoring section is used to create a ServiceMonitor for Prometheus
+#     # ServiceMonitor / PodMonitor <fullName>-<name>, selecting the Services / pods of this application.
+#     # kind defaults to ServiceMonitor.
 #     monitoring:
 #       prometheus:
-#         - name: ServiceMonitor1
+#         - name: metrics
 #           apiVersion: monitoring.coreos.com/v1
 #           kind: ServiceMonitor
 #           # Don't set the namespace if you want to use the release namespace
@@ -333,7 +338,7 @@ applications: []
 #               path: /metrics
 #               interval: 15s
 #               scheme: http
-#         - name: PodMonitor1
+#         - name: pods
 #           apiVersion: monitoring.coreos.com/v1
 #           kind: PodMonitor
 #           namespacesSelector:
