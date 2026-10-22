@@ -7,6 +7,9 @@ Cross-reference checks that values.schema.json cannot express. Rendered once, fr
 {{- $services := list -}}
 {{- $claims   := dict -}}
 {{- range .Values.applications -}}
+{{-   if hasKey $apps .name -}}
+{{-     fail (printf "applications: the name %q is used twice; every application of the release needs its own name" .name) -}}
+{{-   end -}}
 {{-   $_ := set $apps .name true -}}
 {{- end -}}
 {{- range $application := .Values.applications -}}
