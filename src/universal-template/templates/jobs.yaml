@@ -1,20 +1,13 @@
 {{- range .Values.applications }}
 {{-   if eq (dig "app" "type" "none" .) "job" }}
 {{-     $fullName := include "universal-template.fullName" (list $ .name) }}
-{{-     $job      := .app.job | default dict }}
 ---
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ printf "%s-%d" $fullName (now | unixEpoch) | quote }}
+  name: {{ printf "%s-%s" $fullName (now | unixEpoch) | quote }}
   namespace: {{ $.Release.Namespace | quote }}
   {{- include "universal-template.metadata" (dict "root" $ "fullName" $fullName "labels" .app.extraLabels) | nindent 2 }}
-spec:
-  parallelism: {{ $job.parallelism | default 1 | toJson }}
-  completions: {{ $job.completions | default 1 | toJson }}
-  backoffLimit: {{ $job.backoffLimit | default 3 | toJson }}
-  activeDeadlineSeconds: {{ $job.activeDeadlineSeconds | default 600 | toJson }}
-  ttlSecondsAfterFinished: {{ $job.ttlSecondsAfterFinished | default 300 | toJson }}
-  template: {{- include "universal-template.podTemplate" (dict "root" $ "application" . "fullName" $fullName "restartPolicy" ($job.restartPolicy | default "Never")) | nindent 4 }}
+spec: {{- include "universal-template.jobSpec" (dict "root" $ "application" . "fullName" $fullName "settings" .app.job "activeDeadlineSeconds" 600) | nindent 2 }}
 {{-   end }}
 {{- end }}

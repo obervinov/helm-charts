@@ -15,12 +15,6 @@ spec:
   successfulJobsHistoryLimit: {{ dig "successfulJobsHistoryLimit" 1 $cronJob | toJson }}
   concurrencyPolicy: {{ $cronJob.concurrencyPolicy | default "Forbid" | quote }}
   jobTemplate:
-    spec:
-      parallelism: {{ $cronJob.parallelism | default 1 | toJson }}
-      completions: {{ $cronJob.completions | default 1 | toJson }}
-      backoffLimit: {{ $cronJob.backoffLimit | default 3 | toJson }}
-      activeDeadlineSeconds: {{ $cronJob.activeDeadlineSeconds | default 300 | toJson }}
-      ttlSecondsAfterFinished: {{ $cronJob.ttlSecondsAfterFinished | default 300 | toJson }}
-      template: {{- include "universal-template.podTemplate" (dict "root" $ "application" . "fullName" $fullName "restartPolicy" ($cronJob.restartPolicy | default "Never")) | nindent 8 }}
+    spec: {{- include "universal-template.jobSpec" (dict "root" $ "application" . "fullName" $fullName "settings" $cronJob "activeDeadlineSeconds" 300) | nindent 6 }}
 {{-   end }}
 {{- end }}

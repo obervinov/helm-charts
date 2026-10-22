@@ -13,6 +13,21 @@ spec:
 
 
 {{/*
+spec of a Job, and jobTemplate.spec of a CronJob. A key that is not set takes its default; 0 is kept.
+Usage: include "universal-template.jobSpec" (dict "root" $ "application" $application "fullName" $fullName "settings" $application.app.job "activeDeadlineSeconds" 600)
+*/}}
+{{- define "universal-template.jobSpec" -}}
+{{- $settings := .settings | default dict -}}
+{{- $spec     := dict -}}
+{{- range $key, $default := dict "parallelism" 1 "completions" 1 "backoffLimit" 3 "activeDeadlineSeconds" .activeDeadlineSeconds "ttlSecondsAfterFinished" 300 -}}
+{{-   $_ := set $spec $key (dig $key $default $settings) -}}
+{{- end -}}
+{{- toYaml $spec }}
+template: {{- include "universal-template.podTemplate" (dict "root" .root "application" .application "fullName" .fullName "restartPolicy" (dig "restartPolicy" "Never" $settings)) | nindent 2 }}
+{{- end }}
+
+
+{{/*
 Pod spec. Values are rendered as data (toYaml) or as quoted scalars, so no value can add keys.
 */}}
 {{- define "universal-template.podSpec" -}}
