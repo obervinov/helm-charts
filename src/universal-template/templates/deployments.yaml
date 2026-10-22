@@ -1,100 +1,20 @@
-{{- if .Values.applications                                                               }}
-{{-   range .Values.applications                                                          }}
-{{-     if .app                                                                           }}
-{{-       if eq .app.type "deployment"                                                    }}
-{{-         $configMap          := .configMap                                             }}
-{{-         $secret             := .secret                                                }}
-{{-         $service            := .service                                               }}
-{{-         $name               := .name                                                  }}
-{{-         $namespace          := $.Release.Namespace                                    }}
-{{-         $fullName           := include "universal-template.fullName" (list $ . $name) }}
-{{-         $app                := .app                                                   }}
-{{-         $extraLabels        := $app.extraLabels                                       }}
-{{-         $replicas           := $app.replicas                                          }}
-{{-         $extraAnnotations   := $app.extraAnnotations                                  }}
-{{-         $imagePullSecrets   := $app.imagePullSecrets                                  }}
-{{-         $initContainers     := $app.initContainers                                    }}
-{{-         $containers         := $app.containers                                        }}
-{{-         $envs               := $app.envs                                              }}
-{{-         $resources          := $app.resources                                         }}
-{{-         $emptyDirVolume     := $app.emptyDirVolume                                    }}
-{{-         $persistentVolume   := $app.persistentVolume                                  }}
-{{-         $tolerations        := $app.tolerations                                       }}
-{{-         $affinity           := $app.affinity                                          }}
-{{          $nodeSelector       := $app.nodeSelector                                      }}
-{{-         $probes             := $app.probes                                            }}
-{{          $externalSecrets    := $app.externalSecrets                                   }}
-{{          $externalConfigMaps := $app.externalConfigMaps                                }}
-{{          $rbac               := .rbac                                                  }}
+{{- range .Values.applications }}
+{{-   if eq (dig "app" "type" "none" .) "deployment" }}
+{{-     $fullName := include "universal-template.fullName" (dict "root" $ "name" .name) }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ $fullName }}
-  namespace: {{ $namespace }}
-  labels:
-    {{- include "universal-template.labels" $ | nindent 4 }}
-    {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 4 }}
-    {{- if $extraLabels }}
-    {{-   toYaml $extraLabels | nindent 4 }}
-    {{- end }}
+  name: {{ $fullName | quote }}
+  namespace: {{ $.Release.Namespace | quote }}
+  {{- include "universal-template.metadata" (dict "root" $ "fullName" $fullName "labels" .app.extraLabels) | nindent 2 }}
 spec:
-  {{- if $replicas }}
-  replicas: {{ $replicas }}
-  {{- else }}
-  replicas: 1
+  replicas: {{ dig "replicas" 1 .app | toJson }}
+  {{- with .app.strategy }}
+  strategy: {{- toYaml . | nindent 4 }}
   {{- end }}
   selector:
-    matchLabels:
-      {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 6 }}
-  template:
-    metadata:
-      {{- if $extraAnnotations }}
-      annotations: {{- toYaml $extraAnnotations | nindent 8 }}
-      {{- end }}
-      labels:
-        {{- include "universal-template.labels" $ | nindent 8 }}
-        {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 8 }}
-      {{- if $extraLabels }}
-      {{-   toYaml $extraLabels | nindent 8 }}
-      {{- end }}
-    spec:
-      {{- if $rbac }}
-      {{-   include "universal-template.serviceAccount" (list $fullName $rbac) | nindent 6 }}
-      {{- end }}
-      {{- if $affinity }}
-      affinity: {{- toYaml $affinity | nindent 8 }}
-      {{- end }}
-      {{- if $nodeSelector }}
-      nodeSelector: {{- toYaml $nodeSelector | nindent 8 }}
-      {{- end }}
-      {{- if $tolerations }}
-      tolerations: {{- toYaml $tolerations | nindent 8 }}
-      {{- end }}
-      {{- if $initContainers }}
-      initContainers:
-      {{-   range $initContainers }}
-      {{-     $initContainerData := dict "app" . "name" .name "configMap" $configMap "secret" $secret "externalSecrets" $externalSecrets "externalConfigMaps" $externalConfigMaps "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
-      {{- include "universal-template.container.template" $initContainerData | nindent 8 }}
-      {{-   end }}
-      {{- end }}
-      containers:
-      {{- range $containers }}
-      {{- $containerData := dict "app" . "name" .name "configMap" $configMap "secret" $secret "externalSecrets" $externalSecrets "externalConfigMaps" $externalConfigMaps "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
-      {{- include "universal-template.container.template" $containerData | nindent 8 }}
-      {{- end }}
-      {{- if or $configMap $secret $persistentVolume $emptyDirVolume $externalSecrets $externalConfigMaps }}
-      {{-   $volumesData := dict "targetType" "deployment" "fullName" $fullName "configMap" $configMap "secret" $secret "externalSecrets" $externalSecrets "externalConfigMaps" $externalConfigMaps "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
-      volumes: {{- include "universal-template.volumes.template" $volumesData | nindent 8 }}
-      {{- end }}
-      {{- if $imagePullSecrets }}
-      imagePullSecrets:
-      {{-   range $imagePullSecrets }}
-      - name: {{ . }}
-      {{-   end }}
-      {{- end }}
-...
-{{-       end }}
-{{-     end }}
+    matchLabels: {{- include "universal-template.selectorLabels" $fullName | nindent 6 }}
+  template: {{- include "universal-template.podTemplate" (dict "root" $ "application" . "fullName" $fullName) | nindent 4 }}
 {{-   end }}
 {{- end }}

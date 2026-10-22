@@ -1,54 +1,24 @@
-{{- if .Values.applications -}}
-{{-   range .Values.applications -}}
-{{-     if and (.ingress) (.service) -}}
-{{-       $name             := .name }}
-{{-       $fullName         := include "universal-template.fullName" (list $ . $name) }}
-{{-       $namespace        := $.Release.Namespace }}
-{{-       $apiVersion       := .ingress.apiVersion }}
-{{-       $kind             := .ingress.Kind }}
-{{-       $extraAnnotations := .ingress.extraAnnotations }}
-{{-       $useTLS           := .ingress.useTLS }}
-{{-       $fqdn             := .ingress.fqdn }}
-{{-       $paths            := .ingress.paths }}
-{{-       $ingressClassName := .ingress.ingressClassName }}
-apiVersion: {{ default "networking.k8s.io/v1" $apiVersion }}
-kind: {{ default "Ingress" $kind }}
+{{- range $application := .Values.applications }}
+{{-   with .ingress }}
+{{-     $fullName := include "universal-template.fullName" (dict "root" $ "name" $application.name) }}
+{{-     $default  := include "universal-template.ingress.defaultService" (dict "root" $ "application" $application) }}
+{{-     $paths := list }}
+{{-     range .paths }}
+{{-       $port := empty .servicePortName | ternary (dict "number" .servicePort) (dict "name" .servicePortName) }}
+{{-       $backend := dict "service" (dict "name" (.serviceName | default $default) "port" $port) }}
+{{-       $paths = append $paths (dict "path" .path "pathType" .pathType "backend" $backend) }}
+{{-     end }}
+{{-     $spec := dict "rules" (list (dict "host" .fqdn "http" (dict "paths" $paths))) "ingressClassName" (.ingressClassName | default "nginx") }}
+{{-     if .useTLS }}
+{{-       $_ := set $spec "tls" (list (dict "hosts" (list .fqdn) "secretName" (printf "%s-tls" $fullName))) }}
+{{-     end }}
+---
+apiVersion: {{ .apiVersion | default "networking.k8s.io/v1" | quote }}
+kind: {{ .kind | default "Ingress" | quote }}
 metadata:
-  name: {{ $fullName }}
-  namespace: {{ $namespace }}
-  labels:
-    {{- include "universal-template.labels" $ | nindent 4 }}
-    {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
-  {{- if $extraAnnotations }}
-  annotations:
-  {{-   toYaml $extraAnnotations | nindent 4 }}
-  {{- end }}
-spec:
-  {{- if $useTLS }}
-  tls:
-    - hosts:
-        - {{ $fqdn }}
-      secretName: {{ $fullName }}-tls
-  {{- end }}
-  rules:
-  - host: {{ $fqdn }}
-    http:
-      paths:
-      {{- range $paths }}
-      - path: {{ .path }}
-        pathType: {{ .pathType }}
-        backend:
-          service:
-            name: {{ $fullName }}
-            port:
-              {{- if .servicePortName }}
-              name: {{ .servicePortName }}
-              {{- else }}
-              number: {{ .servicePort }}
-              {{- end }}
-      {{- end }}
-  ingressClassName: {{ default "nginx" $ingressClassName }}
-...
-{{-     end -}}
+  name: {{ $fullName | quote }}
+  namespace: {{ $.Release.Namespace | quote }}
+  {{- include "universal-template.metadata" (dict "root" $ "fullName" $fullName "annotations" .extraAnnotations) | nindent 2 }}
+spec: {{- toYaml $spec | nindent 2 }}
 {{-   end }}
 {{- end }}

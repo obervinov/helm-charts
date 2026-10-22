@@ -1,0 +1,96 @@
+# A Deployment with a sidecar: two standalone PVCs adopted by exact name,
+# one Secret mounted twice with different items, per-container mounts,
+# two Services selecting the same pod, Recreate strategy.
+---
+applications:
+  - name: media
+    app:
+      type: deployment
+      replicas: 1
+      strategy:
+        type: Recreate
+      nodeSelector:
+        kubernetes.io/hostname: node-1
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: my-app-data
+        - name: library
+          persistentVolumeClaim:
+            claimName: my-app-library
+        - name: sftp-users
+          secret:
+            secretName: my-app-sftp
+            items:
+              - key: users.conf
+                path: users.conf
+        - name: sftp-host-keys
+          secret:
+            secretName: my-app-sftp
+            items:
+              - key: ssh_host_ed25519_key
+                path: ssh_host_ed25519_key
+      containers:
+        - name: server
+          image:
+            repository: registry.example.com/media-server
+            tag: "1.0.0"
+          ports:
+            - name: ui
+              containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: library
+              mountPath: /library
+              readOnly: true
+        - name: sftp
+          image:
+            repository: registry.example.com/sftp
+            tag: "1.0.0"
+          ports:
+            - name: sftp
+              containerPort: 22
+              protocol: TCP
+          volumeMounts:
+            - name: library
+              mountPath: /srv/sftp/library
+            - name: sftp-users
+              mountPath: /etc/sftp
+            - name: sftp-host-keys
+              mountPath: /host-keys
+    persistentVolumeClaims:
+      - name: data
+        claimName: my-app-data
+        size: 5Gi
+        storageClassName: standard
+        accessModes: [ReadWriteOnce]
+      - name: library
+        claimName: my-app-library
+        size: 100Gi
+        storageClassName: standard
+    services:
+      - name: my-app-media
+        type: ClusterIP
+        ports:
+          - name: ui
+            port: 8080
+            targetPort: 8080
+            protocol: TCP
+      - name: my-app-media-sftp
+        type: ClusterIP
+        ports:
+          - name: sftp
+            port: 22
+            targetPort: 22
+            protocol: TCP
+    ingress:
+      useTLS: true
+      fqdn: media.example.com
+      ingressClassName: nginx
+      paths:
+        - path: /
+          pathType: Prefix
+          serviceName: my-app-media
+          servicePortName: ui

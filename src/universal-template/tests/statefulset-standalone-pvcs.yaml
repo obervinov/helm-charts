@@ -1,0 +1,149 @@
+# A StatefulSet on standalone PVCs (no volumeClaimTemplates), two init containers
+# with their own mounts, a privileged main container and a read-only sidecar,
+# plus a CronJob with two emptyDirs in the same release.
+---
+applications:
+  - name: client
+    app:
+      type: statefulset
+      serviceName: my-app
+      updateStrategy:
+        type: RollingUpdate
+      nodeSelector:
+        kubernetes.io/hostname: node-1
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: my-app-data
+        - name: config
+          persistentVolumeClaim:
+            claimName: my-app-config
+        - name: network
+          persistentVolumeClaim:
+            claimName: my-app-network
+        - name: network-templates
+          configMap:
+            name: my-app-network-templates
+        - name: ui-credentials
+          secret:
+            secretName: my-app-ui-credentials
+        - name: network-credentials
+          secret:
+            secretName: my-app-network-credentials
+        - name: sftp-users
+          secret:
+            secretName: my-app-sftp
+            items:
+              - key: users.conf
+                path: users.conf
+        - name: sftp-host-keys
+          secret:
+            secretName: my-app-sftp
+            items:
+              - key: ssh_host_ed25519_key
+                path: ssh_host_ed25519_key
+      initContainers:
+        - name: init-network-config
+          image:
+            repository: registry.example.com/busybox
+            tag: "1.0.0"
+          volumeMounts:
+            - name: network
+              mountPath: /target-dir
+            - name: network-templates
+              mountPath: /templates
+            - name: network-credentials
+              mountPath: /credentials
+        - name: init-app-configs
+          image:
+            repository: registry.example.com/busybox
+            tag: "1.0.0"
+          volumeMounts:
+            - name: config
+              mountPath: /target-dir
+            - name: ui-credentials
+              mountPath: /source-dir
+      containers:
+        - name: client
+          image:
+            repository: registry.example.com/client
+            tag: "1.0.0"
+          securityContext:
+            privileged: true
+            capabilities:
+              add: [NET_ADMIN]
+          ports:
+            - name: ui
+              containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: config
+              mountPath: /config
+            - name: network
+              mountPath: /etc/app/network
+        - name: sftp
+          image:
+            repository: registry.example.com/sftp
+            tag: "1.0.0"
+          ports:
+            - name: sftp
+              containerPort: 22
+              protocol: TCP
+          volumeMounts:
+            - name: data
+              mountPath: /srv/sftp/data
+              readOnly: true
+            - name: sftp-users
+              mountPath: /etc/sftp
+            - name: sftp-host-keys
+              mountPath: /host-keys
+    persistentVolumeClaims:
+      - {name: data, claimName: my-app-data, size: 100Gi, storageClassName: standard}
+      - {name: config, claimName: my-app-config, size: 1Gi, storageClassName: standard}
+      - {name: network, claimName: my-app-network, size: 1Gi, storageClassName: standard}
+    services:
+      - name: my-app-ui
+        type: ClusterIP
+        ports:
+          - {name: ui, port: 8080, targetPort: 8080, protocol: TCP}
+      - name: my-app-sftp
+        type: ClusterIP
+        ports:
+          - {name: sftp, port: 22, targetPort: 22, protocol: TCP}
+
+  - name: refresh-cache
+    app:
+      type: cronjob
+      cronJob:
+        schedule: "0 3 * * *"
+        concurrencyPolicy: Forbid
+        ttlSecondsAfterFinished: 86400
+        failedJobsHistoryLimit: 1
+      volumes:
+        - name: cli-config
+          emptyDir: {}
+        - name: watch
+          emptyDir: {}
+      containers:
+        - name: refresh-cache
+          image:
+            repository: registry.example.com/client
+            tag: "1.0.0"
+          volumeMounts:
+            - name: cli-config
+              mountPath: /config
+            - name: watch
+              mountPath: /cache
+
+  # Service-only group: exposes the client pods under another name, no workload of its own.
+  - name: public
+    app:
+      type: none
+    services:
+      - name: my-app-public
+        type: LoadBalancer
+        selectApp: client
+        ports:
+          - {name: ui, port: 80, targetPort: 8080, protocol: TCP}

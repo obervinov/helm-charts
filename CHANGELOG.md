@@ -3,6 +3,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## v1.3.0 - 2026-10-22
+### What's Changed
+**Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.2.13...v1.3.0 by @obervinov
+#### 💥 Breaking Changes
+* `universal-template` 4.0.1 is the release of this contract. 4.0.0 was an unreviewed pre-release build of the same branch, published by CI before review: do not use it
+* `universal-template` 4.0.1: the values contract for volumes, Services and claims changes; object names and the Deployment/StatefulSet selectors do not. `app.emptyDirVolume`, `app.persistentVolume`, `app.externalSecrets`, `app.externalConfigMaps`, `configMap.mountPath`, `secret.mountPath` and the single-map `service` are removed, see "Migrating from 3.x" in the chart README
+* `universal-template`: a container mounts only its own `volumeMounts`; 3.x mounted every volume, and the chart's ConfigMap/Secret, into every container, init containers included. The chart's ConfigMap and Secret are the pod volumes `volume-configs` / `volume-secrets`, mounted by name
+* `universal-template`: pod templates no longer carry the chart version labels (`version`, `app.kubernetes.io/version`): pods restart once on the upgrade to 4.x and no longer on every chart release
+* `universal-template`: Service and NetworkPolicy selectors add `app.kubernetes.io/instance: <release>` next to `appselector`
+* `universal-template`: `app.extraAnnotations` go on the pod template for every workload type, and no longer on the StatefulSet/CronJob object
+* `universal-template`: Prometheus monitors are named `<fullName>-<name>`
+* `universal-template`: `values.schema.json` is hand-written and strict, so unknown keys and the removed 3.x keys fail `helm lint`; keys 3.x accepted but never applied (`app.probes`, `app.envs`, `app.resources`, `app.cronjob`) fail too
+* `universal-template`: CronJob `failedJobsHistoryLimit` / `successfulJobsHistoryLimit` default to `1` instead of `0`
+#### 🚀 Features
+* `universal-template`: `app.volumes` (raw volume sources, any number) and per-container `volumeMounts` with `readOnly` / `subPath`
+* `universal-template`: `persistentVolumeClaims` at the application level, with an exact `claimName` to adopt an existing claim and `helm.sh/resource-policy: keep` by default
+* `universal-template`: `app.volumeClaimTemplates` as a list; a StatefulSet can also run on standalone claims without any claim template
+* `universal-template`: `services` as a list, with explicit names, `selectApp` to select another application of the release, a raw `selector`, and `clusterIP`
+* `universal-template`: `ingress.paths[].serviceName` routes to any Service of the release
+* `universal-template`: `app.strategy` (Deployment), `app.updateStrategy` and `app.serviceName` (StatefulSet), `app.type: none` for an application without a workload
+* `universal-template`: rendering fails with a named cause for a duplicate application, volume, Service or claim name, a mount of an undeclared volume, an unknown `selectApp` or ingress `serviceName`, `claimName` with `keep: false`, and a `secret.data` that is not a YAML map
+* `universal-template`: the schema rejects `rbac.create` together with `rbac.useExistingServiceAccount`, unknown keys in monitor `endpoints`, and `app.cronJob` / `app.job` on another workload type
+* `.github/workflows/pr.yaml`: keep a `values.schema.json` marked "do not regenerate" instead of overwriting it with `helm schema-gen`
+#### 🐛 Bug Fixes
+* `universal-template`: Job and CronJob pods carried no labels, so no Service, NetworkPolicy or PodMonitor could select them
+* `universal-template`: ServiceMonitor/PodMonitor selected `appselector` built from the monitor name, rendered a null `matchLabels`, and rendered no endpoints when `kind` was omitted; `honorLabels: false` was ignored
+* `universal-template`: values are rendered as data or as quoted scalars, so a newline in any value (a name, a path, an ingress host, a ServiceAccount, an image pull secret) can no longer inject extra YAML such as `hostNetwork: true`; the schema also restricts names to DNS names and hosts, paths and API versions to strings without whitespace
+* `universal-template`: Job and CronJob `backoffLimit`, `ttlSecondsAfterFinished` and `activeDeadlineSeconds` of `0` were replaced by their defaults
+* `universal-template`: invalid YAML in `secret.data` rendered a Secret with the key `Error` holding the parse error
+* `universal-template`: the ConfigMap volume listed files without `data`, which the ConfigMap leaves out, and lowercased the file names it pointed at
+* `universal-template`: two applications with the same monitor name rendered monitors with the same name
+* `universal-template`: a StatefulSet always rendered a volumeClaimTemplate for `persistentVolume` and never mounted a standalone claim
+* `universal-template`: rendering crashed with a nil pointer for an application with only a Service
+* `universal-template`: the secret mount was dropped when it was the only chart-managed mount of a container
+* `universal-template`: `values.yaml` documented `cronjob` while the template read `cronJob`; `ingress.kind` was read as `ingress.Kind`; the Job spec carried `backoffLimit` twice; NOTES printed an empty ingress host; several Ingresses in one release ran together in one document
+* `universal-template`: probes render only the probes that are set instead of `null` for the missing ones
+
+
 ## v1.2.13 - 2026-09-18
 ### What's Changed
 #### 📚 Documentation

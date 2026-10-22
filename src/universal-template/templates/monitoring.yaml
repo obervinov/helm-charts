@@ -1,64 +1,33 @@
-{{- if .Values.applications }}
-{{-   range .Values.applications }}
-{{-     if .monitoring }}
-{{-       if .monitoring.prometheus }}
-{{-         range .monitoring.prometheus }}
-{{-           $apiVersion         := .apiVersion }}
-{{-           $kind               := .kind }}
-{{-           $name               := .name }}
-{{-           $fullName           := include "universal-template.fullName" (list $ . $name) }}
-{{-           $namespace          := $.Release.Namespace }}
-{{-           $namespacesSelector := .namespacesSelector }}
-{{-           $endpoints          := .endpoints }}
-{{-           $jobLabel           := .jobLabel }}
----
-apiVersion: {{ default "monitoring.coreos.com/v1" $apiVersion }}
-kind: {{ default "ServiceMonitor" $kind }}
-metadata:
-  labels:
-    {{- include "universal-template.labels" $ | nindent 4 }}
-    {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 4 }}
-    {{- include "universal-template.prometheus.labels" $ | nindent 4 }}
-  name: {{ $fullName }}
-  namespace: {{ $namespace }}
-spec:
-{{- if $namespacesSelector }}
-  namespaceSelector:
-    matchNames:
-    {{- range $namespacesSelector }}
-      - {{ . }}
-    {{- end }}
-{{- else }}
-  namespaceSelector:
-    matchNames:
-      - {{ $namespace }}
-{{- end }}
-  selector:
-    matchLabels:
-      {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 4 }}
-{{- if eq $kind "ServiceMonitor" }}
-  endpoints:
-{{-   range $endpoints }}
-  - bearerTokenFile: {{ .bearerTokenFile }}
-    honorLabels: {{ default true .honorLabels }}
-    port: {{ .port }}
-    path: {{ default "/metrics" .path }}
-    interval: {{ default "30s" .interval }}
-    scheme: {{ default "http" .scheme }}
-{{-   end }}
-{{- else if eq $kind "PodMonitor" }}
-  podMetricsEndpoints:
-{{-   range $endpoints }}
-  - port: {{ .port }}
-    path: {{ default "/metrics" .path }}
-    interval: {{ default "30s" .interval }}
-    scheme: {{ default "http" .scheme }}
-{{-   end }}
-{{- end }}
-  jobLabel: {{ default "k8s-app" $jobLabel }}
-...
-{{-         end }}
+{{- /*
+A ServiceMonitor selects the Services of its application, a PodMonitor its pods,
+both by the application's pod labels (appselector + instance). kind defaults to ServiceMonitor.
+*/}}
+{{- range .Values.applications }}
+{{-   $fullName := include "universal-template.fullName" (dict "root" $ "name" .name) }}
+{{-   range (dig "monitoring" "prometheus" list .) }}
+{{-     $kind      := .kind | default "ServiceMonitor" }}
+{{-     $endpoints := list }}
+{{-     range .endpoints }}
+{{-       $endpoint := dict "port" .port "path" (.path | default "/metrics") "interval" (.interval | default "30s") "scheme" (.scheme | default "http") }}
+{{-       if eq $kind "ServiceMonitor" }}
+{{-         $_ := set $endpoint "honorLabels" (dig "honorLabels" true .) }}
+{{-         $_ := merge $endpoint (pick . "bearerTokenFile") }}
 {{-       end }}
+{{-       $endpoints = append $endpoints $endpoint }}
 {{-     end }}
+---
+apiVersion: {{ .apiVersion | default "monitoring.coreos.com/v1" | quote }}
+kind: {{ $kind | quote }}
+metadata:
+  name: {{ printf "%s-%s" $fullName .name | quote }}
+  namespace: {{ $.Release.Namespace | quote }}
+  {{- include "universal-template.metadata" (dict "root" $ "fullName" $fullName "labels" (dict "release" "kube-prometheus-stack" "jobLabel" $.Release.Name)) | nindent 2 }}
+spec:
+  namespaceSelector:
+    matchNames: {{- .namespacesSelector | default (list $.Release.Namespace) | toYaml | nindent 6 }}
+  selector:
+    matchLabels: {{- include "universal-template.podSelector" (dict "root" $ "fullName" $fullName) | nindent 6 }}
+  {{ eq $kind "ServiceMonitor" | ternary "endpoints" "podMetricsEndpoints" }}: {{- toYaml $endpoints | nindent 4 }}
+  jobLabel: {{ .jobLabel | default "k8s-app" | quote }}
 {{-   end }}
 {{- end }}

@@ -1,37 +1,24 @@
----
 Helm template version: {{ .Chart.Version }}
-
-{{- if .Values.applications }}
-{{-   range .Values.applications }}
-
-{{-     if .monitoring }}
-{{-       if .monitoring.prometheus }}
-{{-         range .monitoring.prometheus }}
+{{- range .Values.applications }}
+{{-   $fullName := include "universal-template.fullName" (dict "root" $ "name" .name) }}
+{{-   with dig "monitoring" "prometheus" list . }}
 ---
-Prometheus Operator has been enabled:
-{{-           if eq .kind "ServiceMonitor" }}
-+ ServiceMonitor/{{ .name }}
-{{-           end }}
-{{            if eq .kind "PodMonitor" }}
-+ PodMonitor/{{ .name }}
-{{-           end }}
-{{-         end }}
-{{-       end }}
+Prometheus Operator monitors of {{ $fullName }}:
+{{-     range . }}
++ {{ .kind | default "ServiceMonitor" }}/{{ $fullName }}-{{ .name }}
 {{-     end }}
-
-{{-     if .ingress }}
+{{-   end }}
+{{-   with .ingress }}
 ---
-Ingresses URLs:
-{{-       $name := .name }}
-{{-       if .ingress.useTLS }}
-https://{{ .fqdn }}
-{{-         else }}
-http://{{ .fqdn }}
-{{-         end }}
+Ingress URL: {{ ternary "https" "http" (.useTLS | default false) }}://{{ .fqdn }}
+{{-   end }}
+{{-   with .persistentVolumeClaims }}
+---
+PersistentVolumeClaims of {{ $fullName }}:
+{{-     range . }}
++ {{ include "universal-template.pvc.name" (dict "fullName" $fullName "claim" .) }}{{ if dig "keep" true . }} (helm.sh/resource-policy: keep, survives helm uninstall){{ end }}
 {{-     end }}
-
 {{-   end }}
 {{- end }}
 
 Repository with charts: https://github.com/obervinov/helm-charts
-Current chart template version: {{ $.Chart.Version }}

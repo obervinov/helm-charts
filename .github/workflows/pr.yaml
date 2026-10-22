@@ -104,9 +104,11 @@ jobs:
               exit 0
           fi
 
-          # Generate json-schemas
+          # Generate json-schemas (a hand-written schema marked "do not regenerate" is kept as is)
           printf "Creating json-schemas for chart: ${chart_name}\n"
-          if [[ -f "values.yaml" ]]; then
+          if [[ -f "values.schema.json" ]] && grep -q "do not regenerate" values.schema.json; then
+              printf "   values.schema.json is hand-written, keeping it\n"
+          elif [[ -f "values.yaml" ]]; then
               helm schema-gen values.yaml > values.schema.json
           else
               printf "   values in %s/values.yaml doesn't exist\n   merging *.example.yaml to values.yaml...\n" "${chart_name}"

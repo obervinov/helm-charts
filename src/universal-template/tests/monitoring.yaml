@@ -1,0 +1,42 @@
+# Two applications in one release, each with its own monitor. The selector of a monitor
+# is built from the application it belongs to (appselector + instance), so it matches
+# that application's Service (ServiceMonitor) or pods (PodMonitor). kind defaults to ServiceMonitor.
+---
+applications:
+  - name: api
+    app:
+      type: deployment
+      containers:
+        - name: api
+          image:
+            repository: registry.example.com/api
+            tag: "1.0.0"
+          ports:
+            - {name: metrics, containerPort: 9090, protocol: TCP}
+    services:
+      - type: ClusterIP
+        ports:
+          - {name: metrics, port: 9090, targetPort: metrics, protocol: TCP}
+    monitoring:
+      prometheus:
+        - name: metrics
+          endpoints:
+            - port: metrics
+              honorLabels: false
+  - name: worker
+    app:
+      type: deployment
+      containers:
+        - name: worker
+          image:
+            repository: registry.example.com/worker
+            tag: "1.0.0"
+          ports:
+            - {name: metrics, containerPort: 9090, protocol: TCP}
+    monitoring:
+      prometheus:
+        - name: pods
+          kind: PodMonitor
+          endpoints:
+            - port: metrics
+              interval: 15s

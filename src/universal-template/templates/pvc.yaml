@@ -1,37 +1,17 @@
-{{- if .Values.applications }}
-{{-   range .Values.applications }}
-{{-     if .app.persistentVolume }}
-{{-       if or (eq .app.type "deployment") (eq .app.type "cronjob") (eq .app.type "job") }}
-{{-         $name := .name }}
-{{-         $fullName := include "universal-template.fullName" (list $ . $name) }}
-{{-         $namespace := $.Release.Namespace }}
-{{-         $persistentVolume := .app.persistentVolume }}
+{{- range .Values.applications }}
+{{-   $fullName := include "universal-template.fullName" (dict "root" $ "name" .name) }}
+{{-   range .persistentVolumeClaims }}
+{{-     $annotations := deepCopy (.annotations | default dict) }}
+{{-     if dig "keep" true . }}
+{{-       $_ := set $annotations "helm.sh/resource-policy" "keep" }}
+{{-     end }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  labels:
-    {{- include "universal-template.labels" $ | nindent 4 }}
-    {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 4 }}
-  name: {{ $fullName }}-{{ $persistentVolume.name }}
-  namespace: {{ $namespace }}
-spec:
-  accessModes:
-  {{-         if $persistentVolume.accessModes }}
-  {{-           range $persistentVolume.accessModes }}
-    - {{ . }}
-  {{-           end }}
-  {{-         else }}
-    - ReadWriteOnce
-  {{-         end }}
-  resources:
-    requests:
-      storage: {{ $persistentVolume.size }}
-  {{-         if $persistentVolume.storageClassName }}
-  storageClassName: {{ $persistentVolume.storageClassName }}
-  {{-         end }}
-...
-{{-       end }}
-{{-     end }}
+  name: {{ include "universal-template.pvc.name" (dict "fullName" $fullName "claim" .) | quote }}
+  namespace: {{ $.Release.Namespace | quote }}
+  {{- include "universal-template.metadata" (dict "root" $ "fullName" $fullName "labels" .labels "annotations" $annotations) | nindent 2 }}
+spec: {{- include "universal-template.pvc.spec" . | nindent 2 }}
 {{-   end }}
 {{- end }}

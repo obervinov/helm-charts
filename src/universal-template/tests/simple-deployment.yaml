@@ -1,0 +1,29 @@
+# One Deployment behind one Service, no volumes.
+# Renders the same manifests as 3.x did with `service:` instead of `services:`,
+# except the deliberate 4.0 label changes (see "Migrating from 3.x" in the README).
+---
+applications:
+  - name: my-app
+    app:
+      type: deployment
+      replicas: 1
+      extraAnnotations:
+        linkerd.io/inject: "enabled"
+      containers:
+        - name: my-app
+          image:
+            repository: ghcr.io/example/my-app
+            tag: "v0.3.1"
+            pullPolicy: IfNotPresent
+          envs: []
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+    services:
+      - type: ClusterIP
+        ports:
+          - name: http
+            port: 8080
+            targetPort: http
+    ingress: {}

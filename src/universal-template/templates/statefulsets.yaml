@@ -1,117 +1,31 @@
-{{- if .Values.applications                                                               }}
-{{-   range .Values.applications                                                          }}
-{{-     if .app                                                                           }}
-{{-       if eq .app.type "statefulset"                                                   }}
-{{-         $configMap          := .configMap                                             }}
-{{-         $secret             := .secret                                                }}
-{{-         $service            := .service                                               }}
-{{-         $name               := .name                                                  }}
-{{-         $app                := .app                                                   }}
-{{-         $namespace          := $.Release.Namespace                                    }}
-{{-         $fullName           := include "universal-template.fullName" (list $ . $name) }}
-{{-         $extraLabels        := $app.extraLabels                                       }}
-{{-         $extraAnnotations   := $app.extraAnnotations                                  }}
-{{-         $replicas           := $app.replicas                                          }}
-{{-         $initContainers     := $app.initContainers                                    }}
-{{-         $containers         := $app.containers                                        }}
-{{-         $imagePullSecrets   := $app.imagePullSecrets                                 }}
-{{-         $persistentVolume   := $app.persistentVolume                                  }}
-{{-         $emptyDirVolume     := $app.emptyDirVolume                                    }}
-{{-         $tolerations        := $app.tolerations                                       }}
-{{-         $affinity           := $app.affinity                                          }}
-{{          $nodeSelector       := $app.nodeSelector                                      }}
-{{          $externalSecrets    := $app.externalSecrets                                   }}
-{{          $externalConfigMaps := $app.externalConfigMaps                                }}
-{{          $rbac               := .rbac                                                  }}
+{{- range .Values.applications }}
+{{-   if eq (dig "app" "type" "none" .) "statefulset" }}
+{{-     $fullName := include "universal-template.fullName" (dict "root" $ "name" .name) }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ $fullName }}
-  namespace: {{ $namespace }}
-  labels:
-    {{- include "universal-template.labels" $ | nindent 4 }}
-    {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 4 }}
-    {{- if $extraLabels }}
-    {{-   toYaml $extraLabels | nindent 4 }}
-    {{- end }}
-  {{- if $extraAnnotations }}
-  annotations: {{- toYaml $extraAnnotations | nindent 4 }}
-  {{- end }}
+  name: {{ $fullName | quote }}
+  namespace: {{ $.Release.Namespace | quote }}
+  {{- include "universal-template.metadata" (dict "root" $ "fullName" $fullName "labels" .app.extraLabels) | nindent 2 }}
 spec:
-  serviceName: {{ $fullName }}
-  replicas: {{ default 1 $replicas }}
+  serviceName: {{ .app.serviceName | default $fullName | quote }}
+  replicas: {{ dig "replicas" 1 .app | toJson }}
+  {{- with .app.updateStrategy }}
+  updateStrategy: {{- toYaml . | nindent 4 }}
+  {{- end }}
   selector:
-    matchLabels: {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 6 }}
-  template:
-    metadata:
-      labels:
-        {{- include "universal-template.labels" $ | nindent 8 }}
-        {{- include "universal-template.selectorLabels" (list $fullName )  | nindent 8 }}
-        {{- if $extraLabels }}
-        {{-   toYaml $extraLabels | nindent 8 }}
-        {{- end }}
-      {{- if $extraAnnotations }}
-      annotations: {{- toYaml $extraAnnotations | nindent 8 }}
-      {{- end }}
-    spec:
-      {{- if $rbac }}
-      {{-   include "universal-template.serviceAccount" (list $fullName $rbac) | nindent 6 }}
-      {{- end }}
-      {{- if $imagePullSecrets }}
-      imagePullSecrets:
-      {{-   range $imagePullSecrets }}
-        - name: {{ . }}
-      {{-   end }}
-      {{- end }}
-      {{- if $initContainers }}
-      initContainers:
-      {{-   range $initContainers }}
-      {{-     $initContainerData := dict "app" . "name" .name "configMap" $configMap "secret" $secret "externalSecrets" $externalSecrets "externalConfigMaps" $externalConfigMaps "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
-      {{- include "universal-template.container.template" $initContainerData | nindent 8 }}
-      {{-   end }}
-      {{- end }}
-      containers:
-      {{- range $containers }}
-      {{- $containerData := dict "app" . "name" .name "configMap" $configMap "secret" $secret "externalSecrets" $externalSecrets "externalConfigMaps" $externalConfigMaps "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
-      {{- include "universal-template.container.template" $containerData | nindent 8 }}
-      {{- end }}
-      {{- if or $configMap $secret $persistentVolume $emptyDirVolume $externalSecrets $externalConfigMaps }}
-      {{-   $volumesData := dict "targetType" "statefulset" "fullName" $fullName "configMap" $configMap "secret" $secret "externalSecrets" $externalSecrets "externalConfigMaps" $externalConfigMaps "persistentVolume" $persistentVolume "emptyDirVolume" $emptyDirVolume }}
-      volumes: {{-   include "universal-template.volumes.template" $volumesData | nindent 8 }}
-      {{- end }}
-      {{- if $tolerations }}
-      tolerations: {{- toYaml $tolerations | nindent 8 }}
-      {{- end }}
-      {{- if $affinity }}
-      affinity: {{- toYaml $affinity | nindent 8 }}
-      {{- end }}
-      {{- if $nodeSelector }}
-      nodeSelector: {{- toYaml $nodeSelector | nindent 8 }}
-      {{- end }}
-  {{- if $persistentVolume }}
+    matchLabels: {{- include "universal-template.selectorLabels" $fullName | nindent 6 }}
+  template: {{- include "universal-template.podTemplate" (dict "root" $ "application" . "fullName" $fullName) | nindent 4 }}
+  {{- with .app.volumeClaimTemplates }}
+  {{- /* immutable on a live StatefulSet: keep the rendered shape stable (volumeMode defaults to Filesystem) */}}
   volumeClaimTemplates:
+    {{- range . }}
     - apiVersion: v1
       kind: PersistentVolumeClaim
-      metadata:
-        name: {{ $persistentVolume.name }}
-      spec:
-        accessModes:
-        {{- if $persistentVolume.accessModes }}
-        {{-   range $persistentVolume.accessModes }}
-          - {{ . }}
-        {{-   end }}
-        {{- else }}
-          - ReadWriteOnce
-        {{- end }}
-        resources:
-          requests:
-            storage: {{ $persistentVolume.size }}
-        storageClassName: {{ $persistentVolume.storageClassName }}
-        volumeMode: {{ default "Filesystem" $persistentVolume.volumeMode }}
+      metadata: {{- pick . "name" "annotations" "labels" | toYaml | nindent 8 }}
+      spec: {{- include "universal-template.pvc.spec" (merge (omit . "name") (dict "volumeMode" "Filesystem")) | nindent 8 }}
+    {{- end }}
   {{- end }}
-...
-{{-       end }}
-{{-     end }}
 {{-   end }}
 {{- end }}

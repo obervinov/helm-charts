@@ -1,46 +1,22 @@
-{{- if .Values.applications                                                               }}
-{{-   range .Values.applications                                                          }}
-{{-     if .app                                                                           }}
-{{-       $app                  := .app                                                   }}
-{{-       if $app.networkPolicy                                                           }}
-{{-         $name               := .name                                                  }}
-{{-         $namespace          := $.Release.Namespace                                    }}
-{{-         $fullName           := include "universal-template.fullName" (list $ . $name) }}
-{{-         $extraLabels        := $app.extraLabels                                       }}
-{{-         $extraAnnotations   := $app.extraAnnotations                                  }}
-{{-         $networkPolicy      := $app.networkPolicy                                     }}
+{{- range $application := .Values.applications }}
+{{-   with dig "app" "networkPolicy" dict . }}
+{{-     $fullName := include "universal-template.fullName" (dict "root" $ "name" $application.name) }}
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ $fullName }}
-  namespace: {{ $namespace }}
-  labels:
-    {{- include "universal-template.labels" $ | nindent 4 }}
-    {{- include "universal-template.selectorLabels" (list $fullName) | nindent 4 }}
-    {{- if $extraLabels }}
-    {{- toYaml $extraLabels | nindent 4 }}
-    {{- end }}
-  {{- if $extraAnnotations }}
-  annotations: {{- toYaml $extraAnnotations | nindent 4 }}
-  {{- end }}
+  name: {{ $fullName | quote }}
+  namespace: {{ $.Release.Namespace | quote }}
+  {{- include "universal-template.metadata" (dict "root" $ "fullName" $fullName "labels" $application.app.extraLabels) | nindent 2 }}
 spec:
   podSelector:
-    matchLabels: {{- include "universal-template.selectorLabels" (list $fullName) | nindent 6 }}
-  {{- if $networkPolicy.policyTypes }}
-  policyTypes: {{- toYaml $networkPolicy.policyTypes | nindent 4 }}
-  {{- else }}
-  policyTypes:
-    - Ingress
-    - Egress
+    matchLabels: {{- include "universal-template.podSelector" (dict "root" $ "fullName" $fullName) | nindent 6 }}
+  policyTypes: {{- .policyTypes | default (list "Ingress" "Egress") | toYaml | nindent 4 }}
+  {{- with .ingress }}
+  ingress: {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- if $networkPolicy.ingress }}
-  ingress: {{- toYaml $networkPolicy.ingress | nindent 4 }}
+  {{- with .egress }}
+  egress: {{- toYaml . | nindent 4 }}
   {{- end }}
-  {{- if $networkPolicy.egress }}
-  egress: {{- toYaml $networkPolicy.egress | nindent 4 }}
-  {{- end }}
-{{-       end }}
-{{-     end }}
 {{-   end }}
 {{- end }}
