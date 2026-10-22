@@ -190,7 +190,7 @@ The pod gets the volume `volume-configs` with these files; mount it with `contai
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `secret.data` | YAML string of `key: value` pairs for the Secret `<fullName>` | |
+| `secret.data` | YAML string of `key: value` pairs for the Secret `<fullName>`; rendering fails when it is not a YAML map | |
 | `secret.extraLabels` / `.extraAnnotations` | Extra metadata | |
 
 The pod gets the volume `volume-secrets`; mount it with `containers[].volumeMounts: [{name: volume-secrets, mountPath: ..., readOnly: true}]`, or read single keys with `envs[].valueFrom.secretKeyRef`.
