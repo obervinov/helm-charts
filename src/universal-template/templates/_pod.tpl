@@ -13,17 +13,17 @@ spec:
 
 
 {{/*
-Pod spec. Everything built from values is rendered as data (toYaml), never spliced into YAML text.
+Pod spec. Values are rendered as data (toYaml) or as quoted scalars, so no value can add keys.
 */}}
 {{- define "universal-template.podSpec" -}}
 {{- $app := .application.app -}}
 {{- with .application.rbac }}
-serviceAccountName: {{ ternary $.fullName (.useExistingServiceAccount | default "default") (.create | default false) }}
+serviceAccountName: {{ ternary $.fullName (.useExistingServiceAccount | default "default") (.create | default false) | quote }}
 {{- end }}
 {{- with $app.imagePullSecrets }}
 imagePullSecrets:
   {{- range . }}
-  - name: {{ . }}
+  - name: {{ . | quote }}
   {{- end }}
 {{- end }}
 {{- with $app.affinity }}
@@ -49,7 +49,7 @@ containers:
 volumes: {{- toYaml . | nindent 2 }}
 {{- end }}
 {{- with .restartPolicy }}
-restartPolicy: {{ . }}
+restartPolicy: {{ . | quote }}
 {{- end }}
 {{- end }}
 

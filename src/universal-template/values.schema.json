@@ -47,10 +47,10 @@
           "additionalProperties": false,
           "properties": {
             "apiVersion": {
-              "type": "string"
+              "$ref": "#/definitions/noWhitespace"
             },
             "kind": {
-              "type": "string"
+              "$ref": "#/definitions/noWhitespace"
             },
             "extraAnnotations": {
               "type": "object",
@@ -62,10 +62,11 @@
               "type": "boolean"
             },
             "fqdn": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^[A-Za-z0-9.*-]+$"
             },
             "ingressClassName": {
-              "type": "string"
+              "$ref": "#/definitions/noWhitespace"
             },
             "paths": {
               "type": "array",
@@ -77,7 +78,8 @@
                 ],
                 "properties": {
                   "path": {
-                    "type": "string"
+                    "type": "string",
+                    "pattern": "^/\\S*$"
                   },
                   "pathType": {
                     "enum": [
@@ -90,11 +92,11 @@
                     "type": "integer"
                   },
                   "servicePortName": {
-                    "type": "string"
+                    "$ref": "#/definitions/dnsLabel"
                   },
                   "serviceName": {
-                    "type": "string",
-                    "description": "Any Service of this release; default: the first Service of this application"
+                    "$ref": "#/definitions/dnsLabel",
+                    "$comment": "Any Service of this release; default: the first Service of this application"
                   }
                 }
               }
@@ -167,7 +169,7 @@
               "type": "boolean"
             },
             "useExistingServiceAccount": {
-              "type": "string"
+              "$ref": "#/definitions/dnsSubdomain"
             },
             "rules": {
               "type": "array"
@@ -205,7 +207,7 @@
                     "description": "The monitor is named <fullName>-<name>"
                   },
                   "apiVersion": {
-                    "type": "string"
+                    "$ref": "#/definitions/noWhitespace"
                   },
                   "kind": {
                     "enum": [
@@ -220,7 +222,7 @@
                     }
                   },
                   "jobLabel": {
-                    "type": "string"
+                    "$ref": "#/definitions/noWhitespace"
                   },
                   "endpoints": {
                     "type": "array"
@@ -288,7 +290,7 @@
         "imagePullSecrets": {
           "type": "array",
           "items": {
-            "type": "string"
+            "$ref": "#/definitions/dnsSubdomain"
           }
         },
         "containers": {
@@ -330,7 +332,7 @@
           "type": "object"
         },
         "serviceName": {
-          "type": "string"
+          "$ref": "#/definitions/dnsLabel"
         },
         "affinity": {
           "type": "object"
@@ -352,7 +354,8 @@
           ],
           "properties": {
             "schedule": {
-              "type": "string"
+              "type": "string",
+              "pattern": "^[^\\r\\n]+$"
             },
             "failedJobsHistoryLimit": {
               "type": "integer",
@@ -648,8 +651,8 @@
       ],
       "properties": {
         "name": {
-          "type": "string",
-          "description": "Exact Service name; required for every Service but the first, which defaults to <fullName>"
+          "$ref": "#/definitions/dnsLabel",
+          "$comment": "Exact Service name; required for every Service but the first, which defaults to <fullName>"
         },
         "type": {
           "enum": [
@@ -659,7 +662,7 @@
           ]
         },
         "clusterIP": {
-          "type": "string"
+          "$ref": "#/definitions/noWhitespace"
         },
         "ports": {
           "type": "array",
@@ -696,8 +699,8 @@
           }
         },
         "selectApp": {
-          "type": "string",
-          "description": "Select the pods of another application of this release"
+          "$ref": "#/definitions/dnsLabel",
+          "$comment": "Select the pods of another application of this release"
         },
         "selector": {
           "type": "object",
@@ -746,12 +749,12 @@
       ],
       "properties": {
         "name": {
-          "type": "string",
-          "description": "Logical name; the claim is <fullName>-<name> unless claimName is set"
+          "$ref": "#/definitions/dnsLabel",
+          "$comment": "Logical name; the claim is <fullName>-<name> unless claimName is set"
         },
         "claimName": {
-          "type": "string",
-          "description": "Exact PersistentVolumeClaim name (adopt an existing claim)"
+          "$ref": "#/definitions/dnsSubdomain",
+          "$comment": "Exact PersistentVolumeClaim name (adopt an existing claim)"
         },
         "size": {
           "type": "string"
@@ -835,6 +838,22 @@
           }
         }
       }
+    },
+    "dnsLabel": {
+      "type": "string",
+      "maxLength": 63,
+      "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?$",
+      "description": "DNS-1123 label"
+    },
+    "dnsSubdomain": {
+      "type": "string",
+      "maxLength": 253,
+      "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$",
+      "description": "DNS-1123 subdomain"
+    },
+    "noWhitespace": {
+      "type": "string",
+      "pattern": "^\\S+$"
     }
   }
 }

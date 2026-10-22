@@ -5,11 +5,11 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ $fullName }}
-  namespace: {{ $.Release.Namespace }}
+  name: {{ $fullName | quote }}
+  namespace: {{ $.Release.Namespace | quote }}
   {{- include "universal-template.metadata" (dict "root" $ "fullName" $fullName "labels" .app.extraLabels) | nindent 2 }}
 spec:
-  replicas: {{ hasKey .app "replicas" | ternary .app.replicas 1 }}
+  replicas: {{ dig "replicas" 1 .app | toJson }}
   {{- with .app.strategy }}
   strategy: {{- toYaml . | nindent 4 }}
   {{- end }}

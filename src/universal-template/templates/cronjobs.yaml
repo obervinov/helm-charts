@@ -6,21 +6,21 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ $fullName }}
-  namespace: {{ $.Release.Namespace }}
+  name: {{ $fullName | quote }}
+  namespace: {{ $.Release.Namespace | quote }}
   {{- include "universal-template.metadata" (dict "root" $ "fullName" $fullName "labels" .app.extraLabels) | nindent 2 }}
 spec:
   schedule: {{ $cronJob.schedule | quote }}
-  failedJobsHistoryLimit: {{ dig "failedJobsHistoryLimit" 1 $cronJob }}
-  successfulJobsHistoryLimit: {{ dig "successfulJobsHistoryLimit" 1 $cronJob }}
-  concurrencyPolicy: {{ $cronJob.concurrencyPolicy | default "Forbid" }}
+  failedJobsHistoryLimit: {{ dig "failedJobsHistoryLimit" 1 $cronJob | toJson }}
+  successfulJobsHistoryLimit: {{ dig "successfulJobsHistoryLimit" 1 $cronJob | toJson }}
+  concurrencyPolicy: {{ $cronJob.concurrencyPolicy | default "Forbid" | quote }}
   jobTemplate:
     spec:
-      parallelism: {{ $cronJob.parallelism | default 1 }}
-      completions: {{ $cronJob.completions | default 1 }}
-      backoffLimit: {{ $cronJob.backoffLimit | default 3 }}
-      activeDeadlineSeconds: {{ $cronJob.activeDeadlineSeconds | default 300 }}
-      ttlSecondsAfterFinished: {{ $cronJob.ttlSecondsAfterFinished | default 300 }}
+      parallelism: {{ $cronJob.parallelism | default 1 | toJson }}
+      completions: {{ $cronJob.completions | default 1 | toJson }}
+      backoffLimit: {{ $cronJob.backoffLimit | default 3 | toJson }}
+      activeDeadlineSeconds: {{ $cronJob.activeDeadlineSeconds | default 300 | toJson }}
+      ttlSecondsAfterFinished: {{ $cronJob.ttlSecondsAfterFinished | default 300 | toJson }}
       template: {{- include "universal-template.podTemplate" (dict "root" $ "application" . "fullName" $fullName "restartPolicy" ($cronJob.restartPolicy | default "Never")) | nindent 8 }}
 {{-   end }}
 {{- end }}

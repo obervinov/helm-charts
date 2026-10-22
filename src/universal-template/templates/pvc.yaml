@@ -9,8 +9,8 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "universal-template.pvc.name" (list $fullName .) }}
-  namespace: {{ $.Release.Namespace }}
+  name: {{ include "universal-template.pvc.name" (list $fullName .) | quote }}
+  namespace: {{ $.Release.Namespace | quote }}
   {{- include "universal-template.metadata" (dict "root" $ "fullName" $fullName "labels" .labels "annotations" $annotations) | nindent 2 }}
 spec: {{- include "universal-template.pvc.spec" . | nindent 2 }}
 {{-   end }}

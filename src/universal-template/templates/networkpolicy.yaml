@@ -5,8 +5,8 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: {{ $fullName }}
-  namespace: {{ $.Release.Namespace }}
+  name: {{ $fullName | quote }}
+  namespace: {{ $.Release.Namespace | quote }}
   {{- include "universal-template.metadata" (dict "root" $ "fullName" $fullName "labels" $application.app.extraLabels) | nindent 2 }}
 spec:
   podSelector:

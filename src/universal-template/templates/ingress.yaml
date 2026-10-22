@@ -5,37 +5,23 @@
 {{-     with $application.services }}
 {{-       $default = include "universal-template.service.name" (list $fullName (first .)) }}
 {{-     end }}
+{{-     $paths := list }}
+{{-     range .paths }}
+{{-       $port := empty .servicePortName | ternary (dict "number" .servicePort) (dict "name" .servicePortName) }}
+{{-       $backend := dict "service" (dict "name" (.serviceName | default $default) "port" $port) }}
+{{-       $paths = append $paths (dict "path" .path "pathType" .pathType "backend" $backend) }}
+{{-     end }}
+{{-     $spec := dict "rules" (list (dict "host" .fqdn "http" (dict "paths" $paths))) "ingressClassName" (.ingressClassName | default "nginx") }}
+{{-     if .useTLS }}
+{{-       $_ := set $spec "tls" (list (dict "hosts" (list .fqdn) "secretName" (printf "%s-tls" $fullName))) }}
+{{-     end }}
 ---
-apiVersion: {{ .apiVersion | default "networking.k8s.io/v1" }}
-kind: {{ .kind | default "Ingress" }}
+apiVersion: {{ .apiVersion | default "networking.k8s.io/v1" | quote }}
+kind: {{ .kind | default "Ingress" | quote }}
 metadata:
-  name: {{ $fullName }}
-  namespace: {{ $.Release.Namespace }}
+  name: {{ $fullName | quote }}
+  namespace: {{ $.Release.Namespace | quote }}
   {{- include "universal-template.metadata" (dict "root" $ "fullName" $fullName "annotations" .extraAnnotations) | nindent 2 }}
-spec:
-  {{- if .useTLS }}
-  tls:
-    - hosts:
-        - {{ .fqdn }}
-      secretName: {{ $fullName }}-tls
-  {{- end }}
-  rules:
-  - host: {{ .fqdn }}
-    http:
-      paths:
-      {{- range .paths }}
-      - path: {{ .path }}
-        pathType: {{ .pathType }}
-        backend:
-          service:
-            name: {{ .serviceName | default $default }}
-            port:
-              {{- with .servicePortName }}
-              name: {{ . }}
-              {{- else }}
-              number: {{ .servicePort }}
-              {{- end }}
-      {{- end }}
-  ingressClassName: {{ .ingressClassName | default "nginx" }}
+spec: {{- toYaml $spec | nindent 2 }}
 {{-   end }}
 {{- end }}

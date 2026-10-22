@@ -6,15 +6,15 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ $fullName }}-{{ now | unixEpoch }}
-  namespace: {{ $.Release.Namespace }}
+  name: {{ printf "%s-%d" $fullName (now | unixEpoch) | quote }}
+  namespace: {{ $.Release.Namespace | quote }}
   {{- include "universal-template.metadata" (dict "root" $ "fullName" $fullName "labels" .app.extraLabels) | nindent 2 }}
 spec:
-  parallelism: {{ $job.parallelism | default 1 }}
-  completions: {{ $job.completions | default 1 }}
-  backoffLimit: {{ $job.backoffLimit | default 3 }}
-  activeDeadlineSeconds: {{ $job.activeDeadlineSeconds | default 600 }}
-  ttlSecondsAfterFinished: {{ $job.ttlSecondsAfterFinished | default 300 }}
+  parallelism: {{ $job.parallelism | default 1 | toJson }}
+  completions: {{ $job.completions | default 1 | toJson }}
+  backoffLimit: {{ $job.backoffLimit | default 3 | toJson }}
+  activeDeadlineSeconds: {{ $job.activeDeadlineSeconds | default 600 | toJson }}
+  ttlSecondsAfterFinished: {{ $job.ttlSecondsAfterFinished | default 300 | toJson }}
   template: {{- include "universal-template.podTemplate" (dict "root" $ "application" . "fullName" $fullName "restartPolicy" ($job.restartPolicy | default "Never")) | nindent 4 }}
 {{-   end }}
 {{- end }}

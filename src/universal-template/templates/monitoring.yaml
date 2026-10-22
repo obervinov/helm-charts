@@ -16,11 +16,11 @@ both by the application's pod labels (appselector + instance). kind defaults to 
 {{-       $endpoints = append $endpoints $endpoint }}
 {{-     end }}
 ---
-apiVersion: {{ .apiVersion | default "monitoring.coreos.com/v1" }}
-kind: {{ $kind }}
+apiVersion: {{ .apiVersion | default "monitoring.coreos.com/v1" | quote }}
+kind: {{ $kind | quote }}
 metadata:
-  name: {{ $fullName }}-{{ .name }}
-  namespace: {{ $.Release.Namespace }}
+  name: {{ printf "%s-%s" $fullName .name | quote }}
+  namespace: {{ $.Release.Namespace | quote }}
   {{- include "universal-template.metadata" (dict "root" $ "fullName" $fullName "labels" (dict "release" "kube-prometheus-stack" "jobLabel" $.Release.Name)) | nindent 2 }}
 spec:
   namespaceSelector:
@@ -28,6 +28,6 @@ spec:
   selector:
     matchLabels: {{- include "universal-template.podSelector" (list $ $fullName) | nindent 6 }}
   {{ eq $kind "ServiceMonitor" | ternary "endpoints" "podMetricsEndpoints" }}: {{- toYaml $endpoints | nindent 4 }}
-  jobLabel: {{ .jobLabel | default "k8s-app" }}
+  jobLabel: {{ .jobLabel | default "k8s-app" | quote }}
 {{-   end }}
 {{- end }}
