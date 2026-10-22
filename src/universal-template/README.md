@@ -2,7 +2,7 @@
 
 One chart for simple releases: Deployments, StatefulSets, Jobs and CronJobs with their Services, PersistentVolumeClaims, Ingress, ConfigMap, Secret, RBAC, NetworkPolicy and Prometheus monitors, all described in `values.yaml`.
 
-Version 4.0 changes the values contract (volumes, services, claims). The rendered objects keep their names and the Deployment/StatefulSet selectors, so a module translated from 3.x upgrades in place; pods restart once because their labels change. See [Migrating from 3.x](#migrating-from-3x).
+Version 4.0.1 changes the values contract (volumes, services, claims). The rendered objects keep their names and the Deployment/StatefulSet selectors, so a module translated from 3.x upgrades in place; pods restart once because their labels change. See [Migrating from 3.x](#migrating-from-3x). Do not use 4.0.0: it is an unreviewed pre-release build of the same work.
 
 ## Table of Contents
 
@@ -29,7 +29,7 @@ Version 4.0 changes the values contract (volumes, services, claims). The rendere
 helm repo add obervinov https://obervinov.github.io/helm-charts
 helm upgrade --install my-app obervinov/universal-template -f values.yaml
 # or from the OCI registry
-helm upgrade --install my-app oci://ghcr.io/obervinov/helm-charts/universal-template --version 4.0.0 -f values.yaml
+helm upgrade --install my-app oci://ghcr.io/obervinov/helm-charts/universal-template --version 4.0.1 -f values.yaml
 ```
 
 `values.schema.json` rejects unknown keys, so `helm lint -f values.yaml` catches typos and 3.x keys before anything is applied.
@@ -259,7 +259,7 @@ applications:
 
 Object names and the Deployment/StatefulSet selectors stay the same, so a translated module upgrades in place.
 
-| 3.x key | 4.0 key |
+| 3.x key | 4.x key |
 |---------|---------|
 | `service: {type, ports, ...}` | `services: [{type, ports, ...}]` - the first Service keeps the name `<fullName>` and the same selector |
 | `app.emptyDirVolume: {name, sizeLimit, mountPath}` | `app.volumes: [{name, emptyDir: {sizeLimit}}]` + `containers[].volumeMounts: [{name, mountPath}]` |
@@ -275,8 +275,8 @@ Object names and the Deployment/StatefulSet selectors stay the same, so a transl
 
 Behaviour that changes with the same intent:
 
-- 3.x mounted every volume into every container, init containers included. In 4.0 a container mounts only its own `volumeMounts`: list the mount on each container that needs it.
-- Pod templates no longer carry the chart version (`version`, `app.kubernetes.io/version`), so the first upgrade to 4.0 restarts the pods once and later chart upgrades do not.
+- 3.x mounted every volume into every container, init containers included. In 4.x a container mounts only its own `volumeMounts`: list the mount on each container that needs it.
+- Pod templates no longer carry the chart version (`version`, `app.kubernetes.io/version`), so the first upgrade to 4.x restarts the pods once and later chart upgrades do not.
 - Service and NetworkPolicy selectors add `app.kubernetes.io/instance: <release>` next to `appselector`; the pods already carry it.
 - Job and CronJob pods carry the same labels as other pods of the chart.
 - `app.extraAnnotations` go on the pod template for every workload type; 3.x put them on the StatefulSet and CronJob objects as well (CronJob: only there).

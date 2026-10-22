@@ -7,9 +7,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/) and this p
 ### What's Changed
 **Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.2.13...v1.3.0 by @obervinov
 #### 💥 Breaking Changes
-* `universal-template` 4.0.0: the values contract for volumes, Services and claims changes; object names and the Deployment/StatefulSet selectors do not. `app.emptyDirVolume`, `app.persistentVolume`, `app.externalSecrets`, `app.externalConfigMaps`, `configMap.mountPath`, `secret.mountPath` and the single-map `service` are removed, see "Migrating from 3.x" in the chart README
+* `universal-template` 4.0.1 is the release of this contract. 4.0.0 was an unreviewed pre-release build of the same branch, published by CI before review: do not use it
+* `universal-template` 4.0.1: the values contract for volumes, Services and claims changes; object names and the Deployment/StatefulSet selectors do not. `app.emptyDirVolume`, `app.persistentVolume`, `app.externalSecrets`, `app.externalConfigMaps`, `configMap.mountPath`, `secret.mountPath` and the single-map `service` are removed, see "Migrating from 3.x" in the chart README
 * `universal-template`: a container mounts only its own `volumeMounts`; 3.x mounted every volume, and the chart's ConfigMap/Secret, into every container, init containers included. The chart's ConfigMap and Secret are the pod volumes `volume-configs` / `volume-secrets`, mounted by name
-* `universal-template`: pod templates no longer carry the chart version labels (`version`, `app.kubernetes.io/version`): pods restart once on the upgrade to 4.0 and no longer on every chart release
+* `universal-template`: pod templates no longer carry the chart version labels (`version`, `app.kubernetes.io/version`): pods restart once on the upgrade to 4.x and no longer on every chart release
 * `universal-template`: Service and NetworkPolicy selectors add `app.kubernetes.io/instance: <release>` next to `appselector`
 * `universal-template`: `app.extraAnnotations` go on the pod template for every workload type, and no longer on the StatefulSet/CronJob object
 * `universal-template`: Prometheus monitors are named `<fullName>-<name>`
