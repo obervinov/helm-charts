@@ -186,6 +186,23 @@
                 "type": "string"
               }
             }
+          },
+          "if": {
+            "properties": {
+              "create": {
+                "const": true
+              }
+            },
+            "required": [
+              "create"
+            ]
+          },
+          "then": {
+            "properties": {
+              "useExistingServiceAccount": {
+                "const": "useExistingServiceAccount cannot be used with create: true"
+              }
+            }
           }
         },
         "monitoring": {
@@ -225,7 +242,44 @@
                     "$ref": "#/definitions/noWhitespace"
                   },
                   "endpoints": {
-                    "type": "array"
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "port"
+                      ],
+                      "properties": {
+                        "port": {
+                          "type": "string",
+                          "description": "Port name"
+                        },
+                        "path": {
+                          "type": "string",
+                          "default": "/metrics"
+                        },
+                        "interval": {
+                          "type": "string",
+                          "default": "30s"
+                        },
+                        "scheme": {
+                          "enum": [
+                            "http",
+                            "https"
+                          ],
+                          "default": "http"
+                        },
+                        "bearerTokenFile": {
+                          "type": "string",
+                          "description": "ServiceMonitor only"
+                        },
+                        "honorLabels": {
+                          "type": "boolean",
+                          "default": true,
+                          "description": "ServiceMonitor only"
+                        }
+                      }
+                    }
                   }
                 }
               }
@@ -495,6 +549,42 @@
             "properties": {
               "strategy": {
                 "const": "strategy is for type deployment only; a StatefulSet uses updateStrategy"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "not": {
+                  "const": "cronjob"
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "cronJob": {
+                "const": "cronJob is for type cronjob only"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "not": {
+                  "const": "job"
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "job": {
+                "const": "job is for type job only"
               }
             }
           }
