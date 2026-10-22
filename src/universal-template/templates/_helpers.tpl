@@ -7,36 +7,40 @@ Release name, lowercased and cut to 63 characters.
 
 
 {{/*
+Helpers that take one value get it as is; helpers that take several get a dict with named keys.
+*/}}
+
+
+{{/*
 Name of an application's objects: <release> when the release has one application,
 <release>-<application name> when it has several.
-Usage: include "universal-template.fullName" (list $ $applicationName)
+Usage: include "universal-template.fullName" (dict "root" $ "name" $application.name)
 */}}
 {{- define "universal-template.fullName" -}}
-{{- $root := index . 0 -}}
-{{- $name := include "universal-template.name" $root -}}
-{{- if gt (len $root.Values.applications) 1 -}}
-{{-   printf "%s-%s" $name (index . 1) -}}
+{{- $release := include "universal-template.name" .root -}}
+{{- if gt (len .root.Values.applications) 1 -}}
+{{-   printf "%s-%s" $release .name -}}
 {{- else -}}
-{{-   $name -}}
+{{-   $release -}}
 {{- end -}}
 {{- end }}
 
 
 {{/*
 Selector of a Deployment/StatefulSet (spec.selector is immutable: never extend it).
-Usage: include "universal-template.selectorLabels" (list $fullName)
+Usage: include "universal-template.selectorLabels" $fullName
 */}}
 {{- define "universal-template.selectorLabels" -}}
-{{- dict "appselector" (index . 0) | toYaml -}}
+{{- dict "appselector" . | toYaml -}}
 {{- end }}
 
 
 {{/*
 Pods of one application of this release, for Service, NetworkPolicy and monitor selectors.
-Usage: include "universal-template.podSelector" (list $ $fullName)
+Usage: include "universal-template.podSelector" (dict "root" $ "fullName" $fullName)
 */}}
 {{- define "universal-template.podSelector" -}}
-{{- dict "appselector" (index . 1) "app.kubernetes.io/instance" (index . 0).Release.Name | toYaml -}}
+{{- dict "appselector" .fullName "app.kubernetes.io/instance" .root.Release.Name | toYaml -}}
 {{- end }}
 
 
@@ -63,38 +67,49 @@ annotations: {{- toYaml . | nindent 2 }}
 {{/*
 Name of the n-th Service of an application: `name`, or <fullName> for the first one
 (_validate.tpl rejects a later Service without a name).
-Usage: include "universal-template.service.name" (list $fullName $service)
+Usage: include "universal-template.service.name" (dict "fullName" $fullName "service" $service)
 */}}
 {{- define "universal-template.service.name" -}}
-{{- (index . 1).name | default (index . 0) -}}
+{{- .service.name | default .fullName -}}
 {{- end }}
 
 
 {{/*
 Pod selector of a Service: a raw `selector`, the pods of `selectApp`, or the pods of its own application.
-Usage: include "universal-template.service.selector" (list $ $fullName $service)
+Usage: include "universal-template.service.selector" (dict "root" $ "fullName" $fullName "service" $service)
 */}}
 {{- define "universal-template.service.selector" -}}
-{{- $root    := index . 0 -}}
-{{- $service := index . 2 -}}
-{{- with $service.selector -}}
+{{- $root := .root -}}
+{{- with .service.selector -}}
 {{-   toYaml . -}}
 {{- else -}}
-{{-   $target := index . 1 -}}
-{{-   with $service.selectApp -}}
-{{-     $target = include "universal-template.fullName" (list $root .) -}}
+{{-   $target := .fullName -}}
+{{-   with .service.selectApp -}}
+{{-     $target = include "universal-template.fullName" (dict "root" $root "name" .) -}}
 {{-   end -}}
-{{-   include "universal-template.podSelector" (list $root $target) -}}
+{{-   include "universal-template.podSelector" (dict "root" $root "fullName" $target) -}}
+{{- end -}}
+{{- end }}
+
+
+{{/*
+Backend of an ingress path without serviceName: the first Service of the application, or "".
+Usage: include "universal-template.ingress.defaultService" (dict "root" $ "application" $application)
+*/}}
+{{- define "universal-template.ingress.defaultService" -}}
+{{- $fullName := include "universal-template.fullName" (dict "root" .root "name" .application.name) -}}
+{{- with .application.services -}}
+{{-   include "universal-template.service.name" (dict "fullName" $fullName "service" (first .)) -}}
 {{- end -}}
 {{- end }}
 
 
 {{/*
 Name of a standalone PersistentVolumeClaim: exact claimName or <fullName>-<name>.
-Usage: include "universal-template.pvc.name" (list $fullName $pvc)
+Usage: include "universal-template.pvc.name" (dict "fullName" $fullName "claim" $claim)
 */}}
 {{- define "universal-template.pvc.name" -}}
-{{- (index . 1).claimName | default (printf "%s-%s" (index . 0) (index . 1).name) -}}
+{{- .claim.claimName | default (printf "%s-%s" .fullName .claim.name) -}}
 {{- end }}
 
 

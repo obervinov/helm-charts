@@ -1,6 +1,6 @@
 {{- range $application := .Values.applications }}
 {{-   with .configMap }}
-{{-     $fullName := include "universal-template.fullName" (list $ $application.name) }}
+{{-     $fullName := include "universal-template.fullName" (dict "root" $ "name" $application.name) }}
 {{-     $data     := dict }}
 {{-     range .files }}
 {{-       if .data }}

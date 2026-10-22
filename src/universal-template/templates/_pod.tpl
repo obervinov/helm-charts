@@ -75,8 +75,8 @@ Usage: include "universal-template.container" $container
 */}}
 {{- define "universal-template.container" -}}
 {{- $container := dict "name" .name "image" (printf "%s:%v" .image.repository .image.tag) "imagePullPolicy" (.image.pullPolicy | default "IfNotPresent") -}}
-{{- $optional := merge (pick . "ports" "lifecycle" "securityContext" "resources" "volumeMounts") (.probes | default dict) -}}
-{{- $_ := merge $optional (dict "env" .envs "command" (.image.commands | default list | toStrings) "args" (.image.args | default list | toStrings)) -}}
+{{- $commands := dict "env" .envs "command" (.image.commands | default list | toStrings) "args" (.image.args | default list | toStrings) -}}
+{{- $optional := merge (pick . "ports" "lifecycle" "securityContext" "resources" "volumeMounts") (.probes | default dict) $commands -}}
 {{- range $key, $value := $optional -}}
 {{-   if $value -}}
 {{-     $_ := set $container $key $value -}}

@@ -13,12 +13,12 @@ Cross-reference checks that values.schema.json cannot express. Rendered once, fr
 {{-   $_ := set $apps .name true -}}
 {{- end -}}
 {{- range $application := .Values.applications -}}
-{{-   $fullName := include "universal-template.fullName" (list $root .name) -}}
-{{-   range $index, $service := .services -}}
+{{-   $fullName := include "universal-template.fullName" (dict "root" $root "name" .name) -}}
+{{-   range $index, $_ := .services -}}
 {{-     if and (gt $index 0) (not .name) -}}
 {{-       fail (printf "applications[%s].services[%d]: only the first Service defaults to the name %q, set `name`" $application.name $index $fullName) -}}
 {{-     end -}}
-{{-     $name := include "universal-template.service.name" (list $fullName .) -}}
+{{-     $name := include "universal-template.service.name" (dict "fullName" $fullName "service" .) -}}
 {{-     if has $name $services -}}
 {{-       fail (printf "applications[%s].services: the Service name %q is used twice in the release" $application.name $name) -}}
 {{-     end -}}
@@ -28,7 +28,7 @@ Cross-reference checks that values.schema.json cannot express. Rendered once, fr
 {{-     end -}}
 {{-   end -}}
 {{-   range .persistentVolumeClaims -}}
-{{-     $claim := include "universal-template.pvc.name" (list $fullName .) -}}
+{{-     $claim := include "universal-template.pvc.name" (dict "fullName" $fullName "claim" .) -}}
 {{-     if hasKey $claims $claim -}}
 {{-       fail (printf "applications[%s].persistentVolumeClaims: the claim %q is used twice in the release" $application.name $claim) -}}
 {{-     end -}}
@@ -39,10 +39,7 @@ Cross-reference checks that values.schema.json cannot express. Rendered once, fr
 {{-   end -}}
 {{- end -}}
 {{- range $application := .Values.applications -}}
-{{-   $default := "" -}}
-{{-   with .services -}}
-{{-     $default = include "universal-template.service.name" (list (include "universal-template.fullName" (list $root $application.name)) (first .)) -}}
-{{-   end -}}
+{{-   $default := include "universal-template.ingress.defaultService" (dict "root" $root "application" $application) -}}
 {{-   range (dig "ingress" "paths" list .) -}}
 {{-     $backend := .serviceName | default $default -}}
 {{-     if not (has $backend $services) -}}

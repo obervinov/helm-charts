@@ -1,6 +1,6 @@
 Helm template version: {{ .Chart.Version }}
 {{- range .Values.applications }}
-{{-   $fullName := include "universal-template.fullName" (list $ .name) }}
+{{-   $fullName := include "universal-template.fullName" (dict "root" $ "name" .name) }}
 {{-   with dig "monitoring" "prometheus" list . }}
 ---
 Prometheus Operator monitors of {{ $fullName }}:
@@ -16,7 +16,7 @@ Ingress URL: {{ ternary "https" "http" (.useTLS | default false) }}://{{ .fqdn }
 ---
 PersistentVolumeClaims of {{ $fullName }}:
 {{-     range . }}
-+ {{ include "universal-template.pvc.name" (list $fullName .) }}{{ if dig "keep" true . }} (helm.sh/resource-policy: keep, survives helm uninstall){{ end }}
++ {{ include "universal-template.pvc.name" (dict "fullName" $fullName "claim" .) }}{{ if dig "keep" true . }} (helm.sh/resource-policy: keep, survives helm uninstall){{ end }}
 {{-     end }}
 {{-   end }}
 {{- end }}

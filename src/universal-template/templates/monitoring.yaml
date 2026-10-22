@@ -2,8 +2,8 @@
 A ServiceMonitor selects the Services of its application, a PodMonitor its pods,
 both by the application's pod labels (appselector + instance). kind defaults to ServiceMonitor.
 */}}
-{{- range $application := .Values.applications }}
-{{-   $fullName := include "universal-template.fullName" (list $ .name) }}
+{{- range .Values.applications }}
+{{-   $fullName := include "universal-template.fullName" (dict "root" $ "name" .name) }}
 {{-   range (dig "monitoring" "prometheus" list .) }}
 {{-     $kind      := .kind | default "ServiceMonitor" }}
 {{-     $endpoints := list }}
@@ -26,7 +26,7 @@ spec:
   namespaceSelector:
     matchNames: {{- .namespacesSelector | default (list $.Release.Namespace) | toYaml | nindent 6 }}
   selector:
-    matchLabels: {{- include "universal-template.podSelector" (list $ $fullName) | nindent 6 }}
+    matchLabels: {{- include "universal-template.podSelector" (dict "root" $ "fullName" $fullName) | nindent 6 }}
   {{ eq $kind "ServiceMonitor" | ternary "endpoints" "podMetricsEndpoints" }}: {{- toYaml $endpoints | nindent 4 }}
   jobLabel: {{ .jobLabel | default "k8s-app" | quote }}
 {{-   end }}

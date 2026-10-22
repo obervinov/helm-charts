@@ -1,10 +1,7 @@
 {{- range $application := .Values.applications }}
 {{-   with .ingress }}
-{{-     $fullName := include "universal-template.fullName" (list $ $application.name) }}
-{{-     $default  := "" }}
-{{-     with $application.services }}
-{{-       $default = include "universal-template.service.name" (list $fullName (first .)) }}
-{{-     end }}
+{{-     $fullName := include "universal-template.fullName" (dict "root" $ "name" $application.name) }}
+{{-     $default  := include "universal-template.ingress.defaultService" (dict "root" $ "application" $application) }}
 {{-     $paths := list }}
 {{-     range .paths }}
 {{-       $port := empty .servicePortName | ternary (dict "number" .servicePort) (dict "name" .servicePortName) }}

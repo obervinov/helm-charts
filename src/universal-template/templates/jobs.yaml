@@ -1,6 +1,6 @@
 {{- range .Values.applications }}
 {{-   if eq (dig "app" "type" "none" .) "job" }}
-{{-     $fullName := include "universal-template.fullName" (list $ .name) }}
+{{-     $fullName := include "universal-template.fullName" (dict "root" $ "name" .name) }}
 ---
 apiVersion: batch/v1
 kind: Job

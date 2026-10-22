@@ -1,6 +1,6 @@
 {{- range .Values.applications }}
 {{-   if eq (dig "app" "type" "none" .) "deployment" }}
-{{-     $fullName := include "universal-template.fullName" (list $ .name) }}
+{{-     $fullName := include "universal-template.fullName" (dict "root" $ "name" .name) }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -14,7 +14,7 @@ spec:
   strategy: {{- toYaml . | nindent 4 }}
   {{- end }}
   selector:
-    matchLabels: {{- include "universal-template.selectorLabels" (list $fullName) | nindent 6 }}
+    matchLabels: {{- include "universal-template.selectorLabels" $fullName | nindent 6 }}
   template: {{- include "universal-template.podTemplate" (dict "root" $ "application" . "fullName" $fullName) | nindent 4 }}
 {{-   end }}
 {{- end }}

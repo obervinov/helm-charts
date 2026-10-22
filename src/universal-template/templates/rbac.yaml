@@ -1,6 +1,6 @@
 {{- range $application := .Values.applications }}
 {{-   with .rbac }}
-{{-     $fullName := include "universal-template.fullName" (list $ $application.name) }}
+{{-     $fullName := include "universal-template.fullName" (dict "root" $ "name" $application.name) }}
 {{-     $metadata := include "universal-template.metadata" (dict "root" $ "fullName" $fullName "labels" .extraLabels "annotations" .extraAnnotations) }}
 {{-     if .create }}
 ---
