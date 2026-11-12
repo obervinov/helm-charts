@@ -1,0 +1,74 @@
+# Serving one application through an Ingress and a Gateway API HTTPRoute at the same time,
+# e.g. while moving from an ingress controller to a Gateway. Both point at the same Service and port:
+# the default rule of `web` takes the backend of the first ingress path (servicePortName: http -> 8080),
+# and its hostnames default to the ingress fqdn. `api` has no ingress and replaces the default rule.
+---
+applications:
+  - name: web
+    app:
+      type: deployment
+      containers:
+        - name: web
+          image:
+            repository: registry.example.com/web
+            tag: "1.0.0"
+          ports:
+            - {name: http, containerPort: 8080, protocol: TCP}
+    services:
+      - type: ClusterIP
+        ports:
+          - {name: metrics, port: 9090, targetPort: 9090, protocol: TCP}
+          - {name: http, port: 8080, targetPort: http, protocol: TCP}
+    ingress:
+      useTLS: true
+      fqdn: web.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+          servicePortName: http
+    route:
+      extraLabels:
+        gateway: public
+      extraAnnotations:
+        example.com/owner: web
+      parentRefs:
+        - name: example-gateway
+          namespace: gateway-system
+          sectionName: https
+      timeouts:
+        request: 30s
+        backendRequest: 25s
+      filters:
+        - type: RequestHeaderModifier
+          requestHeaderModifier:
+            set:
+              - name: X-Forwarded-Proto
+                value: https
+  - name: api
+    app:
+      type: deployment
+      containers:
+        - name: api
+          image:
+            repository: registry.example.com/api
+            tag: "1.0.0"
+          ports:
+            - {name: http, containerPort: 8080, protocol: TCP}
+    services:
+      - type: ClusterIP
+        ports:
+          - {name: http, port: 80, targetPort: http, protocol: TCP}
+    route:
+      parentRefs:
+        - name: example-gateway
+          namespace: gateway-system
+      hostnames:
+        - api.example.com
+      rules:
+        - matches:
+            - path: {type: PathPrefix, value: /v1}
+          backendRefs:
+            - name: rel-api
+              port: 80
+          timeouts:
+            request: 10s

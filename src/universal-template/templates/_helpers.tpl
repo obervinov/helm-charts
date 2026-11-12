@@ -121,3 +121,88 @@ Usage: include "universal-template.pvc.spec" $claim
 {{- $spec := dict "accessModes" (.accessModes | default (list "ReadWriteOnce")) "resources" (dict "requests" (dict "storage" .size)) -}}
 {{- toYaml (merge $spec (pick . "storageClassName" "volumeMode" "volumeName")) -}}
 {{- end }}
+
+
+{{/*
+Port (number) of the Service `name` of this release: the port named `portName`, the number `port`,
+or the first port of the Service. HTTPRoute backendRefs take a port number only, so a port name
+is resolved here. Fails for a Service or port name the release does not have.
+Usage: include "universal-template.service.port" (dict "root" $ "where" $where "name" $name ["port" 80] ["portName" "http"])
+*/}}
+{{- define "universal-template.service.port" -}}
+{{- $root := .root -}}
+{{- $want := .name -}}
+{{- $found := list -}}
+{{- $known := list -}}
+{{- range $application := $root.Values.applications -}}
+{{-   $fullName := include "universal-template.fullName" (dict "root" $root "name" $application.name) -}}
+{{-   range .services -}}
+{{-     $name := include "universal-template.service.name" (dict "fullName" $fullName "service" .) -}}
+{{-     $known = append $known $name -}}
+{{-     if eq $name $want -}}
+{{-       $found = append $found . -}}
+{{-     end -}}
+{{-   end -}}
+{{- end -}}
+{{- if not $found -}}
+{{-   fail (printf "%s: serviceName %q is not a Service of this release (known: %s)" .where $want (join ", " $known)) -}}
+{{- end -}}
+{{- $ports := (first $found).ports | default list -}}
+{{- if .portName -}}
+{{-   $number := "" -}}
+{{-   range $ports -}}
+{{-     if eq (.name | default "") $.portName -}}
+{{-       $number = .port | toString -}}
+{{-     end -}}
+{{-   end -}}
+{{-   if not $number -}}
+{{-     fail (printf "%s: the Service %q has no port named %q" .where $want .portName) -}}
+{{-   end -}}
+{{-   $number -}}
+{{- else if .port -}}
+{{-   .port | toString -}}
+{{- else if $ports -}}
+{{-   (first $ports).port | toString -}}
+{{- else -}}
+{{-   fail (printf "%s: the Service %q has no ports" .where $want) -}}
+{{- end -}}
+{{- end }}
+
+
+{{/*
+Backend of the default HTTPRoute rule: `route.serviceName` / `.servicePortName` / `.servicePort` when
+any of them is set, else the backend of the first ingress path, else the first Service of the
+application on its first port - the same Service and port the Ingress of the application uses.
+Usage: include "universal-template.route.defaultBackend" (dict "root" $ "application" $application)
+*/}}
+{{- define "universal-template.route.defaultBackend" -}}
+{{- $route := .application.route -}}
+{{- $source := pick $route "serviceName" "servicePort" "servicePortName" -}}
+{{- if not $source -}}
+{{-   $source = first (dig "ingress" "paths" list .application) | default dict -}}
+{{- end -}}
+{{- $where := printf "applications[%s].route" .application.name -}}
+{{- $name := $source.serviceName | default (include "universal-template.ingress.defaultService" .) -}}
+{{- if not $name -}}
+{{-   fail (printf "%s: the application has no Service; set route.serviceName or route.rules" $where) -}}
+{{- end -}}
+{{- $port := include "universal-template.service.port" (dict "root" .root "where" $where "name" $name "port" $source.servicePort "portName" $source.servicePortName) -}}
+{{- toYaml (dict "name" $name "port" (atoi $port)) -}}
+{{- end }}
+
+
+{{/*
+hostnames of an HTTPRoute: `route.hostnames` when the key is set (an empty list too), else the ingress fqdn.
+Usage: include "universal-template.route.hostnames" $application
+*/}}
+{{- define "universal-template.route.hostnames" -}}
+{{- if hasKey .route "hostnames" -}}
+{{-   toYaml (.route.hostnames | default list) -}}
+{{- else -}}
+{{-   with dig "ingress" "fqdn" "" . -}}
+{{-     toYaml (list .) -}}
+{{-   else -}}
+{{-     toYaml list -}}
+{{-   end -}}
+{{- end -}}
+{{- end }}

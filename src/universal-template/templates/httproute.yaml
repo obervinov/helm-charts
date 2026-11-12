@@ -1,0 +1,34 @@
+{{- range $application := .Values.applications }}
+{{-   with .route }}
+{{-     $fullName := include "universal-template.fullName" (dict "root" $ "name" $application.name) }}
+{{-     $where    := printf "applications[%s].route" $application.name }}
+{{-     $rules    := .rules }}
+{{-     if $rules }}
+{{-       if or .filters .timeouts }}
+{{-         fail (printf "%s: filters and timeouts apply to the default rule only; with rules, set them inside each rule" $where) }}
+{{-       end }}
+{{-     else }}
+{{-       $backend := include "universal-template.route.defaultBackend" (dict "root" $ "application" $application) | fromYaml }}
+{{-       $rule := dict "matches" (list (dict "path" (dict "type" "PathPrefix" "value" "/"))) "backendRefs" (list $backend) }}
+{{-       with .filters }}
+{{-         $_ := set $rule "filters" . }}
+{{-       end }}
+{{-       with .timeouts }}
+{{-         $_ := set $rule "timeouts" . }}
+{{-       end }}
+{{-       $rules = list $rule }}
+{{-     end }}
+{{-     $spec := dict "parentRefs" .parentRefs "rules" $rules }}
+{{-     with include "universal-template.route.hostnames" $application | fromYamlArray }}
+{{-       $_ := set $spec "hostnames" . }}
+{{-     end }}
+---
+apiVersion: {{ .apiVersion | default "gateway.networking.k8s.io/v1" | quote }}
+kind: HTTPRoute
+metadata:
+  name: {{ $fullName | quote }}
+  namespace: {{ $.Release.Namespace | quote }}
+  {{- include "universal-template.metadata" (dict "root" $ "fullName" $fullName "labels" .extraLabels "annotations" .extraAnnotations) | nindent 2 }}
+spec: {{- toYaml $spec | nindent 2 }}
+{{-   end }}
+{{- end }}

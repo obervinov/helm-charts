@@ -12,6 +12,10 @@ Prometheus Operator monitors of {{ $fullName }}:
 ---
 Ingress URL: {{ ternary "https" "http" (.useTLS | default false) }}://{{ .fqdn }}
 {{-   end }}
+{{-   if .route }}
+---
+HTTPRoute {{ $fullName }}: {{ include "universal-template.route.hostnames" . | fromYamlArray | join ", " | default "all hostnames of the parent listeners" }}
+{{-   end }}
 {{-   with .persistentVolumeClaims }}
 ---
 PersistentVolumeClaims of {{ $fullName }}:

@@ -5,7 +5,7 @@
 # - app                     - the workload (Deployment, StatefulSet, Job, CronJob, or none)
 # - services                - Services for the workload (or for another application of the release)
 # - persistentVolumeClaims  - standalone PVCs
-# - ingress, configMap, secret, rbac, monitoring
+# - ingress, route (Gateway API HTTPRoute), configMap, secret, rbac, monitoring
 #
 # Names: with one application every object is named <release>, with several <release>-<application name>
 # (below: <fullName>). Pods carry the label `appselector: <fullName>`.
@@ -19,7 +19,7 @@ applications: []
 #   - name: app1
 #     app:
 #       # required: deployment, statefulset, job, cronjob, or none (no workload: only Services,
-#       # PVCs, ingress, configMap, secret of this application are rendered)
+#       # PVCs, ingress, route, configMap, secret of this application are rendered)
 #       type: deployment
 #       replicas: 1
 #       # Labels of the workload and its pods (chart labels such as appselector cannot be overridden)
@@ -252,6 +252,43 @@ applications: []
 #           # Any Service of this release (see services); default: the first Service of this application
 #           serviceName: my-app-headless
 #       ingressClassName: nginx
+#
+#     # Gateway API HTTPRoute <fullName>, rendered when `route` is set (can run next to `ingress`,
+#     # e.g. while moving from an ingress controller to a Gateway). Requires the Gateway API CRDs.
+#     route:
+#       apiVersion: gateway.networking.k8s.io/v1   # default
+#       extraLabels: {}
+#       extraAnnotations: {}
+#       # Gateways (listeners) to attach to; required
+#       parentRefs:
+#         - name: my-gateway
+#           namespace: gateway-system
+#           sectionName: https                     # optional: one listener of the Gateway
+#       # Default: [ingress.fqdn] when the ingress has an fqdn; set the key (also to []) to override
+#       hostnames:
+#         - my-service.example.com
+#       # Backend of the default rule (PathPrefix /). Default: the backend of the first ingress path,
+#       # else the first Service of this application on its first port. servicePortName wins over servicePort.
+#       serviceName: my-app-headless
+#       servicePortName: http
+#       # servicePort: 80
+#       # Added to the default rule as is
+#       timeouts:
+#         request: 30s
+#         backendRequest: 25s
+#       filters:
+#         - type: RequestHeaderModifier
+#           requestHeaderModifier:
+#             set:
+#               - name: X-Forwarded-Proto
+#                 value: https
+#       # Replaces the default rule (and then cannot be combined with timeouts/filters above), rendered as is
+#       # rules:
+#       #   - matches:
+#       #       - path: {type: PathPrefix, value: /api}
+#       #     backendRefs:
+#       #       - name: my-app-api
+#       #         port: 8080
 
 #     # Description of the ConfigMap
 #     # The contents of the config can be set via
