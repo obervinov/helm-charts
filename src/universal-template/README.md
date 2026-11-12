@@ -1,6 +1,6 @@
 # Universal Helm Chart for Kubernetes Applications
 
-One chart for simple releases: Deployments, StatefulSets, Jobs and CronJobs with their Services, PersistentVolumeClaims, Ingress, ConfigMap, Secret, RBAC, NetworkPolicy and Prometheus monitors, all described in `values.yaml`.
+One chart for simple releases: Deployments, StatefulSets, Jobs and CronJobs with their Services, PersistentVolumeClaims, Ingress, Gateway API HTTPRoute, ConfigMap, Secret, RBAC, NetworkPolicy and Prometheus monitors, all described in `values.yaml`.
 
 Version 4.0.1 changes the values contract (volumes, services, claims). The rendered objects keep their names and the Deployment/StatefulSet selectors, so a module translated from 3.x upgrades in place; pods restart once because their labels change. See [Migrating from 3.x](#migrating-from-3x). Do not use 4.0.0: it is an unreviewed pre-release build of the same work.
 
@@ -15,6 +15,7 @@ Version 4.0.1 changes the values contract (volumes, services, claims). The rende
   - [PersistentVolumeClaims](#persistentvolumeclaims)
   - [Services](#services)
   - [Ingress](#ingress)
+  - [HTTPRoute](#httproute)
   - [ConfigMap](#configmap)
   - [Secret](#secret)
   - [RBAC](#rbac)
@@ -29,7 +30,7 @@ Version 4.0.1 changes the values contract (volumes, services, claims). The rende
 helm repo add obervinov https://obervinov.github.io/helm-charts
 helm upgrade --install my-app obervinov/universal-template -f values.yaml
 # or from the OCI registry
-helm upgrade --install my-app oci://ghcr.io/obervinov/helm-charts/universal-template --version 4.0.1 -f values.yaml
+helm upgrade --install my-app oci://ghcr.io/obervinov/helm-charts/universal-template --version 4.1.0 -f values.yaml
 ```
 
 `values.schema.json` rejects unknown keys, so `helm lint -f values.yaml` catches typos and 3.x keys before anything is applied.
@@ -37,7 +38,7 @@ helm upgrade --install my-app oci://ghcr.io/obervinov/helm-charts/universal-temp
 ## Naming
 
 - `<fullName>` is the release name when the release has one application, and `<release>-<application name>` when it has several.
-- Every workload, ConfigMap, Secret, ServiceAccount and Ingress is named `<fullName>`; a Prometheus monitor is named `<fullName>-<monitor name>`.
+- Every workload, ConfigMap, Secret, ServiceAccount, Ingress and HTTPRoute is named `<fullName>`; a Prometheus monitor is named `<fullName>-<monitor name>`.
 - Every object carries `app.kubernetes.io/managed-by`, `app.kubernetes.io/instance: <release>`, `app: <release>`, `appselector: <fullName>`, and the chart version as `app.kubernetes.io/version` and `version`. Pod templates carry the same labels without the chart version, so a chart upgrade alone does not restart pods. These labels win over `extraLabels` with the same key.
 - Deployment/StatefulSet selectors are `appselector: <fullName>` only. `spec.selector` is immutable, so the chart keeps the 3.x selector to let a module upgrade in place. `<fullName>` is not unique across releases: in one namespace, a release `a-b` with one application and a release `a` with an application `b` both get `appselector: a-b`, and their workloads' selectors overlap, which Kubernetes does not support (the controllers fight over the pods). Name releases that share a namespace so that they cannot join into the same `<fullName>`.
 - Services, NetworkPolicies and monitors select `appselector: <fullName>` plus `app.kubernetes.io/instance: <release>`, so they never select the pods of another release, even with such a collision.
@@ -52,7 +53,7 @@ helm upgrade --install my-app oci://ghcr.io/obervinov/helm-charts/universal-temp
 |-----------|-------------|---------|
 | `applications[]` | List of applications | `[]` |
 | `applications[].name` | Name of the application (required, lowercase DNS label, unique in the release) | |
-| `applications[].app.type` | `deployment`, `statefulset`, `job`, `cronjob` or `none` (no workload: only the Services, claims, ingress, configMap and secret of the application are rendered) | |
+| `applications[].app.type` | `deployment`, `statefulset`, `job`, `cronjob` or `none` (no workload: only the Services, claims, ingress, route, configMap and secret of the application are rendered) | |
 | `applications[].app.replicas` | Number of replicas | `1` |
 | `applications[].app.extraLabels` | Labels added to the workload, its pods and its NetworkPolicy | `{}` |
 | `applications[].app.extraAnnotations` | Annotations added to the pod template, for every workload type (not to the workload object) | `{}` |
@@ -178,6 +179,41 @@ Claims from `volumeClaimTemplates` cannot carry the keep annotation. Helm does n
 | `ingress.paths[].serviceName` | Any Service of this release; rendering fails for an unknown name | first Service of this application |
 | `ingress.paths[].servicePortName` / `.servicePort` | Backend port by name (wins) or number | |
 
+### HTTPRoute
+
+`applications[].route` renders a Gateway API `HTTPRoute` named `<fullName>`; leave it unset (or `{}`) to render none. It works next to `ingress`, so one application can be served by an ingress controller and a Gateway at the same time, both pointing at the same Service and port. The cluster needs the Gateway API CRDs (e.g. the [`gateway-api-crds`](../gateway-api-crds) chart).
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `route.apiVersion` | API version | `gateway.networking.k8s.io/v1` |
+| `route.extraLabels` / `.extraAnnotations` | Extra metadata | |
+| `route.parentRefs[]` | Gateways to attach to (required): `name`, `namespace`, `sectionName`, `port`, `group`, `kind`, rendered as is | |
+| `route.hostnames[]` | Hostnames; set the key (`[]` too) to override the default | `[ingress.fqdn]` when the ingress has an `fqdn`, else none (all hostnames of the listener) |
+| `route.serviceName` | Backend of the default rule: any Service of this release; rendering fails for an unknown name | see below |
+| `route.servicePortName` / `.servicePort` | Backend port by name (wins) or number; a name is resolved to the Service port number, since `backendRefs` take numbers only | see below |
+| `route.timeouts` | `request` / `backendRequest` of the default rule | |
+| `route.filters[]` | Filters of the default rule, rendered as is | `[]` |
+| `route.rules[]` | `spec.rules` rendered as is; replaces the default rule, and rendering fails when `timeouts` or `filters` are set next to it | |
+
+Without `rules` the route has one rule: path prefix `/` to one backend. The backend is `route.serviceName` / `.servicePortName` / `.servicePort` when any of them is set, else the backend of the first `ingress.paths` entry (the same Service and port the Ingress sends `/` to), else the first Service of the application on its first port.
+
+```yaml
+ingress:
+  fqdn: my-app.example.com
+  useTLS: true
+  paths:
+    - path: /
+      pathType: Prefix
+      servicePortName: http
+route:                          # HTTPRoute my-app: my-app.example.com, / -> Service my-app, port "http"
+  parentRefs:
+    - name: my-gateway
+      namespace: gateway-system
+      sectionName: https
+  timeouts:
+    request: 30s
+```
+
 ### ConfigMap
 
 | Parameter | Description | Default |
@@ -227,6 +263,7 @@ The values files in [`tests/`](tests/) pass `helm lint . -f tests/<file>` and co
 - [`tests/statefulset-standalone-pvcs.yaml`](tests/statefulset-standalone-pvcs.yaml) - a StatefulSet on standalone claims with init containers, a CronJob on emptyDirs, and a Service-only application selecting the StatefulSet
 - [`tests/job-configmap-secret.yaml`](tests/job-configmap-secret.yaml) - a Job whose main container mounts the chart's ConfigMap and Secret, and a sidecar that does not
 - [`tests/monitoring.yaml`](tests/monitoring.yaml) - a ServiceMonitor and a PodMonitor, each selecting its own application
+- [`tests/httproute.yaml`](tests/httproute.yaml) - an application served by an Ingress and an HTTPRoute at the same time, and an HTTPRoute with its own rules
 
 A StatefulSet with a claim template:
 

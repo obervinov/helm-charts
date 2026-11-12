@@ -103,6 +103,125 @@
             }
           }
         },
+        "route": {
+          "type": "object",
+          "additionalProperties": false,
+          "$comment": "Rendered when set; parentRefs is required then. route: {} renders nothing",
+          "if": {
+            "minProperties": 1
+          },
+          "then": {
+            "required": [
+              "parentRefs"
+            ]
+          },
+          "properties": {
+            "apiVersion": {
+              "$ref": "#/definitions/noWhitespace"
+            },
+            "extraLabels": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "extraAnnotations": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "parentRefs": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "group": {
+                    "type": "string",
+                    "pattern": "^$|^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$"
+                  },
+                  "kind": {
+                    "type": "string",
+                    "pattern": "^[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$"
+                  },
+                  "namespace": {
+                    "$ref": "#/definitions/dnsLabel"
+                  },
+                  "name": {
+                    "$ref": "#/definitions/dnsSubdomain"
+                  },
+                  "sectionName": {
+                    "type": "string",
+                    "maxLength": 253,
+                    "pattern": "^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$"
+                  },
+                  "port": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 65535
+                  }
+                }
+              }
+            },
+            "hostnames": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "maxLength": 253,
+                "pattern": "^(\\*\\.)?[a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$"
+              }
+            },
+            "serviceName": {
+              "$ref": "#/definitions/dnsLabel",
+              "$comment": "Any Service of this release; default: the backend of the first ingress path, else the first Service of this application"
+            },
+            "servicePort": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 65535
+            },
+            "servicePortName": {
+              "$ref": "#/definitions/dnsLabel"
+            },
+            "timeouts": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "request": {
+                  "type": "string",
+                  "pattern": "^([0-9]{1,5}(h|m|s|ms)){1,4}$",
+                  "description": "Gateway API Duration, e.g. 30s or 1m30s"
+                },
+                "backendRequest": {
+                  "type": "string",
+                  "pattern": "^([0-9]{1,5}(h|m|s|ms)){1,4}$",
+                  "description": "Gateway API Duration, e.g. 30s or 1m30s"
+                }
+              }
+            },
+            "filters": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": [
+                  "type"
+                ]
+              }
+            },
+            "rules": {
+              "type": "array",
+              "items": {
+                "type": "object"
+              },
+              "$comment": "HTTPRoute spec.rules as is; replaces the default rule"
+            }
+          }
+        },
         "configMap": {
           "type": "object",
           "additionalProperties": false,

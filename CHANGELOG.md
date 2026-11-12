@@ -3,6 +3,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## v1.4.0 - 2026-11-12
+### What's Changed
+**Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.3.0...v1.4.0 by @obervinov
+#### 🚀 Features
+* `universal-template` 4.1.0: `applications[].route` renders a Gateway API `HTTPRoute` (`gateway.networking.k8s.io/v1`) named `<fullName>`, next to the Ingress or instead of it, so an application can be served by an ingress controller and a Gateway at the same time. Nothing changes for values without `route`
+* `universal-template`: the default HTTPRoute rule sends `/` (`PathPrefix`) to the backend of the first ingress path, or to `route.serviceName` / `.servicePortName` / `.servicePort`; a port name is resolved to the Service port number. `route.timeouts` and `route.filters` go into that rule; `route.rules` replaces it
+* `universal-template`: `route.hostnames` default to the ingress `fqdn`
+* `universal-template`: rendering fails with a named cause for an unknown route `serviceName` or port name, an application without a Service and without `route.rules`, and `route.rules` together with `route.timeouts` / `route.filters`; the schema requires `route.parentRefs` and checks hostnames and timeouts
+
+
 ## v1.3.0 - 2026-10-22
 ### What's Changed
 **Full Changelog**: https://github.com/obervinov/helm-charts/compare/v1.2.13...v1.3.0 by @obervinov

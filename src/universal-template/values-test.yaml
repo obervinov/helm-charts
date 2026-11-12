@@ -255,6 +255,15 @@ applications:
           pathType: Prefix
           servicePort: 80
       ingressClassName: nginx
+    route:
+      extraAnnotations:
+        checksum/values.yaml: helm/values.yaml
+      parentRefs:
+        - name: example-gateway
+          namespace: gateway-system
+          sectionName: https
+      timeouts:
+        request: 30s
     configMap:
       files:
         - name: config.json
